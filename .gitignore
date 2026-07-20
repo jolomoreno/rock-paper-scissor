@@ -16,6 +16,9 @@ mono_crash.*.json
 build/
 export/
 
+# Local-only design documentation (not for the public repo)
+0-documentation/
+
 # macOS
 .DS_Store
 
