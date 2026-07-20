@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Diario de Playtest — Ronda 2: comparativa de escuadrones</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Kalam:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt:#2E4A38; --felt2:#233A2B;
+    --card:#F7F1DE; --card-line:#D8C9A0;
+    --ink:#241C14; --ink-soft:#55483A;
+    --pin:#B03A2E; --pin-dark:#8A2E20;
+    --sticky:#F2D65B; --sticky2:#EAD9F5; --sticky3:#C9E4D8;
+    --kraft:#C9A876; --kraft-line:#9C7C4C;
+    --ok:#4F6B52; --warn:#B07A2E;
+    --gold:#D9B75A; --blue:#5B8AA6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(255,255,255,.05), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,.025) 0 2px, transparent 2px 8px),
+      var(--felt);
+    color:var(--card);
+    font-family:'Source Serif 4', Georgia, serif;
+    font-size:16.5px;
+    line-height:1.65;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 30px 120px 30px;}
+  @media (max-width:640px){.wrap{padding:0 16px 90px 16px;}}
+  a{color:var(--gold);}
+  strong{color:#F0DFAE;}
+
+  .topbar{background:var(--felt2);color:#CFE0CB;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:9px 20px;border-bottom:2px solid var(--gold);}
+
+  .cover{padding:60px 0 30px 0;text-align:center;border-bottom:2px dashed rgba(255,255,255,.2);}
+  .cover .kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  .cover h1{font-family:'Archivo Black',sans-serif;font-size:clamp(24px,5vw,40px);margin:0 0 10px 0;color:#F7F1DE;text-transform:uppercase;letter-spacing:.01em;}
+  .cover .sub{font-family:'Source Serif 4',serif;font-style:italic;font-size:17px;color:#CFE0CB;max-width:640px;margin:0 auto 14px auto;}
+  .scope-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11.5px;background:rgba(217,183,90,.15);border:1px solid var(--gold);color:var(--gold);padding:5px 14px;border-radius:20px;margin:4px 4px;}
+
+  section{padding:48px 0;border-bottom:2px dashed rgba(255,255,255,.15);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  h2{font-family:'Archivo Black',sans-serif;font-size:23px;margin:0 0 8px 0;color:#F7F1DE;text-transform:uppercase;}
+  h3{font-family:'Archivo Black',sans-serif;font-size:15px;margin:26px 0 10px 0;color:var(--gold);text-transform:uppercase;letter-spacing:.02em;}
+  .sec-intro{color:#CFE0CB;font-style:italic;margin:0 0 20px 0;font-size:15px;}
+  p{margin:0 0 13px 0;color:#EAE3CE;}
+  ul,ol{margin:0 0 15px 0;padding-left:22px;color:#EAE3CE;}
+  li{margin-bottom:6px;}
+
+  .squad-block{border:1px solid var(--gold);border-radius:6px;padding:24px 26px;margin:20px 0;background:rgba(217,183,90,.05);}
+  .squad-block > h2{margin-bottom:4px;}
+  .squad-tag{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--gold);letter-spacing:.06em;}
+
+  .table{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;margin:20px 0;}
+  .idx-card{background:var(--card);color:var(--ink);border:1px solid var(--card-line);border-radius:2px;box-shadow:4px 6px 0 rgba(0,0,0,.28);padding:16px 18px;width:255px;}
+  .idx-card.tl{transform:rotate(-1.6deg);} .idx-card.tr{transform:rotate(1.4deg);} .idx-card.tn{transform:rotate(-0.3deg);}
+  .card-title{font-family:'Archivo Black',sans-serif;font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink);margin:0 0 10px 0;padding-bottom:8px;border-bottom:2px solid var(--pin);}
+  .card-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:12.5px;padding:3px 0;border-bottom:1px dotted var(--card-line);color:var(--ink-soft);}
+  .card-row b{color:var(--ink);font-weight:600;}
+  .cap{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#CFE0CB;margin:-14px 0 26px 0;letter-spacing:.04em;}
+
+  .hp-bar{margin:8px 0 4px 0;}
+  .hp-bar .bg{background:#E4D9BE;border:1px solid var(--card-line);height:14px;border-radius:7px;overflow:hidden;}
+  .hp-bar .fill{height:100%;background:linear-gradient(90deg,#8A2E20,#C0503C);}
+  .hp-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);margin-top:3px;}
+
+  .slots{display:flex;gap:8px;margin-top:8px;}
+  .slot{width:56px;height:64px;border:2px dashed var(--card-line);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;text-align:center;padding:3px;color:var(--ink-soft);}
+  .slot.filled{border-style:solid;border-color:var(--ink);background:#EFE6C8;color:var(--ink);}
+  .slot .dot{width:16px;height:16px;border-radius:50% 50% 3px 3px;margin-bottom:3px;}
+
+  .sticky{background:var(--sticky);box-shadow:3px 6px 10px rgba(0,0,0,.3);padding:16px 18px;font-family:'Kalam',cursive;font-size:15.5px;color:#3a2f10;border-radius:2px;margin:20px auto;max-width:540px;position:relative;}
+  .sticky.alt{background:var(--sticky2);}
+  .sticky.green{background:var(--sticky3);}
+  .sticky::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(4deg);width:34px;height:16px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.6);}
+  .sticky .who{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6b5a1e;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase;}
+
+  .finding{border:2px solid var(--pin);border-radius:3px;background:rgba(176,58,46,.14);padding:16px 20px;margin:18px 0;color:#FCEBE6;}
+  .finding .ftitle{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.08em;color:#F3B7AC;display:block;margin-bottom:8px;}
+  .finding p{color:#FCEBE6;margin-bottom:8px;}
+  .finding p:last-child{margin-bottom:0;}
+  .finding.headline{border-width:3px;background:rgba(176,58,46,.22);}
+  .finding.headline .ftitle{font-size:12.5px;}
+
+  .turnlog{background:#182018;color:#D8E8D2;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;padding:16px 20px;border-radius:4px;margin:14px 0;overflow-x:auto;}
+  .turnlog .phase{color:var(--gold);font-weight:700;}
+  .turnlog .dmg{color:#E38B7A;}
+  .turnlog .heal{color:#8FCB8A;}
+  .turnlog .note{color:#9AA8C7;font-style:italic;}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0 22px 0;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.15);vertical-align:top;color:#EAE3CE;}
+  th{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold);border-bottom:2px solid var(--gold);}
+
+  .diagram-frame{background:#EFE6C8;border:1px solid var(--kraft-line);border-radius:4px;padding:16px 12px 8px 12px;margin:18px 0 8px 0;}
+  .diagram-frame.kraft{background:var(--kraft);}
+  .diagram-frame svg{width:100%;height:auto;display:block;}
+  .fig-cap{font-family:'JetBrains Mono',monospace;font-size:11px;color:#CFE0CB;text-align:center;margin:6px 0 0 0;}
+
+  .final{background:linear-gradient(160deg,#1c2e21,#132015);border:1px solid var(--gold);border-radius:6px;padding:34px 30px;}
+  .final h2{color:var(--gold);}
+
+  footer{text-align:center;padding:36px 0 8px 0;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:#9DB399;}
+</style>
+</head>
+<body>
+
+<div class="topbar">Diario de playtest · Ronda 2 · Comparativa de escuadrones · Uso interno del estudio</div>
+
+<div class="wrap">
+
+  <div class="cover">
+    <div class="kicker">Sesión de prototipado · Continuación</div>
+    <h1>Ronda 2: tres escuadrones más</h1>
+    <div class="sub">Mismo mapa, mismos enemigos, misma economía, mismas reglas ya resueltas en la primera sesión. Lo único que cambia es a quién recluto — para saber si de verdad hay diez formas distintas de jugar este acto, o solo una buena y nueve decorativas.</div>
+    <div class="scope-badge">Hastatus + Eques</div>
+    <div class="scope-badge">Hastatus + Principes</div>
+    <div class="scope-badge">Principes + Eques</div>
+  </div>
+
+  <!-- CONDICIONES -->
+  <section id="condiciones">
+    <div class="eyebrow">00 · Qué se mantiene igual</div>
+    <h2>Mismas condiciones que la Ronda 1</h2>
+    <p class="sec-intro">Nada de esto se toca entre sesiones — es precisamente lo que permite comparar.</p>
+    <ul>
+      <li>Mismo mapa reducido de 8 nodos, mismo orden: Inicio → Cissa → Reclutamiento → Élite (Numida) → Descanso → Tienda → Baecula → Cartagena Nova.</li>
+      <li>Mismos enemigos y las mismas cifras de prueba: Guerrero Lusitano (HP8/ATQ3), Hondero Celtíbero (HP6/ATQ2), Jinete Númida de élite (HP16/ATQ6, Eques), Cartagena Nova (HP40/ATQ8, Hastatus).</li>
+      <li>Misma economía: combate normal 4 Gloria/25 u/15 Oro según el nodo, élite 8 Gloria/22 Oro, jefe 20 Gloria + legendario garantizado. Reclutar cuesta 10 Oro, subir de Posterior a Prior cuesta 12 Oro, la tienda cobra 15 Oro por el común.</li>
+      <li>Mismas cinco reglas caseras ya fijadas en la Ronda 1 (una acción por tipo y turno, el ataque del héroe nunca activa el pentagrama, Bloquear y las mitigaciones de recluta no se acumulan, "Objeto" es un consumible sin probar, Descanso cura 8 HP fijos sin coste).</li>
+      <li>Para esta ronda asumo que las cinco clases tienen ya derecho a aparecer — necesito poder probar Principes y Eques, que en la Ronda 1 seguían bloqueados.</li>
+      <li>El primer combate (Cissa) es idéntico en las tres sesiones: el escuadrón todavía no existe. Termina siempre en HP 16/20, 4 turnos, +4 Gloria, +25 Oro — el Hallazgo 1 de la Ronda 1 (el turno se colapsa sin reclutas) se reconfirma tres veces más, gratis, así que no lo repito en detalle.</li>
+    </ul>
+
+    <table>
+      <tr><th>Clase</th><th>Pasivo</th><th>Acción</th><th>¿Ataca?</th></tr>
+      <tr><td>Hastatus</td><td>+2 ATQ</td><td>Carga — +3 daño si es el primer ataque del combate</td><td class="ok">Sí</td></tr>
+      <tr><td>Principes</td><td>+2 DEF</td><td>Formación firme — mitiga daño, no ataca</td><td>No</td></tr>
+      <tr><td>Triario <span style="opacity:.6">(Ronda 1)</span></td><td>+HP máx.</td><td>Última Línea — mitiga daño, no ataca</td><td>No</td></tr>
+      <tr><td>Eques</td><td>+8% Esquiva</td><td>Carga de flanco — ataque extra + roba el turno al primer enemigo</td><td class="ok">Sí</td></tr>
+      <tr><td>Vélite <span style="opacity:.6">(Ronda 1)</span></td><td>+1 Área</td><td>Descarga — ataque a 2 objetivos</td><td class="ok">Sí</td></tr>
+    </table>
+  </section>
+
+  <!-- SIM 2 -->
+  <section id="sim2">
+    <div class="squad-block">
+      <div class="squad-tag">Simulación 2</div>
+      <h2>Hastatus + Eques — "La pareja rápida"</h2>
+      <p>Sin bonus de HP ni de Área: cero margen extra y sin poder golpear a más de un objetivo a la vez. A cambio, el combo de apertura de Carga (daño extra en el primer golpe) y Carga de flanco (ataque gratis + roba el turno al enemigo) apuesta por resolver los combates antes de que el rival llegue a actuar.</p>
+    </div>
+
+    <h3>Nodo de reclutamiento</h3>
+    <p>Recluto Hastatus (10 Oro) y Eques (10 Oro). ATQ del héroe sube a 7 (base 4 + espada 1 + Hastatus 2). Esquiva sube a 16%. HP se queda en 16/20 — sin Triario, el techo no sube.</p>
+
+    <h3>Combate 2 — Élite, emboscada numida</h3>
+    <div class="turnlog">
+      <span class="phase">TURNO 1 (3 PA)</span><br>
+      · Carga de Hastatus (1 PA, primer ataque del combate) → Numida: <span class="dmg">-10</span> (16→6)<br>
+      · Atacar del héroe (1 PA) → Celtíbero: <span class="dmg">-7</span>, muere<br>
+      · Carga de flanco de Eques (1 PA) → se activa al empezar la Fase Enemigos<br>
+      <span class="phase">INICIO FASE ENEMIGOS</span> · Carga de flanco dispara: <span class="dmg">-7</span> a Numida (6→ muere) y le roba el turno al primer enemigo — que ya no existe. <strong>Combate ganado en el turno 1, cero daño recibido.</strong>
+    </div>
+    <div class="finding">
+      <span class="ftitle">Hallazgo — una fantasía distinta, no necesariamente mejor ni peor</span>
+      <p>Esta pareja puede resolver un combate élite entero antes de que el rival actúe una sola vez. Es una sensación de control de iniciativa, frente a la resistencia que ofrecía Triario+Vélite en la Ronda 1. Ninguna de las dos clases de este escuadrón vence a Eques en el pentagrama — así que el resultado no vino del bonus de contra, vino solo del orden de las acciones.</p>
+    </div>
+
+    <p><strong>Descanso:</strong> +8 HP, pero el techo sigue en 20 → cura solo 4 puntos reales, el resto se pierde por tope. HP 20/20.<br>
+    <strong>Tienda:</strong> Lorica de recluta (+2 DEF, 15 Oro) + Eques a Prior (12 Oro, Esquiva a 22%). Oro a 0.</p>
+
+    <h3>Combate 3 — Baecula</h3>
+    <div class="turnlog">
+      <span class="phase">TURNO 1</span> · Carga (primer ataque, 10) → Lusitano B muere · Atacar (7) → Lusitano A muere · Carga de flanco (primed)<br>
+      <span class="phase">INICIO FASE ENEMIGOS</span> · Carga de flanco remata a Lusitano A (ya muerto por overkill, se reasigna a Celtíbero) y le roba el turno al enemigo restante. <strong>Cero enemigos actúan este turno.</strong><br>
+      <span class="phase">TURNO 2</span> · Atacar (7) → Celtíbero muere. <strong>Combate ganado en 2 turnos, cero daño recibido.</strong>
+    </div>
+
+    <h3>Jefe de acto — Cartagena Nova</h3>
+    <div class="finding headline">
+      <span class="ftitle">Hallazgo crítico — Carga de flanco sin límite rompe los combates 1 contra 1</span>
+      <p>Al preparar esta pelea me di cuenta de que, si Carga de flanco no tiene tope de usos, se puede repetir cada turno: bastaría con gastar 1 PA para robarle el turno al jefe una y otra vez, indefinidamente, sin recibir jamás daño. Contra un único enemigo eso no es una táctica, es un interruptor de apagado. Adopto sobre la marcha la regla "máximo una vez por combate" y sigo jugando con ese límite — pero recomiendo cerrarlo oficialmente antes de tocar código, porque sin él cualquier jefe de acto en solitario queda neutralizado.</p>
+    </div>
+    <div class="turnlog">
+      <span class="phase">T1</span> Carga(10)+Atacar(7) → 40→23 · Carga de flanco (1 uso, con tope) → -7 (23→16) y roba el turno del jefe. <span class="dmg">0 daño recibido</span>.<br>
+      <span class="phase">T2</span> Atacar(7)+Carga(7, ya sin bonus) → 16→2 · 1 PA sin usar (Carga de flanco ya gastada)<br>
+      Enemigo: ataca sin que le roben el turno → <span class="dmg">-4</span> tras Defensa → HP 20→<b>16</b><br>
+      <span class="phase">T3</span> Atacar(7) → jefe muere. <strong>Combate ganado en 3 turnos.</strong><br>
+      <span class="phase">RESULTADO</span> · HP final 16/20 (80%) · +20 Gloria
+    </div>
+
+    <div class="sticky">
+      <span class="who">Nota al margen</span>
+      Incluso con el tope de "una vez por combate" ya aplicado, este escuadrón terminó el jefe en 3 turnos y con el 80% de la barra — la mitad de turnos y el doble de HP restante que Triario+Vélite en la Ronda 1. Antes de sacar conclusiones quiero ver las otras dos sesiones.
+    </div>
+  </section>
+
+  <!-- SIM 3 -->
+  <section id="sim3">
+    <div class="squad-block">
+      <div class="squad-tag">Simulación 3</div>
+      <h2>Hastatus + Principes — "El muro doble"</h2>
+      <p>Doble melé, ATQ y DEF planos, sin HP extra, sin Área, sin movilidad. La apuesta contraria a la anterior: encajar en vez de esquivar.</p>
+    </div>
+
+    <h3>Nodo de reclutamiento</h3>
+    <p>Recluto Hastatus (10) y Principes (10). ATQ 7, DEF 4 (2 base + 2 Principes). Ninguna otra estadística cambia.</p>
+
+    <h3>Combate 2 — Élite</h3>
+    <div class="turnlog">
+      <span class="phase">T1</span> Carga(10)→Numida 16→6 · Atacar(7)→Celtíbero muere · Formación firme (mitigación activa)<br>
+      Enemigo: Numida(6) ataca, mitigado y con Defensa → <span class="dmg">-1</span> → HP 16→<b>15</b><br>
+      <span class="phase">T2</span> Atacar(7) → Numida muere. <strong>2 turnos, HP 15/20.</strong>
+    </div>
+
+    <div class="finding headline">
+      <span class="ftitle">Hallazgo crítico — dos clases nunca pueden cobrar el bonus del pentagrama</span>
+      <p>Principes vence a Eques en el pentagrama, y Triario venció a Hastatus en la Ronda 1 — pero ninguna de las dos acciones de esas clases ataca. Formación firme y Última Línea son puramente defensivas: no hay forma de que Principes o Triario disparen jamás el bonus de daño por contra, porque su acción única nunca inflige daño. Solo Hastatus, Eques y Vélite pueden cobrarlo, porque son las únicas tres clases cuya acción de recluta ataca. En retrospectiva, esto también explica un detalle de la Ronda 1 que no señalé entonces: Triario nunca disparó el bonus tampoco — la pareja Triario+Vélite solo pudo aprovechar el pentagrama gracias a Vélite. Es un desequilibrio estructural entre clases, no un matiz de números: dos de las cinco clases quedan fuera del sistema táctico central del juego en cuanto se juega con su acción de firma.</p>
+    </div>
+
+    <p><strong>Descanso:</strong> 15+8=23, tope 20 → 3 puntos perdidos por límite.<br>
+    <strong>Tienda:</strong> Lorica (+2 DEF, 15 Oro) + Hastatus a Prior (12 Oro, ATQ pasivo +2→+4). ATQ total: 4+1+4=9. DEF total: 2+2+2=6.</p>
+
+    <h3>Combate 3 — Baecula</h3>
+    <div class="turnlog">
+      <span class="phase">T1</span> Carga(12, primer ataque)→Lusitano A muere · Atacar(9)→Lusitano B muere · Formación firme (mitigación)<br>
+      Enemigo: Celtíbero(6) ataca, mitigado y con Defensa 6 → <span class="dmg">0</span> (floor)<br>
+      <span class="phase">T2</span> Atacar(9) → Celtíbero muere. <strong>2 turnos, HP 20/20 — cero daño en todo el combate.</strong>
+    </div>
+
+    <h3>Jefe de acto — Cartagena Nova</h3>
+    <div class="finding headline">
+      <span class="ftitle">Hallazgo crítico — Defensa plana + mitigación porcentual anulan el daño por completo</span>
+      <p>8 de ataque enemigo, mitigado al 50% por Formación firme (→4) y reducido por 6 puntos de Defensa plana, se queda en cero. Este escuadrón terminó el jefe de acto sin recibir un solo punto de daño en ningún turno de todo el combate. Un roguelike que depende de la tensión de la barra compartida no puede permitirse que una combinación de equipo y recluta razonable dé un techo de daño recibido de cero. Recomiendo, como mínimo, un daño mínimo garantizado por golpe (nunca menos de 1) y revisar el orden de aplicación entre Defensa plana y mitigación porcentual — probablemente no deberían combinarse sin límite.</p>
+    </div>
+    <div class="turnlog">
+      <span class="phase">T1</span> Carga(12)+Atacar(9) → 40→19 · Formación firme<br>
+      Enemigo: 8 mitigado a 4, -6 Defensa → <span class="dmg">0</span><br>
+      <span class="phase">T2</span> Atacar(9)+Carga(9, sin bonus) → 19→1 · Formación firme<br>
+      Enemigo: <span class="dmg">0</span> otra vez<br>
+      <span class="phase">T3</span> Atacar(9) → jefe muere. <strong>3 turnos, HP 20/20 — el jefe de acto no hizo ni un solo punto de daño en toda la pelea.</strong><br>
+      <span class="phase">RESULTADO</span> · +20 Gloria · legendario: Falcata de Sagunto
+    </div>
+
+    <div class="sticky alt">
+      <span class="who">Nota al margen</span>
+      Esto ya no es "más fuerte que la Ronda 1" — es directamente otro juego. El jefe de acto, la pieza que debería sentirse más peligrosa del acto entero, no tuvo ninguna oportunidad de hacer nada. Si esto se sostiene con cifras reales, es el hallazgo más urgente de las cuatro sesiones.
+    </div>
+  </section>
+
+  <!-- SIM 4 -->
+  <section id="sim4">
+    <div class="squad-block">
+      <div class="squad-tag">Simulación 4</div>
+      <h2>Principes + Eques — "Defensa y fuga"</h2>
+      <p>La menor potencia de ataque de las cuatro sesiones (el héroe se queda en ATQ 5 toda la partida — sin Hastatus no hay bonus de ataque en ningún momento), compensada con Defensa, Esquiva y robo de turno.</p>
+    </div>
+
+    <h3>Nodo de reclutamiento</h3>
+    <p>Recluto Principes (10) y Eques (10). DEF 4, Esquiva 16%. ATQ se queda en 5 (4 base + 1 espada) — el escuadrón con menos daño por acción de todo el ensayo.</p>
+
+    <h3>Combate 2 — Élite</h3>
+    <div class="turnlog">
+      <span class="phase">T1</span> Atacar(5)→Numida 16→11 · Formación firme (mitigación) · Carga de flanco (primed)<br>
+      Inicio Fase Enemigos: Carga de flanco → -5 (11→6) y roba el turno al Numida.<br>
+      Enemigo: solo Celtíbero actúa → mitigado y con Defensa → <span class="dmg">0</span><br>
+      <span class="phase">T2</span> Atacar(5) → Numida 6→1 (no muere) · 2 PA sin nada más que hacer (Carga de flanco ya gastada, Formación firme no es necesaria)<br>
+      Enemigo: Numida(1) y Celtíbero(6) atacan, ambos mitigados a <span class="dmg">0</span> por Defensa sola<br>
+      <span class="phase">T3</span> Atacar(5) → Numida muere · 2 PA sin usar<br>
+      Enemigo: Celtíbero ataca → <span class="dmg">0</span><br>
+      <span class="phase">T4</span> Atacar(5) → Celtíbero 6→1 · 2 PA sin usar<br>
+      Enemigo: <span class="dmg">0</span><br>
+      <span class="phase">T5</span> Atacar(5) → Celtíbero muere. <strong>5 turnos — el combate más largo de las cuatro sesiones — pero cero daño recibido en total.</strong>
+    </div>
+
+    <div class="finding">
+      <span class="ftitle">Hallazgo — la regla de "una acción por turno" crea un nuevo cuello de botella a media partida</span>
+      <p>Este escuadrón tiene un solo botón ofensivo real fuera del primer uso de Carga de flanco: el ataque básico del héroe. En cuanto Carga de flanco se gasta, sobran hasta 2 PA por turno sin nada útil que hacer — el mismo problema del Hallazgo 1 de la Ronda 1, pero ahora en mitad de la partida, no solo al principio. La regla casera "una vez por tipo de acción y turno" evitó el problema degenerado de repetir "atacar" sin límite — pero quizás la solución correcta no sea prohibir repetir cualquier acción, sino permitir repetir el ataque básico específicamente (no tiene ningún efecto que rompa el juego al repetirse) y reservar el límite de una vez por turno solo para las acciones de recluta con efectos fuertes.</p>
+    </div>
+
+    <p><strong>Descanso:</strong> 16+8=24, tope 20 → 4 perdidos.<br>
+    <strong>Tienda:</strong> Lorica (+2 DEF, 15 Oro) + Eques a Prior (12 Oro, Esquiva a 22%). DEF total 6.</p>
+
+    <h3>Combate 3 — Baecula</h3>
+    <div class="turnlog">
+      <span class="phase">T1</span> Atacar(5)→Lusitano A 8→3 · Formación firme · Carga de flanco (primed)<br>
+      Inicio Fase Enemigos: Carga de flanco remata a Lusitano A y roba el turno de Lusitano B.<br>
+      Enemigo: solo Celtíbero actúa → mitigado + Defensa 6 → <span class="dmg">0</span><br>
+      <span class="phase">T2-T5</span> Igual patrón que el Combate 2: atacar uno a uno, PA sobrante cada turno, daño enemigo siempre a 0 por la Defensa acumulada. <strong>5 turnos, HP 20/20 — cero daño en todo el combate.</strong>
+    </div>
+
+    <h3>Jefe de acto — Cartagena Nova</h3>
+    <div class="finding headline">
+      <span class="ftitle">Hallazgo crítico — el "muro" más aburrido y también el más seguro</span>
+      <p>Eques sí vence a Hastatus en el pentagrama, y a diferencia de Principes/Triario, su acción sí ataca — así que aquí el bonus de contra se cobra de verdad. Aun así, el resultado es el más extremo de las cuatro sesiones: 7 turnos, y ni un solo punto de daño recibido en todo el combate. Cada turno fue idéntico al anterior: atacar, mitigar, sobran 2 PA. Es, a la vez, el escuadrón más seguro y el menos interesante de jugar — la peor combinación posible para un jefe de acto, que debería ser el punto álgido de tensión del acto entero.</p>
+    </div>
+    <div class="turnlog">
+      <span class="phase">T1</span> Atacar(5)→35 · Formación firme · Carga de flanco (con bonus de contra, Eques vence a Hastatus) → -7 (35→28) y roba el turno del jefe → <span class="dmg">0 daño</span><br>
+      <span class="phase">T2–T6</span> Atacar(5) cada turno, Formación firme cada turno, 1 PA sobrante cada turno. Defensa 6 + mitigación reduce cada golpe del jefe a 0.<br>
+      <span class="phase">T7</span> Atacar(5) → jefe muere. <strong>7 turnos, HP 20/20 — el jefe de acto no conectó ni un solo golpe en toda la pelea.</strong><br>
+      <span class="phase">RESULTADO</span> · +20 Gloria · legendario: Reserva de hierro <span class="note">(un objeto de emergencia que este escuadrón nunca llegó a necesitar)</span>
+    </div>
+
+    <div class="sticky green">
+      <span class="who">Nota al margen</span>
+      Siete turnos idénticos contra el jefe de acto, sin decidir nada distinto en ninguno de ellos, y sin recibir jamás daño. Si tuviera que elegir un solo resultado de las cuatro sesiones para enseñarle a alguien qué es "un problema de balance", sería este.
+    </div>
+  </section>
+
+  <!-- COMPARATIVA -->
+  <section id="comparativa">
+    <div class="eyebrow">05 · Comparativa entre las cuatro sesiones</div>
+    <h2>¿Hay de verdad diez escuadrones jugables, o solo cuatro sabores con un ganador claro?</h2>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#9C7C4C" stroke-width="1"><line x1="60" y1="400" x2="860" y2="400"/><line x1="60" y1="40" x2="60" y2="400"/></g>
+        <polyline points="60,40 160,112 260,95.4 360,178.6 460,67.7 560,64.1 660,123.9 760,267.9 860,267.9" fill="none" stroke="#B03A2E" stroke-width="3"/>
+        <polyline points="60,40 160,112 260,112 360,112 460,40 560,40 660,40 760,112 860,112" fill="none" stroke="#D9B75A" stroke-width="3"/>
+        <polyline points="60,40 160,112 260,112 360,130 460,40 560,40 660,40 760,40 860,40" fill="none" stroke="#4F6B52" stroke-width="3"/>
+        <polyline points="60,40 160,112 260,112 360,112 460,40 560,40 660,40 760,40 860,40" fill="none" stroke="#5B8AA6" stroke-width="3" stroke-dasharray="6 4"/>
+        <g font-family="JetBrains Mono, monospace" font-size="9.5" fill="#241C14">
+          <text x="60" y="415" text-anchor="middle">Inicio</text><text x="160" y="415" text-anchor="middle">Cissa</text>
+          <text x="260" y="415" text-anchor="middle">Recl.</text><text x="360" y="415" text-anchor="middle">Élite</text>
+          <text x="460" y="415" text-anchor="middle">Desc.</text><text x="560" y="415" text-anchor="middle">Tienda</text>
+          <text x="660" y="415" text-anchor="middle">Baecula</text><text x="760" y="415" text-anchor="middle">Jefe</text><text x="860" y="415" text-anchor="middle">Fin</text>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="10.5" fill="#241C14">
+          <circle cx="110" cy="20" r="6" fill="#B03A2E"/><text x="122" y="24">Sim.1 Triario+Vélite</text>
+          <circle cx="280" cy="20" r="6" fill="#D9B75A"/><text x="292" y="24">Sim.2 Hastatus+Eques</text>
+          <circle cx="460" cy="20" r="6" fill="#4F6B52"/><text x="472" y="24">Sim.3 Hastatus+Principes</text>
+          <circle cx="670" cy="20" r="6" fill="#5B8AA6"/><text x="682" y="24">Sim.4 Principes+Eques</text>
+        </g>
+      </svg>
+    </div>
+    <p class="fig-cap">Fig. 1 — % de HP compartida sobre el máximo, en los mismos nueve puntos de control de las cuatro sesiones. Tres de cuatro escuadrones terminan el acto por encima del 80%; solo uno termina realmente puesto a prueba.</p>
+
+    <table>
+      <tr><th>Escuadrón</th><th>Turnos (Élite/Baecula/Jefe)</th><th>HP al terminar el jefe</th><th>Daño recibido, jefe incluido</th><th>Arquetipo</th></tr>
+      <tr><td>Triario + Vélite (S1)</td><td>2 / 3 / 6</td><td>11/30 (37%)</td><td>Alto, constante</td><td>Equilibrado, con tensión real</td></tr>
+      <tr><td>Hastatus + Eques (S2)</td><td>1 / 2 / 3</td><td>16/20 (80%)</td><td>Bajo, puntual</td><td>Burst / control de iniciativa</td></tr>
+      <tr><td>Hastatus + Principes (S3)</td><td>2 / 2 / 3</td><td>20/20 (100%)</td><td>Casi nulo</td><td>Muro — probablemente sobretuneado</td></tr>
+      <tr><td>Principes + Eques (S4)</td><td>5 / 5 / 7</td><td>20/20 (100%)</td><td>Nulo</td><td>Tortuga — seguro y tedioso</td></tr>
+    </table>
+
+    <div class="finding headline">
+      <span class="ftitle">Veredicto sobre la Vulnerabilidad D del informe anterior (variedad de escuadrón)</span>
+      <p>Con estas cifras de prueba, no hay diez formas equivalentes de jugar el acto — hay una que exige atención de verdad (S1) y tres que, en distinto grado, resuelven el acto sin apenas coste. Las dos más extremas (S3 y S4) comparten el mismo mecanismo: apilar Defensa plana con mitigación porcentual hasta anular el daño entrante. Eso no es una cuestión de qué clases son "más fuertes" — es una interacción de sistemas (Defensa + mitigación) que hay que revisar antes de tocar ninguna cifra de clase individual. Arreglar esa interacción probablemente resuelve de un solo golpe la mitad de lo que esta comparativa ha sacado a la luz.</p>
+    </div>
+  </section>
+
+  <!-- HALLAZGOS NUEVOS -->
+  <section id="hallazgos">
+    <div class="eyebrow">06 · Registro de hallazgos de esta ronda</div>
+    <h2>Lo nuevo que no se sabía tras la Ronda 1</h2>
+    <table>
+      <tr><th>#</th><th>Hallazgo</th><th>Gravedad</th><th>Dónde apareció</th></tr>
+      <tr><td>6</td><td>Principes y Triario no pueden activar nunca el bonus de contra: su acción de clase no ataca</td><td>Crítica</td><td>S3, retroactivo a S1</td></tr>
+      <tr><td>7</td><td>Defensa plana + mitigación porcentual pueden anular el daño por completo</td><td>Crítica</td><td>S3, S4</td></tr>
+      <tr><td>8</td><td>Carga de flanco sin tope permite anular combates 1 contra 1 de forma indefinida</td><td>Crítica</td><td>S2 (corregido sobre la marcha: máx. 1 vez/combate)</td></tr>
+      <tr><td>9</td><td>La regla de "una acción por turno" crea PA sobrante a media partida en escuadrones con pocos botones ofensivos</td><td>Media</td><td>S4</td></tr>
+      <tr><td>10</td><td>Sin fuente de HP máxima, la curación fija de Descanso se desperdicia por tope</td><td>Baja</td><td>S2, S3, S4</td></tr>
+    </table>
+  </section>
+
+  <!-- VEREDICTO -->
+  <section id="veredicto">
+    <div class="final">
+      <div class="eyebrow">07 · Veredicto de esta ronda</div>
+      <h2>Lo que me llevo de las cuatro sesiones juntas</h2>
+      <p>La buena noticia es que el sistema genera resultados claramente distintos según el escuadrón — eso confirma que las clases sí importan, cada una cambia cómo se juega el acto. La mala noticia es que dos de esas cuatro formas de jugar (S3 y S4) hacen que el jefe de acto, la pieza que más debería tensar la partida, se convierta en un trámite sin ningún golpe recibido. Y una tercera (S2), sin ese problema, aun así termina con casi el doble de margen que la que recomendaba el diseño original.</p>
+      <p>Antes de escribir una sola línea de Godot, recomendaría cerrar tres cosas por escrito: un tope explícito para Carga de flanco, un daño mínimo garantizado por golpe que ninguna combinación de Defensa y mitigación pueda anular, y una decisión consciente sobre si Principes y Triario deberían tener alguna forma — aunque sea menor — de disparar el bonus del pentagrama. Con esos tres ajustes, repetiría esta misma comparativa una vez más antes de dar por buena la fase de diseño de combate.</p>
+    </div>
+  </section>
+
+  <footer>Diario de playtest · Ronda 2 · SPQR: Punic Wars · Acto I · Tres sesiones comparadas</footer>
+
+</div>
+</body>
+</html>

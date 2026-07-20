@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Diario de Playtest — Prototipo de papel, Acto I</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Kalam:wght@400;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt:#2E4A38; --felt2:#233A2B;
+    --card:#F7F1DE; --card-line:#D8C9A0;
+    --ink:#241C14; --ink-soft:#55483A;
+    --pin:#B03A2E; --pin-dark:#8A2E20;
+    --sticky:#F2D65B; --sticky2:#EAD9F5;
+    --kraft:#C9A876; --kraft-line:#9C7C4C;
+    --ok:#4F6B52; --warn:#B07A2E;
+    --gold:#D9B75A;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(255,255,255,.05), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,.025) 0 2px, transparent 2px 8px),
+      var(--felt);
+    color:var(--card);
+    font-family:'Source Serif 4', Georgia, serif;
+    font-size:16.5px;
+    line-height:1.65;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 30px 120px 30px;}
+  @media (max-width:640px){.wrap{padding:0 16px 90px 16px;}}
+  a{color:var(--gold);}
+  strong{color:#F0DFAE;}
+
+  /* ---------- topbar ---------- */
+  .topbar{background:var(--felt2);color:#CFE0CB;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:9px 20px;border-bottom:2px solid var(--gold);}
+
+  /* ---------- cover ---------- */
+  .cover{padding:60px 0 30px 0;text-align:center;border-bottom:2px dashed rgba(255,255,255,.2);}
+  .cover .kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  .cover h1{font-family:'Archivo Black',sans-serif;font-size:clamp(26px,5vw,42px);margin:0 0 10px 0;color:#F7F1DE;text-transform:uppercase;letter-spacing:.01em;}
+  .cover .sub{font-family:'Source Serif 4',serif;font-style:italic;font-size:17px;color:#CFE0CB;max-width:600px;margin:0 auto 14px auto;}
+  .scope-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11.5px;background:rgba(217,183,90,.15);border:1px solid var(--gold);color:var(--gold);padding:5px 14px;border-radius:20px;margin-top:6px;}
+
+  /* ---------- section shell ---------- */
+  section{padding:50px 0;border-bottom:2px dashed rgba(255,255,255,.15);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  h2{font-family:'Archivo Black',sans-serif;font-size:24px;margin:0 0 8px 0;color:#F7F1DE;text-transform:uppercase;}
+  h3{font-family:'Archivo Black',sans-serif;font-size:15px;margin:26px 0 10px 0;color:var(--gold);text-transform:uppercase;letter-spacing:.02em;}
+  .sec-intro{color:#CFE0CB;font-style:italic;margin:0 0 22px 0;font-size:15px;}
+  p{margin:0 0 13px 0;color:#EAE3CE;}
+  ul,ol{margin:0 0 15px 0;padding-left:22px;color:#EAE3CE;}
+  li{margin-bottom:6px;}
+
+  /* ---------- index cards (screenshots) ---------- */
+  .table{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;margin:22px 0;}
+  .idx-card{
+    background:var(--card);color:var(--ink);border:1px solid var(--card-line);border-radius:2px;
+    box-shadow:4px 6px 0 rgba(0,0,0,.28);padding:16px 18px;width:255px;
+  }
+  .idx-card.tl{transform:rotate(-1.6deg);} .idx-card.tr{transform:rotate(1.4deg);} .idx-card.tn{transform:rotate(-0.3deg);}
+  .card-title{font-family:'Archivo Black',sans-serif;font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink);margin:0 0 10px 0;padding-bottom:8px;border-bottom:2px solid var(--pin);}
+  .card-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:12.5px;padding:3px 0;border-bottom:1px dotted var(--card-line);color:var(--ink-soft);}
+  .card-row b{color:var(--ink);font-weight:600;}
+  .cap{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#CFE0CB;margin:-14px 0 26px 0;letter-spacing:.04em;}
+
+  .hp-bar{margin:8px 0 4px 0;}
+  .hp-bar .bg{background:#E4D9BE;border:1px solid var(--card-line);height:14px;border-radius:7px;overflow:hidden;}
+  .hp-bar .fill{height:100%;background:linear-gradient(90deg,#8A2E20,#C0503C);}
+  .hp-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);margin-top:3px;}
+
+  .pips{display:flex;gap:6px;margin:6px 0 2px 0;}
+  .pip{width:18px;height:18px;border-radius:50%;border:2px solid var(--ink);}
+  .pip.used{background:var(--ink);}
+
+  .slots{display:flex;gap:8px;margin-top:8px;}
+  .slot{width:56px;height:64px;border:2px dashed var(--card-line);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;text-align:center;padding:3px;color:var(--ink-soft);}
+  .slot.filled{border-style:solid;border-color:var(--ink);background:#EFE6C8;color:var(--ink);}
+  .slot .dot{width:16px;height:16px;border-radius:50% 50% 3px 3px;margin-bottom:3px;}
+
+  /* ---------- sticky notes (senior-designer voice) ---------- */
+  .sticky{
+    background:var(--sticky);box-shadow:3px 6px 10px rgba(0,0,0,.3);
+    padding:16px 18px;font-family:'Kalam',cursive;font-size:15.5px;color:#3a2f10;
+    border-radius:2px;margin:22px auto;max-width:520px;position:relative;
+  }
+  .sticky.alt{background:var(--sticky2);}
+  .sticky::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(4deg);width:34px;height:16px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.6);}
+  .sticky .who{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6b5a1e;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase;}
+
+  /* ---------- finding box ---------- */
+  .finding{border:2px solid var(--pin);border-radius:3px;background:rgba(176,58,46,.14);padding:16px 20px;margin:18px 0;color:#FCEBE6;}
+  .finding .ftitle{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.08em;color:#F3B7AC;display:block;margin-bottom:8px;}
+  .finding p{color:#FCEBE6;margin-bottom:8px;}
+  .finding p:last-child{margin-bottom:0;}
+
+  /* ---------- turn log ---------- */
+  .turnlog{background:#182018;color:#D8E8D2;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;padding:16px 20px;border-radius:4px;margin:14px 0;overflow-x:auto;}
+  .turnlog .phase{color:var(--gold);font-weight:700;}
+  .turnlog .dmg{color:#E38B7A;}
+  .turnlog .heal{color:#8FCB8A;}
+  .turnlog .note{color:#9AA8C7;font-style:italic;}
+
+  /* ---------- flavor / briefing box ---------- */
+  .briefing{background:rgba(0,0,0,.22);border:1px solid rgba(217,183,90,.35);border-radius:4px;padding:20px 24px;margin:16px 0;}
+  .briefing .btag{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+  .briefing p{font-style:italic;color:#EAE3CE;margin-bottom:0;}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;margin:14px 0 22px 0;font-size:14px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.15);vertical-align:top;color:#EAE3CE;}
+  th{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold);border-bottom:2px solid var(--gold);}
+
+  /* ---------- diagram frame ---------- */
+  .diagram-frame{background:var(--kraft);border:1px solid var(--kraft-line);border-radius:4px;padding:16px 12px 8px 12px;margin:18px 0 8px 0;}
+  .diagram-frame svg{width:100%;height:auto;display:block;}
+  .fig-cap{font-family:'JetBrains Mono',monospace;font-size:11px;color:#CFE0CB;text-align:center;margin:6px 0 0 0;}
+
+  /* ---------- final verdict ---------- */
+  .final{background:linear-gradient(160deg,#1c2e21,#132015);border:1px solid var(--gold);border-radius:6px;padding:34px 30px;}
+  .final h2{color:var(--gold);}
+
+  footer{text-align:center;padding:36px 0 8px 0;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;color:#9DB399;}
+</style>
+</head>
+<body>
+
+<div class="topbar">Diario de playtest · Sesión de prototipo de papel · Uso interno del estudio</div>
+
+<div class="wrap">
+
+  <div class="cover">
+    <div class="kicker">Sesión de prototipado</div>
+    <h1>Prototipo de papel<br>Acto I · Iberia</h1>
+    <div class="sub">Una partida completa, jugada a mano, para comprobar si el bloque único, los 3 Puntos de Acción y el pentagrama de contras se sostienen en la mesa antes de tocar ni una línea de Godot.</div>
+    <div class="scope-badge">Alcance reducido: 1 facción (Roma / Escipión) · 1 acto · mapa de 8 nodos</div>
+  </div>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="eyebrow">00 · Antes de empezar</div>
+    <h2>Cómo he montado el ensayo</h2>
+    <p class="sec-intro">Cualquier prototipo de papel necesita cifras para poder jugarse, aunque el dossier las deje explícitamente pendientes de playtesting. Las que uso aquí son de usar y tirar — sirven para generar la primera evidencia, no para fijar el balance.</p>
+
+    <h3>Supuestos de alcance</h3>
+    <ul>
+      <li>Facción Roma, héroe Escipión. El mismo ensayo con Cartago/Aníbal debería dar resultados equivalentes por diseño (mismo esqueleto, reskin), así que no lo duplico aquí.</li>
+      <li>Mapa de campaña reducido a 8 nodos para esta prueba, en vez de un grafo largo con ramas múltiples — suficiente para pasar por cada tipo de nodo al menos una vez.</li>
+      <li>Simulo progreso previo ya invertido en Gloria: 2 de los 3 huecos de escuadrón ya desbloqueados, y 3 de las 5 clases con derecho a aparecer (Triario, Vélite, Hastatus). Así puedo probar el reclutamiento sin simular partidas anteriores.</li>
+      <li>Cada run empieza con el héroe solo, como dicta el diseño — los huecos desbloqueados están vacíos hasta reclutar con Oro dentro de esta partida.</li>
+    </ul>
+
+    <h3>Reglas ambiguas que he tenido que decidir sobre la marcha</h3>
+    <p>Un prototipo de papel sirve exactamente para esto: en cuanto te sientas a jugarlo de verdad, el documento de diseño deja de ser suficiente. Estas son las cinco veces que tuve que inventar una regla que el dossier no especifica, marcadas para decisión oficial más adelante:</p>
+    <ol>
+      <li><strong>¿Se puede repetir la misma acción varias veces en un turno?</strong> Fallo por defecto en "sí" y el resultado fue degenerado (ver Hallazgo 1). Adopto la regla "cada tipo de acción, máximo una vez por turno" para el resto del ensayo.</li>
+      <li><strong>¿El ataque básico del héroe activa el bonus del pentagrama de contras?</strong> Como el héroe no tiene clase fija, asumo que no — solo las acciones de clase de los reclutas lo activan.</li>
+      <li><strong>¿Bloquear y la acción de mitigación de un recluta (p. ej. Última Línea) se acumulan?</strong> Asumo que no — se queda con la mejor mitigación activa ese turno, no se suman.</li>
+      <li><strong>¿Qué hace exactamente el botón "Objeto"?</strong> Lo trato como un consumible de un solo uso obtenido en cofres, distinto del equipo permanente de la run. No salió ninguno en esta partida, así que queda sin probar (ver registro de fricciones).</li>
+      <li><strong>¿Qué hace el nodo de Descanso?</strong> Asumo una curación fija de la barra compartida, sin coste, a falta de que el dossier lo defina.</li>
+    </ol>
+
+    <div class="table">
+      <div class="idx-card tl">
+        <div class="card-title">Héroe · Escipión</div>
+        <div class="card-row"><span>HP bloque (base)</span><b>20</b></div>
+        <div class="card-row"><span>Ataque</span><b>4</b></div>
+        <div class="card-row"><span>Defensa</span><b>2</b></div>
+        <div class="card-row"><span>Esquiva</span><b>8%</b></div>
+        <div class="card-row"><span>Área</span><b>1</b></div>
+        <div class="card-row"><span>Crítico base</span><b>5%</b></div>
+        <div class="card-row"><span>Equipado</span><b>Gladio veterano (+1 ATQ)</b></div>
+      </div>
+      <div class="idx-card tr">
+        <div class="card-title">Clases disponibles hoy</div>
+        <div class="card-row"><span>Triario</span><b>+HP máx. / Última Línea</b></div>
+        <div class="card-row"><span>Vélite</span><b>+Área / Descarga</b></div>
+        <div class="card-row"><span>Hastatus</span><b>+ATQ / Carga</b></div>
+        <div class="card-row"><span>Principes</span><b>bloqueado</b></div>
+        <div class="card-row"><span>Eques</span><b>bloqueado</b></div>
+      </div>
+      <div class="idx-card tn">
+        <div class="card-title">Cifras de economía (de prueba)</div>
+        <div class="card-row"><span>Combate normal</span><b>4 Gloria / 25 Oro</b></div>
+        <div class="card-row"><span>Élite</span><b>8 Gloria / 22 Oro</b></div>
+        <div class="card-row"><span>Jefe de acto</span><b>20 Gloria / legendario garantizado</b></div>
+        <div class="card-row"><span>Reclutar (Posterior)</span><b>10 Oro cualquier clase</b></div>
+        <div class="card-row"><span>Subir a Prior</span><b>12 Oro</b></div>
+      </div>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="JetBrains Mono, monospace" font-size="11" fill="#241C14">
+          <line x1="60" y1="110" x2="840" y2="110" stroke="#9C7C4C" stroke-width="2" stroke-dasharray="1 8"/>
+          <circle cx="60" cy="110" r="20" fill="#4F6B52"/><text x="60" y="150" text-anchor="middle">Inicio</text>
+          <circle cx="180" cy="110" r="18" fill="#7C2530"/><text x="180" y="150" text-anchor="middle">Cissa</text>
+          <circle cx="300" cy="110" r="18" fill="#2C5F7C"/><text x="300" y="150" text-anchor="middle">Reclutar</text>
+          <circle cx="420" cy="110" r="20" fill="#4A3166"/><text x="420" y="150" text-anchor="middle">Élite</text>
+          <circle cx="540" cy="110" r="18" fill="#4F6B52"/><text x="540" y="150" text-anchor="middle">Descanso</text>
+          <circle cx="660" cy="110" r="18" fill="#A9822E"/><text x="660" y="150" text-anchor="middle">Tienda</text>
+          <circle cx="750" cy="110" r="18" fill="#7C2530"/><text x="750" y="150" text-anchor="middle">Baecula</text>
+          <circle cx="840" cy="110" r="26" fill="#5A1B23" stroke="#D9B75A" stroke-width="3"/><text x="840" y="150" text-anchor="middle">Cart. Nova</text>
+        </g>
+      </svg>
+    </div>
+    <p class="fig-cap">Fig. 0 — Mapa reducido de esta sesión: 8 nodos en línea recta, sin ramificación, solo para pasar por cada mecánica al menos una vez.</p>
+  </section>
+
+  <!-- BRIEFING -->
+  <section id="briefing">
+    <div class="eyebrow">01 · Briefing de apertura de acto</div>
+    <h2>Iberia, 218 a. C.</h2>
+    <div class="briefing">
+      <div class="btag">Panel de apertura — estilo Commandos</div>
+      <p>Escipión desembarca en la costa ibérica con un puñado de hombres y la promesa de refuerzos que aún no han llegado. Las tribus lusitanas y celtíberas vigilan el paso hacia el interior, y en el puerto de Cartagena Nova, Cartago guarda su tesoro y sus rehenes. Antes de pensar en Italia, hay que asegurar la retaguardia.</p>
+    </div>
+  </section>
+
+  <!-- NODO INICIO -->
+  <section id="n0">
+    <div class="eyebrow">02 · Nodo de inicio</div>
+    <h2>El mapa y la primera decisión</h2>
+    <p>Con el mapa reducido a una sola línea no hay bifurcación real que decidir en esta sesión — pero vale la pena anotar la primera fricción de ambientación: el mapa completo del juego tiene ramas y nodos ocultos más allá de la primera capa. En una sesión de papel, "ocultar" un nodo significa literalmente voltear la ficha boca abajo hasta que el jugador esté a una casilla de distancia. Mecánicamente funciona igual de bien en papel que en pantalla — buena señal, es una mecánica barata de portar.</p>
+  </section>
+
+  <!-- COMBATE 1 -->
+  <section id="c1">
+    <div class="eyebrow">03 · Combate 1</div>
+    <h2>Batalla de Cissa</h2>
+    <p class="sec-intro">2× Guerrero Lusitano (HP 8, ATQ 3 cada uno) contra el héroe, todavía solo. Este es el primer combate real del juego — así que también es la primera vez que se puede comprobar si el sistema de PA aguanta sin ningún recluta detrás.</p>
+
+    <div class="table">
+      <div class="idx-card tl">
+        <div class="card-title">Estado — inicio del combate</div>
+        <div class="hp-bar"><div class="bg"><div class="fill" style="width:100%"></div></div><div class="lbl">HP bloque 20 / 20</div></div>
+        <div class="pips"><div class="pip"></div><div class="pip"></div><div class="pip"></div></div>
+        <div class="slots">
+          <div class="slot">vacío</div>
+          <div class="slot">vacío</div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">Captura 1 — ficha del bloque antes del primer golpe. Los dos huecos ya desbloqueados siguen vacíos: cada run empieza así, por diseño.</p>
+
+    <div class="turnlog">
+      <span class="phase">TURNO 1 · FASE JUGADOR (3 PA)</span><br>
+      · Atacar (1 PA) → Lusitano A: <span class="dmg">-5</span> (8→3)<br>
+      · Bloquear (1 PA) → mitigación activa este turno<br>
+      · <span class="note">1 PA sin gastar — no queda ninguna otra acción distinta que elegir</span><br>
+      <span class="phase">FASE ENEMIGOS</span><br>
+      · Lusitano A ataca → <span class="dmg">-3, mitigado a -1</span><br>
+      · Lusitano B ataca → <span class="dmg">-3, mitigado a -1</span><br>
+      · HP bloque: 20 → <b>18</b>
+    </div>
+    <div class="turnlog">
+      <span class="phase">TURNO 2</span> · Atacar → Lusitano A muere (8→3→ <span class="dmg">-5</span>) · Bloquear · 1 PA sin gastar<br>
+      Fase enemigos: solo Lusitano B ataca, mitigado <span class="dmg">-1</span> → HP <b>17</b>
+    </div>
+    <div class="turnlog">
+      <span class="phase">TURNO 3</span> · Atacar → Lusitano B (8→3, <span class="dmg">-5</span>) · Bloquear · 1 PA sin gastar<br>
+      Fase enemigos: Lusitano B ataca, mitigado <span class="dmg">-1</span> → HP <b>16</b>
+    </div>
+    <div class="turnlog">
+      <span class="phase">TURNO 4</span> · Atacar → Lusitano B muere (3→ <span class="dmg">-5</span>) · Combate ganado.<br>
+      <span class="phase">RESULTADO</span> · HP final 16/20 · +4 Gloria · +25 Oro · 4 turnos jugados
+    </div>
+
+    <div class="finding">
+      <span class="ftitle">Hallazgo 1 — el turno se colapsa sin escuadrón</span>
+      <p>Con el héroe solo, la Fase Jugador tiene como máximo dos acciones distintas de verdad (Atacar, Bloquear). Aunque hay 3 PA disponibles, siempre sobra al menos uno — no porque el jugador esté siendo eficiente, sino porque no hay una tercera opción que elegir. El cuello de botella real al principio de una run no son los PA: es el número de acciones distintas disponibles, y eso no llega hasta que hay reclutas.</p>
+      <p>Cuatro turnos para derrotar a dos enemigos básicos, sin ningún dilema más allá de "bloqueo o no", es además un ritmo que puede sentirse largo para lo poco que aporta. Vale la pena considerar empezar cada run con un recluta gratuito, o recortar el HP de los primeros enemigos del Acto I específicamente para este tramo sin escuadrón.</p>
+    </div>
+
+    <div class="sticky">
+      <span class="who">Nota al margen</span>
+      Este combate no me ha enseñado nada sobre el juego que quiero hacer — me ha enseñado que necesito jugar el segundo combate ya con reclutas para saber si esto se pone interesante.
+    </div>
+  </section>
+
+  <!-- RECLUTAMIENTO -->
+  <section id="n1">
+    <div class="eyebrow">04 · Nodo de reclutamiento</div>
+    <h2>Reforzar el bloque</h2>
+    <p>Con 25 Oro en el bolsillo y los dos huecos vacíos, recluto Triario (10 Oro) y Vélite (10 Oro) — quedan 5 Oro. Elijo esta pareja a propósito: Triario da margen de HP para aguantar el resto del acto, Vélite da la única forma de golpear a más de un objetivo a la vez, algo que hasta ahora no existía en absoluto.</p>
+
+    <div class="table">
+      <div class="idx-card tl">
+        <div class="card-title">Estado — tras reclutar</div>
+        <div class="hp-bar"><div class="bg"><div class="fill" style="width:85%"></div></div><div class="lbl">HP bloque 22 / 26 (+6 máx. de Triario)</div></div>
+        <div class="slots">
+          <div class="slot filled"><div class="dot" style="background:#4F6B52"></div>Triario<br>Posterior</div>
+          <div class="slot filled"><div class="dot" style="background:#A9822E"></div>Vélite<br>Posterior</div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">Captura 2 — el bloque pasa de una silueta a un escuadrón de tres. Área del bloque sube a 2 gracias al pasivo de Vélite.</p>
+
+    <div class="finding">
+      <span class="ftitle">Hallazgo 2 — el pasivo de Vélite puede estar comiéndose a su propia acción</span>
+      <p>Si el pasivo de Vélite sube el Área del bloque a 2, el ataque básico del héroe (1 PA) empieza a golpear a dos objetivos él solo. Comparado con la acción de clase "Descarga" (2 PA, también dos objetivos, pero con menos daño por impacto): incluso metiendo el bonus del pentagrama de contras a favor de Descarga, el ataque básico del héroe sigue siendo más eficiente por punto de PA. Los números exactos están en el Combate 2. Si esto se confirma con las cifras reales, "Descarga" nace redundante en cuanto reclutas a Vélite — probablemente el pasivo de Vélite no debería tocar el ataque del héroe, sino ser exclusivo de su propia acción.</p>
+    </div>
+  </section>
+
+  <!-- COMBATE 2 -->
+  <section id="c2">
+    <div class="eyebrow">05 · Combate 2 · Nodo Élite</div>
+    <h2>Emboscada numida</h2>
+    <p class="sec-intro">Jinete Númida de élite (HP 16, ATQ 6 — mapeado a Eques en el pentagrama) + Hondero Celtíbero (HP 6, ATQ 2, sin clase). Primera vez que el pentagrama de contras entra en juego: Vélite vence a Eques.</p>
+
+    <div class="turnlog">
+      <span class="phase">TURNO 1 (3 PA)</span><br>
+      · Atacar del héroe (1 PA, Área 2) → ambos objetivos: <span class="dmg">-5</span> cada uno (Numida 16→11, Celtíbero 6→1)<br>
+      · Descarga de Vélite (2 PA) → Numida: <span class="dmg">-4, +50% por contra = -6</span> (11→5) · Celtíbero: <span class="dmg">-4</span>, muere<br>
+      <span class="phase">FASE ENEMIGOS</span> · Numida (5 HP) ataca → <span class="dmg">-6</span> → HP bloque 22 → <b>16</b>
+    </div>
+    <div class="turnlog">
+      <span class="phase">TURNO 2</span> · Atacar del héroe → Numida (5→ <span class="dmg">-5</span>), muere. Combate ganado en 2 turnos.<br>
+      <span class="phase">RESULTADO</span> · HP final 16/26 · +8 Gloria · +22 Oro
+    </div>
+
+    <div class="finding">
+      <span class="ftitle">Hallazgo 2 (confirmado con números) — eficiencia de Descarga</span>
+      <p>Con las cifras de esta prueba: Descarga con bonus de contra = 6+4 = 10 daño repartido en 2 PA (5 daño/PA). Atacar del héroe sin bonus = 5+5 = 10 daño en 1 PA (10 daño/PA). El ataque básico gana incluso contra el enemigo que Descarga contrarresta. La única razón para pulsar Descarga tal y como está diseñada hoy sería un enemigo inmune al Área del héroe pero no a Descarga — algo que el dossier no contempla todavía. Recomiendo separar el bonus de Área del pasivo genérico de Vélite y dejarlo ligado solo a su acción, o subir sustancialmente el multiplicador de contra.</p>
+    </div>
+
+    <div class="sticky alt">
+      <span class="who">Nota al margen</span>
+      Esto sí se sintió como un combate: dos turnos, una decisión real sobre a quién rematar primero, y el pentagrama importando de verdad por primera vez. Pero he tenido que parar la partida y mirar el diagrama del dossier para confirmar que Vélite gana a Eques — sin la chuleta delante, no lo habría recordado.
+    </div>
+  </section>
+
+  <!-- DESCANSO -->
+  <section id="n2">
+    <div class="eyebrow">06 · Nodo de descanso</div>
+    <h2>Un vacío de diseño, resuelto por decreto</h2>
+    <p>El dossier no dice qué hace exactamente este nodo más allá de existir en el pool. Para poder seguir jugando, decreto una curación fija de 8 puntos de la barra compartida, sin coste. HP bloque: 16 → <strong>24 / 26</strong>.</p>
+    <div class="finding">
+      <span class="ftitle">Hallazgo 3 — nodo sin contenido cerrado</span>
+      <p>A diferencia de Combate, Élite, Reclutamiento, Tienda y Jefe — todos con reglas claras en el dossier — Descanso es el único tipo de nodo del pool que no tiene ninguna mecánica definida más allá del nombre. Es fácil de pasar por alto precisamente porque "descansar" parece autoexplicativo, pero necesita la misma atención que el resto: ¿cura un porcentaje o un valor fijo?, ¿tiene coste en Oro?, ¿puede además quitar una condición negativa? Ahora mismo es el nodo con menos peso de decisión de todo el mapa.</p>
+    </div>
+  </section>
+
+  <!-- TIENDA -->
+  <section id="n3">
+    <div class="eyebrow">07 · Nodo de tienda</div>
+    <h2>Gastar antes del tramo final</h2>
+    <p>Con 27 Oro en el bolsillo (5 restantes + 22 del Combate 2), la tienda ofrece solo objetos de tier común, tal y como está cerrado en el diseño. Compro Lorica de recluta (Armadura común, +2 Defensa, 15 Oro) y subo a Triario de Posterior a Prior (12 Oro, su pasivo de HP máxima sube de +6 a +10). Salgo con 0 Oro — la tienda se lo lleva todo, una tensión de gasto que se siente exactamente como se espera de un roguelike.</p>
+
+    <div class="table">
+      <div class="idx-card tr">
+        <div class="card-title">Estado — tras la tienda</div>
+        <div class="card-row"><span>Armadura equipada</span><b>Lorica de recluta</b></div>
+        <div class="card-row"><span>Defensa</span><b>2 → 4</b></div>
+        <div class="card-row"><span>Triario</span><b>Posterior → Prior</b></div>
+        <div class="hp-bar"><div class="bg"><div class="fill" style="width:93%"></div></div><div class="lbl">HP bloque 28 / 30</div></div>
+      </div>
+    </div>
+
+    <div class="sticky">
+      <span class="who">Nota al margen</span>
+      Aquí también probé la regla de "sustituir un ítem por otro en el mismo slot es gratis, sin reembolso" — cambié el Gladio veterano por nada (el slot de Arma se queda vacío un momento) solo para confirmar que no hay penalización. Funciona sin fricción, es una regla simple y se nota.
+    </div>
+  </section>
+
+  <!-- COMBATE 3 -->
+  <section id="c3">
+    <div class="eyebrow">08 · Combate 3</div>
+    <h2>Batalla de Baecula</h2>
+    <p class="sec-intro">2× Guerrero Lusitano (HP 8, ATQ 3) + 1× Hondero Celtíbero (HP 6, ATQ 2). Tres enemigos, Área 2 — la primera vez que el bloque no puede golpear a todos a la vez. Ninguno de los tres tiene clase en el pentagrama: buen contraste con el combate anterior.</p>
+
+    <div class="turnlog">
+      <span class="phase">TURNO 1 (3 PA)</span><br>
+      · Atacar (1 PA, Área 2) → Lusitano A y B: <span class="dmg">-5</span> cada uno (8→3, 8→3)<br>
+      · Última Línea de Triario (1 PA) → mitigación activa<br>
+      · <span class="note">1 PA sin gastar — Bloquear queda redundante con Última Línea ya activa</span><br>
+      <span class="phase">FASE ENEMIGOS</span> · los 3 atacan, mitigados → <span class="dmg">-1 cada uno = -3</span> → HP 28 → <b>25</b>
+    </div>
+    <div class="turnlog">
+      <span class="phase">TURNO 2</span><br>
+      · Atacar (1 PA, Área 2) → Lusitano A y B mueren (3→ <span class="dmg">-5</span> cada uno)<br>
+      · Descarga de Vélite (2 PA) → único objetivo restante, Celtíbero: <span class="dmg">-4</span> (6→2)<br>
+      <span class="phase">FASE ENEMIGOS</span> · solo Celtíbero ataca, sin mitigación este turno → <span class="dmg">-2</span> → HP <b>23</b>
+    </div>
+    <div class="turnlog">
+      <span class="phase">TURNO 3</span> · Atacar → Celtíbero muere (2→ <span class="dmg">-5</span>). Combate ganado en 3 turnos.<br>
+      <span class="phase">RESULTADO</span> · HP final 23/30 · +4 Gloria · +15 Oro
+    </div>
+
+    <div class="sticky alt">
+      <span class="who">Nota al margen</span>
+      Este es el primer combate del ensayo donde sentí un dilema de verdad: ¿remato rápido con Descarga o me cubro otra vez con Última Línea? Con tres enemigos y dos reclutas ya en el bloque, el sistema por fin hace lo que promete. Con uno o dos enemigos, o sin escuadrón, ese dilema no aparece.
+    </div>
+  </section>
+
+  <!-- JEFE -->
+  <section id="boss">
+    <div class="eyebrow">09 · Jefe de acto</div>
+    <h2>Cartagena Nova</h2>
+    <p class="sec-intro">Guarnición íbero-cartaginesa (HP 40, ATQ 8) — la mapeo como espejo de Hastatus, ya que defiende una plaza cartaginesa. Triario vence a Hastatus en el pentagrama: la pareja de reclutas que elegí al principio, casi por instinto, termina siendo la correcta aquí. Es una coincidencia útil o una señal de que hay que decidir explícitamente si los jefes de acto están mapeados al pentagrama o quedan fuera de él, como los tres especiales.</p>
+
+    <div class="table">
+      <div class="idx-card tl">
+        <div class="card-title">Estado — antes del jefe</div>
+        <div class="hp-bar"><div class="bg"><div class="fill" style="width:77%"></div></div><div class="lbl">HP bloque 23 / 30</div></div>
+        <div class="slots">
+          <div class="slot filled"><div class="dot" style="background:#4F6B52"></div>Triario<br>Prior</div>
+          <div class="slot filled"><div class="dot" style="background:#A9822E"></div>Vélite<br>Posterior</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="turnlog">
+      <span class="phase">T1</span> Atacar (1PA) <span class="dmg">-5</span> (40→35) · Descarga (2PA) <span class="dmg">-4</span> sin bonus, Vélite pierde contra Hastatus (35→31)<br>
+      Enemigo: ataca sin mitigación → <span class="dmg">-4</span> (tras Defensa) → HP 23→<b>19</b><br>
+      <span class="phase">T2</span> Atacar <span class="dmg">-5</span> (31→26) · Última Línea (1PA) · 1PA libre<br>
+      Enemigo: mitigado y absorbido por Defensa → <span class="dmg">0</span> → HP <b>19</b><br>
+      <span class="phase">T3</span> Atacar <span class="dmg">-5</span> (26→21) · Descarga <span class="dmg">-4</span> (21→17)<br>
+      Enemigo: sin mitigación → <span class="dmg">-4</span> → HP <b>15</b><br>
+      <span class="phase">T4</span> Atacar <span class="dmg">-5</span> (17→12) · Última Línea · 1PA libre<br>
+      Enemigo: mitigado y absorbido → <span class="dmg">0</span> → HP <b>15</b><br>
+      <span class="phase">T5</span> Atacar <span class="dmg">-5</span> (12→7) · Descarga <span class="dmg">-4</span> (7→3)<br>
+      Enemigo: sin mitigación → <span class="dmg">-4</span> → HP <b>11</b><br>
+      <span class="phase">T6</span> Atacar, <em>crítico</em> (tirada 2/20) → objetivo ya en 3 HP, combate ganado.<br>
+      <span class="phase">RESULTADO</span> · HP final 11/30 (37%) · +20 Gloria · legendario garantizado
+    </div>
+
+    <div class="sticky">
+      <span class="who">Nota al margen</span>
+      Seis turnos, un tira y afloja real entre rematar rápido y cubrirse, y terminé por debajo de un tercio de la barra. Se sintió como un jefe de acto de verdad — tenso pero justo, ni un paseo ni un muro.
+    </div>
+
+    <p><strong>Botín:</strong> Coraza del general (Armadura legendaria, +HP máxima del bloque mientras se lleva puesta) — un remate temático apropiado para la conquista de la plaza fuerte de Cartago en Iberia.</p>
+  </section>
+
+  <!-- TRANSICION -->
+  <section id="transicion">
+    <div class="eyebrow">10 · Transición de acto</div>
+    <h2>Sala de Mando</h2>
+    <div class="briefing">
+      <div class="btag">Panel de cierre — estilo Commandos</div>
+      <p>Cartagena Nova cae, y con ella el principal bastión cartaginés en Iberia. Escipión asegura la retaguardia y los suministros que necesitará para cruzar hacia Italia — donde Aníbal lleva más de una década sembrando el terror entre las legiones.</p>
+    </div>
+    <p>Con 36 Gloria acumuladas en el acto, invierto 10 en "Piel de hierro" (Ars Belli, +Defensa base) y 15 en "Cobertura de escuadrón" (Mos Maiorum, +Esquiva escalando con huecos ocupados). Quedan 11 Gloria en el banco para la siguiente sesión. El bucle de meta-progresión cierra sin fricciones: la pantalla de transición ya cerrada en el dossier (mapa lineal, saldo de Gloria, accesos al árbol) es suficiente tal cual está diseñada — no hizo falta improvisar nada aquí.</p>
+  </section>
+
+  <!-- HOJA DE RESULTADOS -->
+  <section id="resultados">
+    <div class="eyebrow">11 · Hoja de resultados</div>
+    <h2>Lo que dicen los números de esta sesión</h2>
+
+    <div class="diagram-frame" style="background:#EFE6C8;">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#9C7C4C" stroke-width="1">
+          <line x1="60" y1="400" x2="840" y2="400"/>
+          <line x1="60" y1="40" x2="60" y2="400"/>
+        </g>
+        <polyline points="60,175 157.5,220 255,152.5 352.5,220 450,130 547.5,85 645,141.25 742.5,276.25 840,276.25" fill="none" stroke="#8A2E20" stroke-width="3"/>
+        <polyline points="60,175 157.5,175 255,107.5 352.5,107.5 450,107.5 547.5,62.5 645,62.5 742.5,62.5 840,62.5" fill="none" stroke="#4F6B52" stroke-width="2" stroke-dasharray="5 4"/>
+        <g font-family="JetBrains Mono, monospace" font-size="9.5" fill="#241C14">
+          <text x="60" y="415" text-anchor="middle">Inicio</text>
+          <text x="157" y="415" text-anchor="middle">Cissa</text>
+          <text x="255" y="415" text-anchor="middle">Recl.</text>
+          <text x="352" y="415" text-anchor="middle">Élite</text>
+          <text x="450" y="415" text-anchor="middle">Desc.</text>
+          <text x="547" y="415" text-anchor="middle">Tienda</text>
+          <text x="645" y="415" text-anchor="middle">Baecula</text>
+          <text x="742" y="415" text-anchor="middle">Jefe</text>
+          <text x="840" y="415" text-anchor="middle">Fin</text>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="11" fill="#241C14">
+          <circle cx="120" cy="30" r="6" fill="#8A2E20"/><text x="132" y="34">HP actual</text>
+          <circle cx="230" cy="30" r="6" fill="#4F6B52"/><text x="242" y="34">HP máxima (techo)</text>
+        </g>
+      </svg>
+    </div>
+    <p class="fig-cap">Fig. 1 — La barra compartida sube de techo con cada Triario reclutado/mejorado, y toca su punto más bajo justo en el jefe de acto: la curva de tensión que se busca.</p>
+
+    <table>
+      <tr><th>Métrica</th><th>Valor de esta sesión</th></tr>
+      <tr><td>Combates jugados</td><td>3 normales/élite + 1 jefe de acto</td></tr>
+      <tr><td>Turnos totales jugados</td><td>4 + 2 + 3 + 6 = 15</td></tr>
+      <tr><td>Turnos con al menos 1 PA sin usar por falta de opciones</td><td>6 de 15 (todos antes de tener 2 reclutas activos con enemigos suficientes)</td></tr>
+      <tr><td>Punto más bajo de HP</td><td>11 / 30 (37%), en el jefe de acto</td></tr>
+      <tr><td>Gloria total ganada</td><td>36 (25 invertidas, 11 en banco)</td></tr>
+      <tr><td>Oro total ganado / gastado</td><td>62 ganado / 47 gastado (reclutar, veterancía, tienda)</td></tr>
+      <tr><td>Huecos de escuadrón usados</td><td>2 de 3 (Hastatus, tercera clase disponible, no se llegó a reclutar)</td></tr>
+      <tr><td>Objetos obtenidos</td><td>1 común (Lorica de recluta) + 1 legendario (Coraza del general)</td></tr>
+      <tr><td>Botón "Objeto" probado</td><td>No — ningún consumible salió en esta sesión</td></tr>
+    </table>
+  </section>
+
+  <!-- FRICCIONES -->
+  <section id="fricciones">
+    <div class="eyebrow">12 · Registro de fricciones</div>
+    <h2>Todo lo que hubo que decidir sobre la marcha</h2>
+    <table>
+      <tr><th>Momento</th><th>Ambigüedad encontrada</th><th>Ruling adoptado para esta sesión</th></tr>
+      <tr><td>Combate 1, turno 1</td><td>¿Se repite la misma acción varias veces por turno?</td><td>No — una vez por tipo de acción y turno</td></tr>
+      <tr><td>Combate 2</td><td>¿El ataque del héroe activa el bonus del pentagrama?</td><td>No — solo las acciones de clase</td></tr>
+      <tr><td>Combate 3, turno 1</td><td>¿Bloquear y Última Línea se acumulan?</td><td>No — se queda la mejor mitigación activa, no se suman</td></tr>
+      <tr><td>General</td><td>¿Qué hace el botón "Objeto"?</td><td>Consumible de un solo uso de cofre — sin probar, no salió ninguno</td></tr>
+      <tr><td>Nodo de Descanso</td><td>Sin efecto definido en el dossier</td><td>Curación fija de 8 HP, sin coste, cifra inventada</td></tr>
+      <tr><td>Jefe de acto</td><td>¿Los jefes de acto tienen clase en el pentagrama?</td><td>Se asumió que sí (mapeado a Hastatus) para poder jugar la pelea</td></tr>
+    </table>
+  </section>
+
+  <!-- VUELTA A VULNERABILIDADES -->
+  <section id="vuelta">
+    <div class="eyebrow">13 · Vuelta al informe anterior</div>
+    <h2>Qué dice esta partida sobre las vulnerabilidades ya señaladas</h2>
+
+    <div class="finding">
+      <span class="ftitle">A · ¿Sigue siendo "táctico"?</span>
+      <p>Veredicto matizado: sí, pero de forma frágil. La profundidad aparece solo cuando coinciden dos condiciones — al menos dos reclutas activos y al menos tres enemigos en pantalla. Fuera de esas condiciones (héroe solo, o un solo enemigo) el turno colapsa a "pulsar atacar". El tramo inicial de cada run, antes del primer Reclutamiento, es exactamente la zona donde esto falla — y es también la primera impresión que tendrá cualquier jugador nuevo.</p>
+    </div>
+    <div class="finding">
+      <span class="ftitle">E · Legibilidad del pentagrama</span>
+      <p>Confirmado en la práctica: tuve que consultar el diagrama del dossier las dos veces que el pentagrama importó. Sin una chuleta siempre visible en pantalla, es optimista esperar que un jugador nuevo lo internalice jugando.</p>
+    </div>
+    <div class="finding">
+      <span class="ftitle">D · Variedad de escuadrón</span>
+      <p>Parcialmente confirmado: Triario + Vélite se sintieron como una elección claramente fuerte y no hubo ningún momento en que valorase cambiarla. Falta repetir el ensayo con Hastatus + Eques, o Hastatus + Principes, para saber si de verdad hay 10 combinaciones viables o solo 2-3 "correctas".</p>
+    </div>
+    <div class="finding">
+      <span class="ftitle">B y C · Sin evidencia todavía</span>
+      <p>El relevo de línea no se probó porque la mecánica ni siquiera existe hoy en el diseño — sigue como recomendación pendiente. La bola de nieve económica de Providentia no se puede juzgar con un solo acto: hace falta una sesión de 2-3 actos seguidos para ver si el interés compuesto se dispara.</p>
+    </div>
+  </section>
+
+  <!-- VEREDICTO -->
+  <section id="veredicto">
+    <div class="final">
+      <div class="eyebrow">14 · Veredicto de esta sesión</div>
+      <h2>Lo que me llevo de la mesa</h2>
+      <p>El sistema no está roto. Cuando el escuadrón está completo y hay enemigos suficientes para que el Área importe, el combate genera decisiones reales turno a turno — eso es la prueba que se necesitaba y no existía hace una semana. Pero el prototipo también deja tres deberes concretos, no opinables: cerrar qué pasa en el tramo sin escuadrón (los primeros minutos de cada run), decidir si el pasivo de Vélite compite con su propia acción, y definir por escrito las cinco reglas que hoy solo existen porque las inventé para poder terminar de jugar.</p>
+      <p>Recomiendo repetir esta misma sesión dos veces más con escuadrones distintos (Hastatus+Eques, Hastatus+Principes) antes de tocar Godot. Si las tres sesiones cuentan una historia parecida — funciona con squad completo y enemigos variados, cojea sin ellos — el sistema está listo para pasar a un prototipo digital. Si cada squad cuenta una historia distinta, todavía hay trabajo de diseño por delante, y es mejor descubrirlo aquí, con fichas de cartulina, que en el editor de Godot.</p>
+    </div>
+  </section>
+
+  <footer>Diario de playtest · Prototipo de papel · SPQR: Punic Wars · Acto I · Sesión única</footer>
+
+</div>
+</body>
+</html>
