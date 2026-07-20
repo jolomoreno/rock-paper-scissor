@@ -15,7 +15,9 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-En fase de arranque — todavía no hay proyecto Godot ni código. Ver [ROADMAP.md](ROADMAP.md)
+En fase de arranque — todavía no hay proyecto Godot ni código. Infraestructura lista
+(Godot, `gh`, repo, documentación). Pausado a la espera de que el autor confirme que
+tiene el editor de Godot abierto para arrancar la Fase 0. Ver [ROADMAP.md](ROADMAP.md)
 para el desglose de fases y qué hito está en marcha ahora mismo.
 
 ## Stack técnico

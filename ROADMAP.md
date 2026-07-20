@@ -7,6 +7,9 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
+**Checkpoint actual (2026-07-20):** infraestructura completa. Fase 0 lista para arrancar,
+pendiente de que el autor confirme que tiene el editor de Godot abierto.
+
 ## Fase 0 — Motor de resolución (sin UI)
 
 Objetivo Godot: estructurar un proyecto desde cero, scripts, señales básicas.
