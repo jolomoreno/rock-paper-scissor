@@ -15,10 +15,9 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-En fase de arranque — todavía no hay proyecto Godot ni código. Infraestructura lista
-(Godot, `gh`, repo, documentación). Pausado a la espera de que el autor confirme que
-tiene el editor de Godot abierto para arrancar la Fase 0. Ver [ROADMAP.md](ROADMAP.md)
-para el desglose de fases y qué hito está en marcha ahora mismo.
+Fase 0 en marcha: proyecto Godot ya creado (`project.godot` + estructura de carpetas).
+Pendiente el script de resolución de ronda. Ver [ROADMAP.md](ROADMAP.md) para el
+desglose de fases y qué hito está en marcha ahora mismo.
 
 ## Stack técnico
 
@@ -43,8 +42,21 @@ tocar cualquier script o escena de este repo, humano o no.
 ├── README.md          # Este archivo
 ├── ROADMAP.md          # Hitos y fases, con estado de cada uno
 ├── CLAUDE.md            # Guía de desarrollo Godot (arquitectura, estilo, convenciones)
-└── (proyecto Godot, pendiente de crear)
+├── LICENSE              # PolyForm Noncommercial 1.0.0
+├── project.godot        # Proyecto Godot 4.7
+├── autoloads/           # Singletons (Fase 2+)
+├── scenes/              # main/ combat/ map/
+├── scripts/             # Scripts sueltos (motor de resolución, etc.)
+└── resources/           # Datos compartidos (.tres)
 ```
 
 `0-documentation/` (dossiers de diseño de SPQR y de este ejercicio) existe en local pero
 no está versionado — es material de referencia, no parte del repo público.
+
+## Licencia
+
+Este repo es público como pieza de portfolio, pero **no** es de código abierto para
+reutilización libre: se distribuye bajo
+[PolyForm Noncommercial 1.0.0](LICENSE), que permite ver, estudiar y usar el código con
+fines no comerciales, pero prohíbe explícitamente cualquier uso comercial del proyecto o
+de sus derivados.
