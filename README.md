@@ -15,9 +15,10 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 0 en marcha: proyecto Godot ya creado (`project.godot` + estructura de carpetas).
-Pendiente el script de resolución de ronda. Ver [ROADMAP.md](ROADMAP.md) para el
-desglose de fases y qué hito está en marcha ahora mismo.
+Fase 0 completa: proyecto Godot, estructura de carpetas y motor de resolución de rondas
+PPT (`CombatResolver`), verificado por consola en modo `--headless`. Siguiente hito:
+Fase 1 (combate jugable con UI mínima). Ver [ROADMAP.md](ROADMAP.md) para el desglose
+completo de fases.
 
 ## Stack técnico
 

@@ -7,17 +7,17 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-20):** Fase 0 en marcha. Proyecto Godot y estructura de
-carpetas creados y verificados en el editor. Siguiente paso: script de resolución de
-ronda.
+**Checkpoint actual (2026-07-20):** Fase 0 completa. Proyecto Godot, estructura de
+carpetas y motor de resolución de rondas creados y verificados por consola en
+`--headless`. Siguiente paso: arrancar Fase 1 (combate con UI mínima).
 
 ## Fase 0 — Motor de resolución (sin UI)
 
 Objetivo Godot: estructurar un proyecto desde cero, scripts, señales básicas.
 
 - [x] Crear el proyecto Godot y la estructura de carpetas
-- [ ] Script de resolución de una ronda PPT (piedra/papel/tijera), tipado
-- [ ] Probado por consola en modo `--headless`, sin abrir ventana
+- [x] Script de resolución de una ronda PPT (piedra/papel/tijera), tipado
+- [x] Probado por consola en modo `--headless`, sin abrir ventana
 
 ## Fase 1 — Combate jugable con UI mínima
 
