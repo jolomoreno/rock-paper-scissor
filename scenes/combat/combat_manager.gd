@@ -8,6 +8,7 @@ enum TurnPhase { PLAYER, RESOLUTION, ENEMY }
 
 const CombatResolver := preload("res://scripts/combat_resolver.gd")
 const ROUND_DELAY_SECONDS := 1.2
+const COMBAT_WIN_CHISPA_REWARD := 2
 const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
@@ -24,6 +25,7 @@ var enemy_hp: int
 var _resolver := CombatResolver.new()
 var _rng := RandomNumberGenerator.new()
 
+@onready var chispa_label: Label = %ChispaLabel
 @onready var player_health_bar: ProgressBar = %PlayerHealthBar
 @onready var enemy_health_bar: ProgressBar = %EnemyHealthBar
 @onready var action_buttons_container: HBoxContainer = %ActionButtonsContainer
@@ -35,8 +37,12 @@ var _rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	_rng.randomize()
+	player_max_hp += Chispa.player_hp_bonus()
 	player_hp = player_max_hp
 	enemy_hp = enemy_max_hp
+
+	chispa_label.text = "Chispa: %d" % Chispa.chispa
+	Chispa.chispa_changed.connect(_on_chispa_changed)
 
 	player_health_bar.max_value = player_max_hp
 	player_health_bar.value = player_hp
@@ -54,6 +60,10 @@ func _on_action_button_pressed(choice: CombatResolver.Choice) -> void:
 	if current_phase != TurnPhase.PLAYER:
 		return
 	_play_round(choice)
+
+
+func _on_chispa_changed(new_amount: int) -> void:
+	chispa_label.text = "Chispa: %d" % new_amount
 
 
 func _play_round(player_choice: CombatResolver.Choice) -> void:
@@ -84,7 +94,15 @@ func _play_round(player_choice: CombatResolver.Choice) -> void:
 
 func _end_combat(player_won: bool) -> void:
 	action_buttons_container.visible = false
-	result_label.text += "\n" + ("¡Ganaste el combate!" if player_won else "Perdiste el combate.")
+
+	if not player_won:
+		result_label.text += "\nPerdiste el combate."
+		combat_ended.emit(player_won)
+		return
+
+	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus()
+	Chispa.add_chispa(reward)
+	result_label.text += "\n¡Ganaste el combate! (+%d Chispa)" % reward
 	combat_ended.emit(player_won)
 
 

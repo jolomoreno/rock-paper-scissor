@@ -7,10 +7,11 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-20):** Fase 1 completa (lógica y escena; verificación visual
-y export HTML5 pendientes, ver detalle en la fase). Escena de combate jugable con barra
-de vida, botones de acción y máquina de estados de turno, verificada por consola en
-`--headless`. Siguiente paso: Fase 2 (persistencia entre sesiones).
+**Checkpoint actual (2026-07-20):** Fase 2 completa (export HTML5 de la Fase 1 sigue
+pendiente por falta de templates, ver detalle en esa fase). Autoload `Chispa` con
+guardado/carga en `user://` vía `FileAccess`+JSON, dos mejoras fijas comprables
+(vida extra, botín extra), y combate otorgando Chispa al ganar. Verificado por consola
+en `--headless`. Siguiente paso: Fase 3 (mapa de nodos + hub).
 
 ## Fase 0 — Motor de resolución (sin UI)
 
@@ -35,9 +36,9 @@ Objetivo Godot: Control nodes, máquina de estados de turno.
 
 Objetivo Godot: `FileAccess`/JSON, Autoload para datos persistentes.
 
-- [ ] Autoload de la moneda permanente ("Chispa")
-- [ ] Guardado/carga en `user://` entre ejecuciones
-- [ ] Un puñado de mejoras fijas compradas con la moneda permanente
+- [x] Autoload de la moneda permanente ("Chispa")
+- [x] Guardado/carga en `user://` entre ejecuciones
+- [x] Un puñado de mejoras fijas compradas con la moneda permanente
 
 ## Fase 3 — Mapa de nodos + hub
 

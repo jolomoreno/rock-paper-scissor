@@ -15,13 +15,13 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 1 completa: escena de combate jugable (`scenes/combat/combat.tscn`) con barra de
-vida de jugador y enemigo, botones de acción (Piedra/Papel/Tijera) y máquina de estados
-de turno (Fase Jugador → Resolución → Fase Enemigos) sobre el motor de resolución de la
-Fase 0. Verificado por consola en modo `--headless` simulando pulsaciones de botón, y
-confirmado visualmente en el editor por el usuario. Pendiente: exportación HTML5
-(bloqueada por falta de export templates instalados localmente). Siguiente hito: Fase 2
-(persistencia). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
+Fase 2 completa: Autoload `Chispa` (`autoloads/chispa.gd`) con la moneda permanente,
+guardado/carga en `user://savegame.json` vía `FileAccess`+JSON, y dos mejoras fijas
+comprables (vida extra, botín extra de combate). El combate de la Fase 1 ya otorga
+Chispa al ganar y aplica el bonus de vida de las mejoras compradas. Verificado por
+consola en modo `--headless`. Pendiente: exportación HTML5 de la Fase 1 (bloqueada por
+falta de export templates instalados localmente). Siguiente hito: Fase 3 (mapa de nodos
++ hub). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
 
 ## Stack técnico
 
