@@ -1,0 +1,99 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/combat/combat_manager.gd" id="1_5vqsm"]
+
+[node name="Combat" type="Control" unique_id=906363792]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_5vqsm")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1237300598]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=2109858]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="HealthBarsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=350416800]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerHealthRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HealthBarsContainer" unique_id=2135495572]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PlayerLabel" type="Label" parent="MarginContainer/VBoxContainer/HealthBarsContainer/PlayerHealthRow" unique_id=1414190001]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Jugador"
+
+[node name="PlayerHealthBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/HealthBarsContainer/PlayerHealthRow" unique_id=1924990077]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="EnemyHealthRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HealthBarsContainer" unique_id=1281054836]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EnemyLabel" type="Label" parent="MarginContainer/VBoxContainer/HealthBarsContainer/EnemyHealthRow" unique_id=1376312267]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Enemigo"
+
+[node name="EnemyHealthBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/HealthBarsContainer/EnemyHealthRow" unique_id=1643617436]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 3.0
+value = 3.0
+show_percentage = false
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1688472813]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ResultLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1889331378]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ActionButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1775047326]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="RockButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=484364721]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "● Piedra"
+
+[node name="PaperButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=1516569130]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "■ Papel"
+
+[node name="ScissorsButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=66037849]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "▲ Tijera"

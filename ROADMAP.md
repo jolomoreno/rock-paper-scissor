@@ -7,9 +7,10 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-20):** Fase 0 completa. Proyecto Godot, estructura de
-carpetas y motor de resolución de rondas creados y verificados por consola en
-`--headless`. Siguiente paso: arrancar Fase 1 (combate con UI mínima).
+**Checkpoint actual (2026-07-20):** Fase 1 completa (lógica y escena; verificación visual
+y export HTML5 pendientes, ver detalle en la fase). Escena de combate jugable con barra
+de vida, botones de acción y máquina de estados de turno, verificada por consola en
+`--headless`. Siguiente paso: Fase 2 (persistencia entre sesiones).
 
 ## Fase 0 — Motor de resolución (sin UI)
 
@@ -23,10 +24,12 @@ Objetivo Godot: estructurar un proyecto desde cero, scripts, señales básicas.
 
 Objetivo Godot: Control nodes, máquina de estados de turno.
 
-- [ ] Escena de combate: barra de vida compartida + botones de acción
-- [ ] Máquina de estados: Fase Jugador → Resolución → Fase Enemigos
-- [ ] Enemigo con vida propia; combate dura varias rondas hasta llegar a 0
-- [ ] Primer build exportable a HTML5 para verificación visual
+- [x] Escena de combate: barra de vida compartida + botones de acción
+- [x] Máquina de estados: Fase Jugador → Resolución → Fase Enemigos
+- [x] Enemigo con vida propia; combate dura varias rondas hasta llegar a 0
+- [x] Verificación visual en el editor (F5) — confirmada por el usuario (2026-07-20)
+- [ ] Primer build exportable a HTML5 para verificación visual — bloqueado: no hay
+      export templates de Godot instalados localmente todavía
 
 ## Fase 2 — Persistencia entre sesiones
 

@@ -15,10 +15,13 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 0 completa: proyecto Godot, estructura de carpetas y motor de resolución de rondas
-PPT (`CombatResolver`), verificado por consola en modo `--headless`. Siguiente hito:
-Fase 1 (combate jugable con UI mínima). Ver [ROADMAP.md](ROADMAP.md) para el desglose
-completo de fases.
+Fase 1 completa: escena de combate jugable (`scenes/combat/combat.tscn`) con barra de
+vida de jugador y enemigo, botones de acción (Piedra/Papel/Tijera) y máquina de estados
+de turno (Fase Jugador → Resolución → Fase Enemigos) sobre el motor de resolución de la
+Fase 0. Verificado por consola en modo `--headless` simulando pulsaciones de botón, y
+confirmado visualmente en el editor por el usuario. Pendiente: exportación HTML5
+(bloqueada por falta de export templates instalados localmente). Siguiente hito: Fase 2
+(persistencia). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
 
 ## Stack técnico
 
