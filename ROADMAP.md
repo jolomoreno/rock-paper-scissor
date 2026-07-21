@@ -19,6 +19,17 @@ su jugada en pantalla antes de que el jugador elija, vía la nueva etiqueta
 Reactivo siempre contraataca, Telegráfico no re-rollea tras anunciar) y confirmado
 visualmente por el usuario en el editor.
 
+Además, el mapa de nodos (Fase 3) recibió la visualización de pathing que había quedado
+pendiente de una sesión anterior: `RunState` ahora guarda `path_history` (capa + tipo de
+nodo elegido en cada una), y `map.tscn`/`map.gd` muestran las 4 capas a la vez como
+círculos — el camino recorrido resaltado en dorado y conectado con una línea, un marcador
+▼ sobre la capa actual, capas futuras atenuadas (el Jefe en un tono distinto), y una
+leyenda de colores. Una franja compacta (`scenes/map/path_strip.tscn`) con el mismo
+camino resumido se añadió arriba de las pantallas de Combate y Descanso. También se
+añadió una sección `[display]` a `project.godot` (ventana de depuración más grande +
+`stretch mode` "canvas_items"/"expand") para que la ventana de juego no se vea diminuta
+en pantallas grandes, y para dejar el proyecto listo de cara al export HTML5 pendiente.
+
 De paso, en Fase 4 se pulieron tres cosas de UX descubiertas al probar: el mapa
 (`RunState`) ya no deja encadenar solo nodos de Descanso hasta el Jefe — la capa 1 nunca
 ofrece Descanso, no se puede Descansar dos capas seguidas, y no se ofrece si la vida

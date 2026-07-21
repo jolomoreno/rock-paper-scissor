@@ -17,6 +17,7 @@ var current_layer: int = 0
 var chosen_node_type: String = ""
 var player_max_hp: int = 0
 var player_hp: int = 0
+var path_history: Array = []
 
 
 func start_run() -> void:
@@ -25,7 +26,13 @@ func start_run() -> void:
 	chosen_node_type = ""
 	player_max_hp = 3 + Chispa.player_hp_bonus()
 	player_hp = player_max_hp
+	path_history = []
 	run_started.emit()
+
+
+func choose_node(node_type: String) -> void:
+	chosen_node_type = node_type
+	path_history.append({"layer": current_layer, "node_type": node_type})
 
 
 func heal_full() -> void:

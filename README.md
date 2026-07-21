@@ -23,6 +23,13 @@ de que el jugador elija) y Reactivo (contraataca la última jugada del jugador) 
 Reactivo; cualquier otro combate sortea entre Aleatorio y Telegráfico. Verificado por
 consola en `--headless` y confirmado visualmente en el editor.
 
+El mapa de nodos también recibió la visualización de pathing que había quedado pendiente
+de la Fase 3: `RunState.path_history` registra capa + tipo de nodo elegido en cada
+decisión, y `scenes/map/map.tscn`/`map.gd` dibujan las 4 capas a la vez como nodos
+circulares — el camino recorrido en dorado y conectado con una línea, un marcador sobre
+la capa actual, capas futuras atenuadas, y una franja compacta (`path_strip.tscn`) con el
+mismo resumen arriba de Combate y Descanso.
+
 Fase 4 extendió el motor de resolución (`scripts/combat_resolver.gd`): ya no es solo
 piedra-papel-tijera, resuelve las 5 elecciones de RPSLS (+ Lagarto y Spock) con una
 matriz de contras `Choice -> Array[Choice]`, probada por las 25 combinaciones en el test

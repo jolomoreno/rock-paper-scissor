@@ -2,14 +2,14 @@
 
 [ext_resource type="Script" path="res://scenes/map/map.gd" id="1_sxf4j"]
 
-[node name="Map" type="Control" unique_id=801401221]
+[node name="Map" type="Control" unique_id=638853355]
 layout_mode = 3
 anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_sxf4j")
 
-[node name="@MarginContainer@4" type="MarginContainer" parent="." unique_id=153528195]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=936997915]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,23 +18,80 @@ theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 32
 
-[node name="@VBoxContainer@5" type="VBoxContainer" parent="@MarginContainer@4" unique_id=746726984]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1782282125]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 24
 
-[node name="TitleLabel" type="Label" parent="@MarginContainer@4/@VBoxContainer@5" unique_id=138849331]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=900155815]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="@MarginContainer@4/@VBoxContainer@5" unique_id=563021635]
+[node name="TopSpacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1625633209]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="NodeButtonsContainer" type="HBoxContainer" parent="@MarginContainer@4/@VBoxContainer@5" unique_id=1235640513]
+[node name="MapArea" type="Control" parent="MarginContainer/VBoxContainer" unique_id=677949116]
+custom_minimum_size = Vector2(680, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Rows" type="VBoxContainer" parent="MarginContainer/VBoxContainer/MapArea" unique_id=1866216569]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 18
+
+[node name="MarkerRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MapArea/Rows" unique_id=1069477068]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 56
 alignment = 1
+
+[node name="CombatRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MapArea/Rows" unique_id=2057374574]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 56
+alignment = 1
+
+[node name="RestRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MapArea/Rows" unique_id=1257256146]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 56
+alignment = 1
+
+[node name="PathOverlay" type="Control" parent="MarginContainer/VBoxContainer/MapArea" unique_id=1058638415]
+unique_name_in_owner = true
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="LegendRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1366676364]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="LegendRecorrido" type="Label" parent="MarginContainer/VBoxContainer/LegendRow" unique_id=2105019540]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "● recorrido"
+
+[node name="LegendActual" type="Label" parent="MarginContainer/VBoxContainer/LegendRow" unique_id=533789678]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "● capa actual"
+
+[node name="LegendPorVenir" type="Label" parent="MarginContainer/VBoxContainer/LegendRow" unique_id=917277004]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "○ por venir"
+
+[node name="BottomSpacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=177748198]
+layout_mode = 2
+size_flags_vertical = 3

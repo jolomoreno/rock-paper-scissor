@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/path_strip.gd" id="1_bc7c1"]
+
+[node name="PathStrip" type="Control" unique_id=1024160619]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+script = ExtResource("1_bc7c1")
+
+[node name="PathContainer" type="HBoxContainer" parent="." unique_id=2086691396]
+unique_name_in_owner = true
+layout_mode = 0
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+alignment = 1

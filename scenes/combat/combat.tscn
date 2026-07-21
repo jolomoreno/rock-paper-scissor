@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/combat/combat_manager.gd" id="1_5vqsm"]
+[ext_resource type="PackedScene" path="res://scenes/map/path_strip.tscn" id="2_pqpfu"]
+[ext_resource type="Script" path="res://scenes/map/path_strip.gd" id="3_ltalu"]
 
 [node name="Combat" type="Control" unique_id=906363792]
 layout_mode = 3
@@ -25,6 +27,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 24
+
+[node name="PathStrip" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1024160619 instance=ExtResource("2_pqpfu")]
+layout_mode = 2
+script = ExtResource("3_ltalu")
 
 [node name="ChispaLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=158598417]
 unique_name_in_owner = true
