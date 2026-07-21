@@ -7,6 +7,8 @@ signal combat_ended(player_won: bool)
 enum TurnPhase { PLAYER, RESOLUTION, ENEMY }
 
 const CombatResolver := preload("res://scripts/combat_resolver.gd")
+const EnemyAI := preload("res://scripts/enemy_ai.gd")
+const EnemyPattern := preload("res://scripts/enemy_pattern.gd")
 const ROUND_DELAY_SECONDS := 1.2
 const COMBAT_WIN_CHISPA_REWARD := 2
 const CHOICE_NAMES := {
@@ -16,6 +18,11 @@ const CHOICE_NAMES := {
 	CombatResolver.Choice.LIZARD: "Lagarto",
 	CombatResolver.Choice.SPOCK: "Spock",
 }
+const REACTIVE_PATTERN: EnemyPattern = preload("res://resources/enemy_patterns/reactivo.tres")
+const RANDOM_PATTERNS: Array[EnemyPattern] = [
+	preload("res://resources/enemy_patterns/aleatorio.tres"),
+	preload("res://resources/enemy_patterns/telegrafico.tres"),
+]
 
 @export var player_max_hp: int = 3
 @export var enemy_max_hp: int = 3
@@ -26,10 +33,16 @@ var enemy_hp: int
 
 var _resolver := CombatResolver.new()
 var _rng := RandomNumberGenerator.new()
+var _enemy_ai: EnemyAI
+var _last_player_choice: CombatResolver.Choice
+var _has_player_history: bool = false
+var _pending_enemy_choice: CombatResolver.Choice
+var _has_pending_enemy_choice: bool = false
 
 @onready var chispa_label: Label = %ChispaLabel
 @onready var player_health_bar: ProgressBar = %PlayerHealthBar
 @onready var enemy_health_bar: ProgressBar = %EnemyHealthBar
+@onready var enemy_intent_label: Label = %EnemyIntentLabel
 @onready var action_buttons_container: HBoxContainer = %ActionButtonsContainer
 @onready var rock_button: Button = %RockButton
 @onready var paper_button: Button = %PaperButton
@@ -52,6 +65,9 @@ func _ready() -> void:
 		player_hp = player_max_hp
 
 	enemy_hp = enemy_max_hp
+
+	_enemy_ai = EnemyAI.new(_pick_enemy_pattern())
+	enemy_intent_label.text = "Enemigo: %s" % _enemy_ai.pattern.display_name
 
 	chispa_label.text = "Chispa: %d" % Chispa.chispa
 	Chispa.chispa_changed.connect(_on_chispa_changed)
@@ -83,8 +99,17 @@ func _on_chispa_changed(new_amount: int) -> void:
 func _play_round(player_choice: CombatResolver.Choice) -> void:
 	_set_phase(TurnPhase.RESOLUTION)
 
-	var enemy_choice: CombatResolver.Choice = _roll_enemy_choice()
+	var enemy_choice: CombatResolver.Choice
+	if _has_pending_enemy_choice:
+		enemy_choice = _pending_enemy_choice
+		_has_pending_enemy_choice = false
+	else:
+		enemy_choice = _enemy_ai.choose(_last_player_choice, _has_player_history)
+
 	var result: CombatResolver.Result = _resolver.resolve_round(player_choice, enemy_choice)
+
+	_last_player_choice = player_choice
+	_has_player_history = true
 
 	match result:
 		CombatResolver.Result.WINS_A:
@@ -134,9 +159,21 @@ func _end_combat(player_won: bool) -> void:
 			get_tree().change_scene_to_file("res://scenes/map/map.tscn")
 
 
-func _roll_enemy_choice() -> CombatResolver.Choice:
-	var choices: Array = CombatResolver.Choice.values()
-	return choices[_rng.randi_range(0, choices.size() - 1)] as CombatResolver.Choice
+func _pick_enemy_pattern() -> EnemyPattern:
+	if RunState.in_run and RunState.chosen_node_type == "jefe":
+		return REACTIVE_PATTERN
+	return RANDOM_PATTERNS[_rng.randi_range(0, RANDOM_PATTERNS.size() - 1)]
+
+
+func _prepare_enemy_turn() -> void:
+	if _enemy_ai.pattern.pattern_type != EnemyPattern.Type.TELEGRAPHED:
+		return
+	_pending_enemy_choice = _enemy_ai.choose(_last_player_choice, _has_player_history)
+	_has_pending_enemy_choice = true
+	enemy_intent_label.text = "Enemigo: %s — jugará %s" % [
+		_enemy_ai.pattern.display_name,
+		CHOICE_NAMES[_pending_enemy_choice],
+	]
 
 
 func _describe_result(player_choice: CombatResolver.Choice, enemy_choice: CombatResolver.Choice, result: CombatResolver.Result) -> String:
@@ -159,4 +196,6 @@ func _set_phase(phase: TurnPhase) -> void:
 	scissors_button.disabled = not buttons_enabled
 	lizard_button.disabled = not buttons_enabled
 	spock_button.disabled = not buttons_enabled
+	if phase == TurnPhase.PLAYER:
+		_prepare_enemy_turn()
 	phase_changed.emit(phase)

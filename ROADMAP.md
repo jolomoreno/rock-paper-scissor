@@ -7,20 +7,25 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-21):** Fase 4 completa (export HTML5 de la Fase 1 sigue
-pendiente por falta de templates, ver detalle en esa fase). `combat_resolver.gd` resuelve
-las 5 elecciones de RPSLS (piedra-papel-tijera-lagarto-Spock) con una matriz
-`Choice -> Array[Choice]` en vez del 1-a-1 de PPT; las 25 combinaciones están cubiertas
-por el test headless de `scripts/main.gd`. La escena de combate tiene los 5 botones de
-acción y confirmación visual del usuario.
+**Checkpoint actual (2026-07-21):** Fase 5 completa (export HTML5 de la Fase 1 sigue
+pendiente por falta de templates, ver detalle en esa fase). El enemigo ya no es un roll
+uniforme puro: `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern`
+(`display_name` + `pattern_type`) con 3 instancias en `resources/enemy_patterns/`
+(Aleatorio, Telegráfico, Reactivo), y `scripts/enemy_ai.gd` decide la jugada del enemigo
+según el patrón activo. El Jefe siempre usa Reactivo (contraataca la última jugada del
+jugador); cualquier otro combate sortea entre Aleatorio y Telegráfico (este último anuncia
+su jugada en pantalla antes de que el jugador elija, vía la nueva etiqueta
+`%EnemyIntentLabel` en `combat.tscn`). Verificado por consola en `--headless` (patrón
+Reactivo siempre contraataca, Telegráfico no re-rollea tras anunciar) y confirmado
+visualmente por el usuario en el editor.
 
-De paso se pulieron tres cosas de UX descubiertas al probar: el mapa (`RunState`) ya no
-deja encadenar solo nodos de Descanso hasta el Jefe — la capa 1 nunca ofrece Descanso, no
-se puede Descansar dos capas seguidas, y no se ofrece si la vida supera el 85% del
-máximo; las barras de vida de jugador y enemigo muestran ahora el porcentaje; y la mejora
-de Chispa "Vida extra" se renombró a "Vida máxima +1" con etiqueta "(ya comprada)" en vez
-de un "✓" poco visible, para dejar claro que es +1 HP máximo de una sola vez, no una
-vida de repuesto.
+De paso, en Fase 4 se pulieron tres cosas de UX descubiertas al probar: el mapa
+(`RunState`) ya no deja encadenar solo nodos de Descanso hasta el Jefe — la capa 1 nunca
+ofrece Descanso, no se puede Descansar dos capas seguidas, y no se ofrece si la vida
+supera el 85% del máximo; las barras de vida de jugador y enemigo muestran ahora el
+porcentaje; y la mejora de Chispa "Vida extra" se renombró a "Vida máxima +1" con
+etiqueta "(ya comprada)" en vez de un "✓" poco visible, para dejar claro que es +1 HP
+máximo de una sola vez, no una vida de repuesto.
 
 Autoload `RunState` (`autoloads/run_state.gd`) gestiona la run en curso (capa actual,
 tipo de nodo elegido, HP del jugador que se traslada entre combates). Hub
@@ -31,7 +36,7 @@ construido dinámicamente desde `RunState.available_node_types()`; nodo de Desca
 terminar el combate (mapa si gana y quedan capas, Hub si gana el Jefe o si pierde),
 leyendo/escribiendo `RunState` para el HP y para saber si el enemigo es el Jefe. Bucle
 completo verificado por consola en `--headless` y confirmado visualmente por el usuario
-en el editor. Siguiente hito: Fase 5 (opcional) o pulir el export HTML5 pendiente.
+en el editor. Siguiente hito: pulir el export HTML5 pendiente (ver Infraestructura).
 
 ## Fase 0 — Motor de resolución (sin UI)
 
@@ -79,9 +84,9 @@ RPSLS de SPQR.
 
 Objetivo Godot: nociones de comportamiento/IA simple.
 
-- [ ] Patrón aleatorio
-- [ ] Patrón telegráfico (anuncia su jugada)
-- [ ] Patrón reactivo (responde a tu última jugada)
+- [x] Patrón aleatorio
+- [x] Patrón telegráfico (anuncia su jugada)
+- [x] Patrón reactivo (responde a tu última jugada)
 
 ## Infraestructura (fuera de las fases del dossier)
 

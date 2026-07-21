@@ -15,7 +15,15 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 4 completa: el motor de resolución (`scripts/combat_resolver.gd`) ya no es solo
+Fase 5 completa (última del roadmap): el enemigo ya no juega con un roll uniforme puro.
+`scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en
+`resources/enemy_patterns/` — Aleatorio, Telegráfico (anuncia su jugada en pantalla antes
+de que el jugador elija) y Reactivo (contraataca la última jugada del jugador) — y
+`scripts/enemy_ai.gd` decide la jugada según el patrón activo. El Jefe siempre usa
+Reactivo; cualquier otro combate sortea entre Aleatorio y Telegráfico. Verificado por
+consola en `--headless` y confirmado visualmente en el editor.
+
+Fase 4 extendió el motor de resolución (`scripts/combat_resolver.gd`): ya no es solo
 piedra-papel-tijera, resuelve las 5 elecciones de RPSLS (+ Lagarto y Spock) con una
 matriz de contras `Choice -> Array[Choice]`, probada por las 25 combinaciones en el test
 headless. La escena de combate tiene los 5 botones de acción correspondientes.
