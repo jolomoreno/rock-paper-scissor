@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/main/hub.gd" id="1_j8vol"]
+
+[node name="Hub" type="Control" unique_id=1969799147]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_j8vol")
+
+[node name="@MarginContainer@2" type="MarginContainer" parent="." unique_id=1038806919]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="@VBoxContainer@3" type="VBoxContainer" parent="@MarginContainer@2" unique_id=1966070447]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="ChispaLabel" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=251265296]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Chispa: 0"
+horizontal_alignment = 1
+
+[node name="TitleLabel" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=255793461]
+layout_mode = 2
+text = "Mejoras"
+horizontal_alignment = 1
+
+[node name="UpgradesContainer" type="VBoxContainer" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1917070638]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Spacer" type="Control" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=86731290]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StartRunButton" type="Button" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=901595095]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Empezar Run"

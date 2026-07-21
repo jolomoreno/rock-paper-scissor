@@ -7,11 +7,18 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-20):** Fase 2 completa (export HTML5 de la Fase 1 sigue
-pendiente por falta de templates, ver detalle en esa fase). Autoload `Chispa` con
-guardado/carga en `user://` vía `FileAccess`+JSON, dos mejoras fijas comprables
-(vida extra, botín extra), y combate otorgando Chispa al ganar. Verificado por consola
-en `--headless`. Siguiente paso: Fase 3 (mapa de nodos + hub).
+**Checkpoint actual (2026-07-21):** Fase 3 completa (export HTML5 de la Fase 1 sigue
+pendiente por falta de templates, ver detalle en esa fase). Autoload `RunState`
+(`autoloads/run_state.gd`) gestiona la run en curso (capa actual, tipo de nodo elegido,
+HP del jugador que se traslada entre combates). Hub (`scenes/main/hub.tscn`) con compra
+de mejoras y botón "Empezar Run"; mapa (`scenes/map/map.tscn`) de 4 capas (3 de
+Combate/Descanso ramificadas + Jefe final) construido dinámicamente desde
+`RunState.LAYERS`; nodo de Descanso (`scenes/map/descanso.tscn`) que cura al máximo.
+`combat_manager.gd` navega él mismo al terminar el combate (mapa si gana y quedan capas,
+Hub si gana el Jefe o si pierde), leyendo/escribiendo `RunState` para el HP y para saber
+si el enemigo es el Jefe. Bucle completo verificado por consola en `--headless` y
+confirmado visualmente por el usuario en el editor. Siguiente hito: Fase 4/5
+(opcionales) o pulir el export HTML5 pendiente.
 
 ## Fase 0 — Motor de resolución (sin UI)
 
@@ -44,9 +51,9 @@ Objetivo Godot: `FileAccess`/JSON, Autoload para datos persistentes.
 
 Objetivo Godot: gestión de escenas, transición entre pantallas.
 
-- [ ] Mapa lineal/ligeramente ramificado (5-8 nodos: Combate/Descanso/Jefe)
-- [ ] Hub con acceso a las mejoras compradas
-- [ ] Bucle completo: hub → run → combate(s) → fin de run → vuelta al hub
+- [x] Mapa lineal/ligeramente ramificado (5-8 nodos: Combate/Descanso/Jefe)
+- [x] Hub con acceso a las mejoras compradas
+- [x] Bucle completo: hub → run → combate(s) → fin de run → vuelta al hub
 
 ## Fase 4 — Extensión a 5 elementos (opcional)
 

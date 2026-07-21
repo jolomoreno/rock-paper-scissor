@@ -11,12 +11,13 @@ config_version=5
 [application]
 
 config/name="PPT Roguelite"
-run/main_scene="res://scenes/combat/combat.tscn"
+run/main_scene="res://scenes/main/hub.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [autoload]
 
 Chispa="*res://autoloads/chispa.gd"
+RunState="*res://autoloads/run_state.gd"
 
 [rendering]
 

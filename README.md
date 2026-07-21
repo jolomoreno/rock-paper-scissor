@@ -15,13 +15,17 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 2 completa: Autoload `Chispa` (`autoloads/chispa.gd`) con la moneda permanente,
-guardado/carga en `user://savegame.json` vía `FileAccess`+JSON, y dos mejoras fijas
-comprables (vida extra, botín extra de combate). El combate de la Fase 1 ya otorga
-Chispa al ganar y aplica el bonus de vida de las mejoras compradas. Verificado por
-consola en modo `--headless`. Pendiente: exportación HTML5 de la Fase 1 (bloqueada por
-falta de export templates instalados localmente). Siguiente hito: Fase 3 (mapa de nodos
-+ hub). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
+Fase 3 completa: autoload `RunState` (`autoloads/run_state.gd`) sostiene el estado de la
+run en curso (capa del mapa, HP del jugador entre combates). El Hub
+(`scenes/main/hub.tscn`, ahora la escena de arranque) permite comprar las mejoras de la
+Fase 2 y lanzar una run; el mapa (`scenes/map/map.tscn`) ofrece 4 capas — 3 de elección
+Combate/Descanso y una capa final de Jefe — construidas dinámicamente; el nodo de
+Descanso (`scenes/map/descanso.tscn`) cura al máximo. El combate de la Fase 1 se reusa
+sin cambios de diseño, solo lee/escribe `RunState` para el HP entre nodos y para saber si
+el enemigo actual es el Jefe. Bucle completo (Hub → Mapa → Combate/Descanso → Jefe →
+Hub) verificado por consola en `--headless` y confirmado visualmente en el editor.
+Pendiente: exportación HTML5 (bloqueada por falta de export templates instalados
+localmente). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
 
 ## Stack técnico
 

@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/descanso.gd" id="1_fufkc"]
+
+[node name="Descanso" type="Control" unique_id=1331385492]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_fufkc")
+
+[node name="@MarginContainer@6" type="MarginContainer" parent="." unique_id=1750269028]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="@VBoxContainer@7" type="VBoxContainer" parent="@MarginContainer@6" unique_id=993805932]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="InfoLabel" type="Label" parent="@MarginContainer@6/@VBoxContainer@7" unique_id=530128278]
+layout_mode = 2
+text = "Descansas junto al fuego y recuperas toda tu vida."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="@MarginContainer@6/@VBoxContainer@7" unique_id=1973439890]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ContinueButton" type="Button" parent="@MarginContainer@6/@VBoxContainer@7" unique_id=1893931739]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Continuar"

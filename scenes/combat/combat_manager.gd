@@ -37,8 +37,16 @@ var _rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	_rng.randomize()
-	player_max_hp += Chispa.player_hp_bonus()
-	player_hp = player_max_hp
+
+	if RunState.in_run:
+		player_max_hp = RunState.player_max_hp
+		player_hp = RunState.player_hp
+		if RunState.chosen_node_type == "jefe":
+			enemy_max_hp = RunState.JEFE_ENEMY_HP
+	else:
+		player_max_hp += Chispa.player_hp_bonus()
+		player_hp = player_max_hp
+
 	enemy_hp = enemy_max_hp
 
 	chispa_label.text = "Chispa: %d" % Chispa.chispa
@@ -98,12 +106,26 @@ func _end_combat(player_won: bool) -> void:
 	if not player_won:
 		result_label.text += "\nPerdiste el combate."
 		combat_ended.emit(player_won)
+		if RunState.in_run:
+			RunState.end_run(false)
+			await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
+			get_tree().change_scene_to_file("res://scenes/main/hub.tscn")
 		return
 
 	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus()
 	Chispa.add_chispa(reward)
 	result_label.text += "\n¡Ganaste el combate! (+%d Chispa)" % reward
 	combat_ended.emit(player_won)
+
+	if RunState.in_run:
+		await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
+		if RunState.is_last_layer():
+			RunState.end_run(true)
+			get_tree().change_scene_to_file("res://scenes/main/hub.tscn")
+		else:
+			RunState.player_hp = player_hp
+			RunState.advance()
+			get_tree().change_scene_to_file("res://scenes/map/map.tscn")
 
 
 func _roll_enemy_choice() -> CombatResolver.Choice:
