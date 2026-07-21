@@ -6,7 +6,7 @@ signal upgrade_purchased(upgrade_id: String)
 const SAVE_PATH := "user://savegame.json"
 const UPGRADES := {
 	"vida_extra_jugador": {
-		"display_name": "Vida extra",
+		"display_name": "Vida máxima +1",
 		"cost": 5,
 		"player_hp_bonus": 1,
 	},

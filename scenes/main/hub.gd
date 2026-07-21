@@ -50,5 +50,5 @@ func _refresh_upgrade_buttons() -> void:
 		var button: Button = upgrades_container.get_node(UPGRADE_BUTTON_NAME_PREFIX + upgrade_id)
 		var data: Dictionary = Chispa.UPGRADES[upgrade_id]
 		var owned := Chispa.has_upgrade(upgrade_id)
-		button.text = "%s (%d Chispa)%s" % [data["display_name"], data["cost"], " ✓" if owned else ""]
+		button.text = "%s (%d Chispa)%s" % [data["display_name"], data["cost"], " (ya comprada)" if owned else ""]
 		button.disabled = owned or not Chispa.can_afford(upgrade_id)

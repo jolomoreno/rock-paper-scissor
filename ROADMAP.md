@@ -7,18 +7,31 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-21):** Fase 3 completa (export HTML5 de la Fase 1 sigue
-pendiente por falta de templates, ver detalle en esa fase). Autoload `RunState`
-(`autoloads/run_state.gd`) gestiona la run en curso (capa actual, tipo de nodo elegido,
-HP del jugador que se traslada entre combates). Hub (`scenes/main/hub.tscn`) con compra
-de mejoras y botón "Empezar Run"; mapa (`scenes/map/map.tscn`) de 4 capas (3 de
-Combate/Descanso ramificadas + Jefe final) construido dinámicamente desde
-`RunState.LAYERS`; nodo de Descanso (`scenes/map/descanso.tscn`) que cura al máximo.
-`combat_manager.gd` navega él mismo al terminar el combate (mapa si gana y quedan capas,
-Hub si gana el Jefe o si pierde), leyendo/escribiendo `RunState` para el HP y para saber
-si el enemigo es el Jefe. Bucle completo verificado por consola en `--headless` y
-confirmado visualmente por el usuario en el editor. Siguiente hito: Fase 4/5
-(opcionales) o pulir el export HTML5 pendiente.
+**Checkpoint actual (2026-07-21):** Fase 4 completa (export HTML5 de la Fase 1 sigue
+pendiente por falta de templates, ver detalle en esa fase). `combat_resolver.gd` resuelve
+las 5 elecciones de RPSLS (piedra-papel-tijera-lagarto-Spock) con una matriz
+`Choice -> Array[Choice]` en vez del 1-a-1 de PPT; las 25 combinaciones están cubiertas
+por el test headless de `scripts/main.gd`. La escena de combate tiene los 5 botones de
+acción y confirmación visual del usuario.
+
+De paso se pulieron tres cosas de UX descubiertas al probar: el mapa (`RunState`) ya no
+deja encadenar solo nodos de Descanso hasta el Jefe — la capa 1 nunca ofrece Descanso, no
+se puede Descansar dos capas seguidas, y no se ofrece si la vida supera el 85% del
+máximo; las barras de vida de jugador y enemigo muestran ahora el porcentaje; y la mejora
+de Chispa "Vida extra" se renombró a "Vida máxima +1" con etiqueta "(ya comprada)" en vez
+de un "✓" poco visible, para dejar claro que es +1 HP máximo de una sola vez, no una
+vida de repuesto.
+
+Autoload `RunState` (`autoloads/run_state.gd`) gestiona la run en curso (capa actual,
+tipo de nodo elegido, HP del jugador que se traslada entre combates). Hub
+(`scenes/main/hub.tscn`) con compra de mejoras y botón "Empezar Run"; mapa
+(`scenes/map/map.tscn`) de 4 capas (3 de Combate/Descanso ramificadas + Jefe final)
+construido dinámicamente desde `RunState.available_node_types()`; nodo de Descanso
+(`scenes/map/descanso.tscn`) que cura al máximo. `combat_manager.gd` navega él mismo al
+terminar el combate (mapa si gana y quedan capas, Hub si gana el Jefe o si pierde),
+leyendo/escribiendo `RunState` para el HP y para saber si el enemigo es el Jefe. Bucle
+completo verificado por consola en `--headless` y confirmado visualmente por el usuario
+en el editor. Siguiente hito: Fase 5 (opcional) o pulir el export HTML5 pendiente.
 
 ## Fase 0 — Motor de resolución (sin UI)
 
@@ -60,7 +73,7 @@ Objetivo Godot: gestión de escenas, transición entre pantallas.
 Objetivo Godot: resolución de matriz de contras — transferencia directa al pentagrama
 RPSLS de SPQR.
 
-- [ ] Ampliar el motor de resolución a piedra-papel-tijera-lagarto-Spock
+- [x] Ampliar el motor de resolución a piedra-papel-tijera-lagarto-Spock
 
 ## Fase 5 — Patrones de IA enemiga (opcional)
 

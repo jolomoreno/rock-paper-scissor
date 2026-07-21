@@ -10,7 +10,7 @@ func _ready() -> void:
 
 
 func _build_node_buttons() -> void:
-	var node_types: Array = RunState.LAYERS[RunState.current_layer]
+	var node_types: Array = RunState.available_node_types()
 	for node_type: String in node_types:
 		var button := Button.new()
 		button.text = node_type.capitalize()

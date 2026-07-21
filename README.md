@@ -15,17 +15,27 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 3 completa: autoload `RunState` (`autoloads/run_state.gd`) sostiene el estado de la
-run en curso (capa del mapa, HP del jugador entre combates). El Hub
-(`scenes/main/hub.tscn`, ahora la escena de arranque) permite comprar las mejoras de la
-Fase 2 y lanzar una run; el mapa (`scenes/map/map.tscn`) ofrece 4 capas — 3 de elección
-Combate/Descanso y una capa final de Jefe — construidas dinámicamente; el nodo de
-Descanso (`scenes/map/descanso.tscn`) cura al máximo. El combate de la Fase 1 se reusa
-sin cambios de diseño, solo lee/escribe `RunState` para el HP entre nodos y para saber si
-el enemigo actual es el Jefe. Bucle completo (Hub → Mapa → Combate/Descanso → Jefe →
-Hub) verificado por consola en `--headless` y confirmado visualmente en el editor.
-Pendiente: exportación HTML5 (bloqueada por falta de export templates instalados
-localmente). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
+Fase 4 completa: el motor de resolución (`scripts/combat_resolver.gd`) ya no es solo
+piedra-papel-tijera, resuelve las 5 elecciones de RPSLS (+ Lagarto y Spock) con una
+matriz de contras `Choice -> Array[Choice]`, probada por las 25 combinaciones en el test
+headless. La escena de combate tiene los 5 botones de acción correspondientes.
+
+De paso se pulió la experiencia del mapa y el Hub heredados de la Fase 3: el mapa ya no
+permite encadenar solo nodos de Descanso hasta el Jefe (la primera capa nunca ofrece
+Descanso, no se puede Descansar dos capas seguidas, y no se ofrece con la vida por
+encima del 85%); las barras de vida muestran el porcentaje; y la mejora de Chispa se
+renombró de "Vida extra" a "Vida máxima +1" con una etiqueta "(ya comprada)" explícita,
+para dejar claro que es +1 HP máximo permanente, no una vida de repuesto.
+
+Autoload `RunState` (`autoloads/run_state.gd`) sostiene el estado de la run en curso
+(capa del mapa, HP del jugador entre combates). El Hub (`scenes/main/hub.tscn`, ahora la
+escena de arranque) permite comprar las mejoras de la Fase 2 y lanzar una run; el mapa
+(`scenes/map/map.tscn`) ofrece 4 capas — 3 de elección Combate/Descanso y una capa final
+de Jefe — construidas dinámicamente; el nodo de Descanso (`scenes/map/descanso.tscn`)
+cura al máximo. Bucle completo (Hub → Mapa → Combate/Descanso → Jefe → Hub) verificado
+por consola en `--headless` y confirmado visualmente en el editor. Pendiente: exportación
+HTML5 (bloqueada por falta de export templates instalados localmente). Ver
+[ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
 
 ## Stack técnico
 

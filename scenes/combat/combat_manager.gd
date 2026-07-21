@@ -13,6 +13,8 @@ const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
 	CombatResolver.Choice.SCISSORS: "Tijera",
+	CombatResolver.Choice.LIZARD: "Lagarto",
+	CombatResolver.Choice.SPOCK: "Spock",
 }
 
 @export var player_max_hp: int = 3
@@ -32,6 +34,8 @@ var _rng := RandomNumberGenerator.new()
 @onready var rock_button: Button = %RockButton
 @onready var paper_button: Button = %PaperButton
 @onready var scissors_button: Button = %ScissorsButton
+@onready var lizard_button: Button = %LizardButton
+@onready var spock_button: Button = %SpockButton
 @onready var result_label: Label = %ResultLabel
 
 
@@ -60,6 +64,8 @@ func _ready() -> void:
 	rock_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.ROCK))
 	paper_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.PAPER))
 	scissors_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.SCISSORS))
+	lizard_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.LIZARD))
+	spock_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.SPOCK))
 
 	_set_phase(TurnPhase.PLAYER)
 
@@ -151,4 +157,6 @@ func _set_phase(phase: TurnPhase) -> void:
 	rock_button.disabled = not buttons_enabled
 	paper_button.disabled = not buttons_enabled
 	scissors_button.disabled = not buttons_enabled
+	lizard_button.disabled = not buttons_enabled
+	spock_button.disabled = not buttons_enabled
 	phase_changed.emit(phase)

@@ -10,6 +10,7 @@ const LAYERS: Array = [
 	["jefe"],
 ]
 const JEFE_ENEMY_HP := 5
+const REST_HEALTH_THRESHOLD := 0.85
 
 var in_run: bool = false
 var current_layer: int = 0
@@ -37,6 +38,23 @@ func advance() -> void:
 
 func is_last_layer() -> bool:
 	return current_layer >= LAYERS.size() - 1
+
+
+func available_node_types() -> Array:
+	var node_types: Array = LAYERS[current_layer].duplicate()
+	if not _can_offer_rest():
+		node_types.erase("descanso")
+	return node_types
+
+
+func _can_offer_rest() -> bool:
+	if current_layer == 0:
+		return false
+	if chosen_node_type == "descanso":
+		return false
+	if player_hp > player_max_hp * REST_HEALTH_THRESHOLD:
+		return false
+	return true
 
 
 func end_run(victory: bool) -> void:

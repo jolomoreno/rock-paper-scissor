@@ -50,7 +50,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 max_value = 3.0
 value = 3.0
-show_percentage = false
 
 [node name="EnemyHealthRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HealthBarsContainer" unique_id=1281054836]
 layout_mode = 2
@@ -68,7 +67,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 max_value = 3.0
 value = 3.0
-show_percentage = false
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1688472813]
 layout_mode = 2
@@ -103,3 +101,15 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
 text = "▲ Tijera"
+
+[node name="LizardButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=1200000001]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "◆ Lagarto"
+
+[node name="SpockButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=1200000002]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+text = "★ Spock"
