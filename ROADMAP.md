@@ -99,10 +99,35 @@ Objetivo Godot: nociones de comportamiento/IA simple.
 - [x] Patrón telegráfico (anuncia su jugada)
 - [x] Patrón reactivo (responde a tu última jugada)
 
+## Fase 6 — Deploy (Vercel + itch.io)
+
+No es una fase del dossier original (0-5), pero es justo el tipo de infraestructura que
+debe transferir directo a SPQR: validar aquí el pipeline completo de export/deploy con
+un proyecto pequeño, antes de necesitarlo con uno grande.
+
+- [ ] Instalar los export templates de Godot 4.7.1 que faltan (Editor → Manage Export
+      Templates → Download and Install, coincidiendo con la versión exacta del motor)
+- [ ] Crear preset de export "Web" en Project → Export, variante **sin Threads** —
+      imprescindible para poder servirlo como estático en Vercel sin cabeceras
+      COOP/COEP especiales
+- [ ] Exportar build HTML5 de la escena de combate (Fase 1) a una carpeta local
+      (p. ej. `export/web/`) y añadirla a `.gitignore` — es un build regenerable, no
+      fuente de verdad
+- [ ] Verificar el build localmente sirviéndolo con un servidor HTTP
+      (`python3 -m http.server` desde la carpeta de export) antes de subirlo a ningún
+      sitio — abrirlo directo con `file://` falla por CORS/WASM
+- [ ] Deploy a Vercel de la carpeta de export (repo conectado o `vercel --prod`); sin
+      configuración de headers porque el build es sin threads
+- [ ] Deploy de prueba en itch.io: subir el `.zip` del build Web como proyecto "HTML",
+      marcar "This file will be played in the browser" y fijar el tamaño de viewport
+      (ver ajustes en `project.godot [display]`, Fase de mapa) para que no se recorte
+      dentro del iframe de itch.io
+- [ ] Confirmar visualmente en ambas URLs (Vercel + itch.io) que el build carga y el
+      combate es jugable — verificación final antes de dar por bueno el pipeline
+
 ## Infraestructura (fuera de las fases del dossier)
 
 - [x] Godot 4.7 instalado
 - [x] `gh` CLI instalado y autenticado
 - [x] Repositorio en GitHub (público, `main`)
 - [x] `CLAUDE.md` con convenciones de desarrollo
-- [ ] Despliegue del build HTML5 en Vercel (a partir de que exista un build de la Fase 1)

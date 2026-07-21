@@ -48,9 +48,10 @@ escena de arranque) permite comprar las mejoras de la Fase 2 y lanzar una run; e
 (`scenes/map/map.tscn`) ofrece 4 capas — 3 de elección Combate/Descanso y una capa final
 de Jefe — construidas dinámicamente; el nodo de Descanso (`scenes/map/descanso.tscn`)
 cura al máximo. Bucle completo (Hub → Mapa → Combate/Descanso → Jefe → Hub) verificado
-por consola en `--headless` y confirmado visualmente en el editor. Pendiente: exportación
-HTML5 (bloqueada por falta de export templates instalados localmente). Ver
-[ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
+por consola en `--headless` y confirmado visualmente en el editor. Siguiente hito:
+Fase 6, deploy del build HTML5 en Vercel e itch.io (bloqueada por falta de export
+templates instalados localmente). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo
+de fases.
 
 ## Stack técnico
 
