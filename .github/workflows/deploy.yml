@@ -14,10 +14,15 @@ on:
 # from the workflow. Also tried forcing an explicit @vercel/static
 # builder via vercel.json (in case zero-config detection was the
 # issue) — confirmed applied ("Due to `builds` existing... Build
-# Settings will not apply") and still 404. Re-enable the `push`
-# trigger only after a manual `workflow_dispatch` run is confirmed to
-# actually serve (curl the alias, not just a green checkmark) — a
-# successful Action run is not proof the site works.
+# Settings will not apply") and still 404. Compared against this
+# account's two other Vercel-deployed repos (lone-wolf, exile-dowser)
+# — both have working CI deploys, both are real framework apps with a
+# package.json; also tried adding a trivial package.json here in case
+# a zero-signal directory was the trigger — still 404, and the build
+# log shows Vercel never even looked at it (no npm install attempted).
+# Re-enable the `push` trigger only after a manual `workflow_dispatch`
+# run is confirmed to actually serve (curl the alias, not just a green
+# checkmark) — a successful Action run is not proof the site works.
 
 jobs:
   export_and_deploy:
@@ -40,10 +45,6 @@ jobs:
 
       - name: install vercel cli
         run: npm install -g vercel@54.14.2
-
-      - name: add minimal package.json
-        working-directory: export/web
-        run: echo '{"name":"rock-paper-scissor-web","private":true}' > package.json
 
       - name: deploy to vercel
         working-directory: export/web
