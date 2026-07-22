@@ -41,6 +41,10 @@ jobs:
       - name: install vercel cli
         run: npm install -g vercel@54.14.2
 
+      - name: add minimal package.json
+        working-directory: export/web
+        run: echo '{"name":"rock-paper-scissor-web","private":true}' > package.json
+
       - name: deploy to vercel
         working-directory: export/web
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
