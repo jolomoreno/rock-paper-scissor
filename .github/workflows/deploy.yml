@@ -1,9 +1,20 @@
 name: Deploy to Vercel
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+
+# NOTE (2026-07-22): push-to-main trigger disabled on purpose. Every
+# deployment made by this workflow (token-authenticated, via GitHub
+# Actions) comes back as a real 404 on every alias, even though the
+# exact same `vercel deploy --prod` run interactively from a logged-in
+# session works immediately. Identity, project settings, deployment
+# protection, and file counts were all compared and are identical
+# between the two — this looks like a Vercel-side quirk specific to
+# token-authenticated deploys for this project, not something fixable
+# from the workflow. Re-enable the `push` trigger only after a manual
+# `workflow_dispatch` run is confirmed to actually serve (curl the
+# alias, not just a green checkmark) — a successful Action run is not
+# proof the site works.
 
 jobs:
   export_and_deploy:
@@ -26,15 +37,6 @@ jobs:
 
       - name: install vercel cli
         run: npm install -g vercel@54.14.2
-
-      - name: debug vercel identity
-        run: |
-          vercel whoami --token=${{ secrets.VERCEL_TOKEN }}
-          vercel teams ls --token=${{ secrets.VERCEL_TOKEN }}
-          vercel project ls --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: deploy to vercel
         working-directory: export/web
