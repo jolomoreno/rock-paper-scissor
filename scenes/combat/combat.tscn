@@ -103,28 +103,28 @@ alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
-text = "● Piedra"
+text = "0 Piedra"
 
 [node name="PaperButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=1516569130]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
-text = "■ Papel"
+text = "= Papel"
 
 [node name="ScissorsButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=66037849]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
-text = "▲ Tijera"
+text = "X Tijera"
 
 [node name="LizardButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=1200000001]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
-text = "◆ Lagarto"
+text = "L Lagarto"
 
 [node name="SpockButton" type="Button" parent="MarginContainer/VBoxContainer/ActionButtonsContainer" unique_id=1200000002]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
-text = "★ Spock"
+text = "V Spock"

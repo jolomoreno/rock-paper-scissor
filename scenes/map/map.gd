@@ -5,8 +5,8 @@ const NODE_RADIUS := 45
 const MARKER_SIZE := Vector2(90, 36)
 const NODE_ICONS := {
 	"combate": "†",
-	"descanso": "♥",
-	"jefe": "★",
+	"descanso": "+",
+	"jefe": "!",
 }
 
 const GOLD := Color(0.878, 0.698, 0.235)
@@ -61,7 +61,7 @@ func _make_marker_cell(layer_idx: int) -> Control:
 	label.custom_minimum_size = MARKER_SIZE
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 26)
-	label.text = "▼" if layer_idx == RunState.current_layer else ""
+	label.text = "v" if layer_idx == RunState.current_layer else ""
 	return label
 
 

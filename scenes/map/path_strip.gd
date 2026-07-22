@@ -2,8 +2,8 @@ extends Control
 
 const NODE_ICONS := {
 	"combate": "†",
-	"descanso": "♥",
-	"jefe": "★",
+	"descanso": "+",
+	"jefe": "!",
 }
 const GOLD := Color(0.878, 0.698, 0.235)
 const CURRENT_BG := Color(0.310, 0.639, 0.820)
@@ -12,7 +12,7 @@ const CURRENT_TEXT := Color(0.08, 0.12, 0.16)
 const NODE_FONT_SIZE := 20
 const SEPARATOR_FONT_SIZE := 16
 const CURRENT_BADGE_SIZE := Vector2(36, 36)
-const SEPARATOR_TEXT := " → "
+const SEPARATOR_TEXT := " -> "
 
 @onready var path_container: HBoxContainer = %PathContainer
 

@@ -15,7 +15,8 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 5 completa (última del roadmap): el enemigo ya no juega con un roll uniforme puro.
+Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
+roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en
 `resources/enemy_patterns/` — Aleatorio, Telegráfico (anuncia su jugada en pantalla antes
 de que el jugador elija) y Reactivo (contraataca la última jugada del jugador) — y
@@ -48,16 +49,15 @@ escena de arranque) permite comprar las mejoras de la Fase 2 y lanzar una run; e
 (`scenes/map/map.tscn`) ofrece 4 capas — 3 de elección Combate/Descanso y una capa final
 de Jefe — construidas dinámicamente; el nodo de Descanso (`scenes/map/descanso.tscn`)
 cura al máximo. Bucle completo (Hub → Mapa → Combate/Descanso → Jefe → Hub) verificado
-por consola en `--headless` y confirmado visualmente en el editor. Siguiente hito:
-Fase 6, deploy del build HTML5 en Vercel e itch.io (bloqueada por falta de export
-templates instalados localmente). Ver [ROADMAP.md](ROADMAP.md) para el desglose completo
-de fases.
+por consola en `--headless` y confirmado visualmente en el editor. Fase 6 (deploy)
+completa: build HTML5 público en https://web-sand-nine-92.vercel.app. Ver
+[ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
 
 ## Stack técnico
 
 - **Motor:** Godot 4.7 (stable), GDScript — sin C#/.NET.
-- **Export objetivo:** HTML5/WASM sin threads, para poder servirse como sitio estático
-  (pensado para desplegarse en Vercel más adelante, como pieza de portfolio).
+- **Export objetivo:** HTML5/WASM sin threads, servido como sitio estático en Vercel
+  (https://web-sand-nine-92.vercel.app) como pieza de portfolio.
 - **Sin arte propio:** formas geométricas/texto (círculo=piedra, cuadrado=papel,
   triángulo=tijera). Sin música ni sonido elaborado.
 

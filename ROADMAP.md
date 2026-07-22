@@ -7,8 +7,12 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-21):** Fase 5 completa (export HTML5 de la Fase 1 sigue
-pendiente por falta de templates, ver detalle en esa fase). El enemigo ya no es un roll
+**Checkpoint actual (2026-07-22):** Fase 6 completa — deploy en Vercel, público en
+https://web-sand-nine-92.vercel.app (proyecto `rock-paper-scissor`). itch.io se
+descartó a propósito (ver detalle en esa fase). De paso se encontró y corrigió un bug
+real: varios iconos (mapa, botones de combate) usaban glifos Unicode que dependen del
+font fallback del sistema operativo y se rompían en el export Web — sustituidos por
+caracteres ASCII simples. Antes de eso, Fase 5 completa. El enemigo ya no es un roll
 uniforme puro: `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern`
 (`display_name` + `pattern_type`) con 3 instancias en `resources/enemy_patterns/`
 (Aleatorio, Telegráfico, Reactivo), y `scripts/enemy_ai.gd` decide la jugada del enemigo
@@ -65,8 +69,8 @@ Objetivo Godot: Control nodes, máquina de estados de turno.
 - [x] Máquina de estados: Fase Jugador → Resolución → Fase Enemigos
 - [x] Enemigo con vida propia; combate dura varias rondas hasta llegar a 0
 - [x] Verificación visual en el editor (F5) — confirmada por el usuario (2026-07-20)
-- [ ] Primer build exportable a HTML5 para verificación visual — bloqueado: no hay
-      export templates de Godot instalados localmente todavía
+- [x] Primer build exportable a HTML5 para verificación visual — hecho en la Fase 6
+      (2026-07-22), templates instalados y build desplegado en Vercel
 
 ## Fase 2 — Persistencia entre sesiones
 
@@ -99,31 +103,39 @@ Objetivo Godot: nociones de comportamiento/IA simple.
 - [x] Patrón telegráfico (anuncia su jugada)
 - [x] Patrón reactivo (responde a tu última jugada)
 
-## Fase 6 — Deploy (Vercel + itch.io)
+## Fase 6 — Deploy (Vercel)
 
 No es una fase del dossier original (0-5), pero es justo el tipo de infraestructura que
 debe transferir directo a SPQR: validar aquí el pipeline completo de export/deploy con
 un proyecto pequeño, antes de necesitarlo con uno grande.
 
-- [ ] Instalar los export templates de Godot 4.7.1 que faltan (Editor → Manage Export
-      Templates → Download and Install, coincidiendo con la versión exacta del motor)
-- [ ] Crear preset de export "Web" en Project → Export, variante **sin Threads** —
-      imprescindible para poder servirlo como estático en Vercel sin cabeceras
-      COOP/COEP especiales
-- [ ] Exportar build HTML5 de la escena de combate (Fase 1) a una carpeta local
-      (p. ej. `export/web/`) y añadirla a `.gitignore` — es un build regenerable, no
-      fuente de verdad
-- [ ] Verificar el build localmente sirviéndolo con un servidor HTTP
-      (`python3 -m http.server` desde la carpeta de export) antes de subirlo a ningún
-      sitio — abrirlo directo con `file://` falla por CORS/WASM
-- [ ] Deploy a Vercel de la carpeta de export (repo conectado o `vercel --prod`); sin
-      configuración de headers porque el build es sin threads
-- [ ] Deploy de prueba en itch.io: subir el `.zip` del build Web como proyecto "HTML",
-      marcar "This file will be played in the browser" y fijar el tamaño de viewport
-      (ver ajustes en `project.godot [display]`, Fase de mapa) para que no se recorte
-      dentro del iframe de itch.io
-- [ ] Confirmar visualmente en ambas URLs (Vercel + itch.io) que el build carga y el
-      combate es jugable — verificación final antes de dar por bueno el pipeline
+- [x] Instalar los export templates de Godot 4.7.1 que faltan (descargados e instalados
+      en `~/Library/Application Support/Godot/export_templates/4.7.1.stable/`)
+- [x] Crear preset de export "Web" en `export_presets.cfg`, variante **sin Threads**
+      (`variant/thread_support=false`) — imprescindible para poder servirlo como
+      estático en Vercel sin cabeceras COOP/COEP especiales
+- [x] Exportar build HTML5 de la escena de combate a `export/web/` (ignorado en git,
+      build regenerable)
+- [x] Verificar el build localmente sirviéndolo con `python3 -m http.server` antes de
+      subirlo — abrirlo directo con `file://` falla por CORS/WASM
+- [x] Deploy a Vercel (`vercel --prod` desde `export/web/`) — público en
+      **https://web-sand-nine-92.vercel.app**, proyecto `rock-paper-scissor` en la
+      cuenta de Vercel
+- [x] Confirmado visualmente en producción (Vercel) que el build carga y el combate es
+      jugable
+- [x] Bug encontrado y corregido en el proceso: los iconos del mapa y de los botones de
+      combate usaban glifos Unicode fuera de ASCII (`♥ ★ ▼ ● ○ ■ ▲ ◆`) que dependen del
+      *font fallback* del sistema operativo — funcionan en el editor pero se rompen en
+      el export Web (sin ese fallback, se ven como caja+código hex). Sustituidos por
+      caracteres ASCII simples en `map.gd`, `path_strip.gd`, `map.tscn` y `combat.tscn`.
+      Lección para SPQR: cualquier icono como texto debe limitarse a lo que cubre la
+      fuente por defecto de Godot, o requiere una fuente propia embebida con fallback.
+- [x] **itch.io descartado** (2026-07-22): decisión consciente del usuario — el
+      pipeline de export/deploy (la parte que de verdad transfiere a SPQR) ya quedó
+      validado con Vercel; duplicar el deploy en itch.io solo para completar la casilla
+      no aportaba aprendizaje adicional relevante para un proyecto de prueba. Si SPQR
+      alguna vez se publica en itch.io, el ajuste de viewport dentro de su iframe (ver
+      `project.godot [display]`) es la única pieza no validada aquí.
 
 ## Infraestructura (fuera de las fases del dossier)
 

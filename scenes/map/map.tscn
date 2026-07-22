@@ -78,19 +78,19 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "● recorrido"
+text = "* recorrido"
 
 [node name="LegendActual" type="Label" parent="MarginContainer/VBoxContainer/LegendRow" unique_id=533789678]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "● capa actual"
+text = "* capa actual"
 
 [node name="LegendPorVenir" type="Label" parent="MarginContainer/VBoxContainer/LegendRow" unique_id=917277004]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "○ por venir"
+text = "o por venir"
 
 [node name="BottomSpacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=177748198]
 layout_mode = 2
