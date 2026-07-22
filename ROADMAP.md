@@ -7,12 +7,16 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-22):** Fase 6 completa — deploy en Vercel, público en
-https://rock-paper-scissor-godot.vercel.app (proyecto `rock-paper-scissor`). itch.io se
-descartó a propósito (ver detalle en esa fase). De paso se encontró y corrigió un bug
-real: varios iconos (mapa, botones de combate) usaban glifos Unicode que dependen del
-font fallback del sistema operativo y se rompían en el export Web — sustituidos por
-caracteres ASCII simples. Antes de eso, Fase 5 completa. El enemigo ya no es un roll
+**Checkpoint actual (2026-07-22):** Fase 6 completa, incluido CI/CD — cada push a
+`main` exporta con Godot y despliega a Vercel automáticamente
+(https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
+descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
+bugs reales: varios iconos (mapa, botones de combate) usaban glifos Unicode que dependen
+del font fallback del sistema operativo y se rompían en el export Web — sustituidos por
+caracteres ASCII simples; y la action de export anidaba el build en una subcarpeta
+extra, haciendo que todo deploy por CI diera 404 (ver Fase 6 para el detalle — costó
+horas de depuración por comparar mal contra deploys manuales que nunca pasaban por la
+misma action). Antes de eso, Fase 5 completa. El enemigo ya no es un roll
 uniforme puro: `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern`
 (`display_name` + `pattern_type`) con 3 instancias en `resources/enemy_patterns/`
 (Aleatorio, Telegráfico, Reactivo), y `scripts/enemy_ai.gd` decide la jugada del enemigo
@@ -136,25 +140,24 @@ un proyecto pequeño, antes de necesitarlo con uno grande.
       no aportaba aprendizaje adicional relevante para un proyecto de prueba. Si SPQR
       alguna vez se publica en itch.io, el ajuste de viewport dentro de su iframe (ver
       `project.godot [display]`) es la única pieza no validada aquí.
-- [~] **CI/CD (GitHub Actions → Vercel) — bloqueado por un bug de Vercel, no nuestro.**
-      `.github/workflows/deploy.yml` existe (export con `firebelley/godot-export` +
-      `vercel deploy --prod --token=...`) pero su trigger de `push` está desactivado a
-      propósito: todo deploy autenticado con el token de la API (como hace el Action)
-      responde con un 404 real en todos sus alias, mientras el mismo comando exacto
-      corrido a mano desde una sesión logueada (`vercel --prod -y`) funciona al
-      instante. Se comparó identidad de cuenta, ajustes del proyecto, protección de
-      deployment y conteo de archivos entre un deploy roto y uno bueno — todo idéntico.
-      El deploy manual sigue siendo el camino fiable; el workflow solo se dispara con
-      `workflow_dispatch` y **hay que verificar con `curl` la URL real, no solo el
-      check verde de la Action**, antes de fiarse de un run. Reactivar el trigger de
-      `push` solo si esto se resuelve (o se confirma como bug conocido de Vercel).
-      Se probaron 7 vías distintas (versión de CLI, receta oficial `--prebuilt`,
-      builder explícito `@vercel/static`, `package.json` mínimo, y la action mantenida
-      `amondnet/vercel-action`) — mismo 404 en todas. También se descartó
-      "Trusted Sources"/OIDC: leyendo la documentación oficial resulta que es para que
-      un servicio externo *lea* un deployment ya protegido (tests e2e contra un
-      preview), no para autenticar la *creación* del deploy — no aplica a este bug.
-      Único camino que queda: ticket a soporte de Vercel.
+- [x] **CI/CD (GitHub Actions → Vercel) — funcionando.** `.github/workflows/deploy.yml`
+      exporta con `firebelley/godot-export` y despliega con `vercel deploy --prod` en
+      cada push a `main`. La causa real de todos los 404 anteriores: la action
+      `firebelley/godot-export` copia el export dentro de una carpeta con el nombre del
+      preset (`export/web/Web/`, mayúscula, porque el preset se llama "Web" en
+      `export_presets.cfg`) en vez de aplanarlo en `export/web/` — Vercel servía bien,
+      pero `index.html` estaba un nivel más adentro de lo esperado y todo devolvía 404.
+      Nunca fue un bug de Vercel (el ticket de soporte se abrió sin necesidad, aunque su
+      IA sí encontró la pista correcta comparando el manifiesto de archivos del
+      deployment). El fix: un paso que localiza dinámicamente dónde quedó `index.html`
+      con `find` en vez de asumir la ruta, así no depende de que el comportamiento de
+      copia de la action coincida con lo esperado. **Lección grande:** todas las
+      comparaciones "funciona a mano pero no en CI" durante horas de depuración estaban
+      mal planteadas — los deploys manuales nunca pasaron por esta action (exportaba
+      con Godot directo en local), así que nunca reproducían de verdad lo que hacía CI.
+      Antes de sospechar de un servicio externo, comparar el *contenido real subido*
+      (`vercel inspect --files` o la API `/v13/deployments/{id}/files`), no solo
+      metadata/config — se podría haber encontrado esto en minutos, no horas.
 
 ## Infraestructura (fuera de las fases del dossier)
 
