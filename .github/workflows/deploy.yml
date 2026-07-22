@@ -20,8 +20,13 @@ on:
 # package.json; also tried adding a trivial package.json here in case
 # a zero-signal directory was the trigger — still 404, and the build
 # log shows Vercel never even looked at it (no npm install attempted).
-# Re-enable the `push` trigger only after a manual `workflow_dispatch`
-# run is confirmed to actually serve (curl the alias, not just a green
+# Also swapped the raw `vercel deploy --token=` invocation for
+# amondnet/vercel-action@v42.3.0 (actively maintained, different code
+# path) in case our own CLI invocation was the problem — same 404.
+# Seven different approaches, identical failure every time: this is a
+# Vercel-side issue, not something fixable from this repo. Re-enable
+# the `push` trigger only after a manual `workflow_dispatch` run is
+# confirmed to actually serve (curl the alias, not just a green
 # checkmark) — a successful Action run is not proof the site works.
 
 jobs:
