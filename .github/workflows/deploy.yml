@@ -27,6 +27,15 @@ jobs:
       - name: install vercel cli
         run: npm install -g vercel@54.14.2
 
+      - name: debug vercel identity
+        run: |
+          vercel whoami --token=${{ secrets.VERCEL_TOKEN }}
+          vercel teams ls --token=${{ secrets.VERCEL_TOKEN }}
+          vercel project ls --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: deploy to vercel
         working-directory: export/web
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
