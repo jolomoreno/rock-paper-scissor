@@ -2,7 +2,8 @@
 .godot/
 .import/
 export.cfg
-export_presets.cfg
+# export_presets.cfg is tracked on purpose: GitHub Actions needs it to know
+# what to export. It has no secrets (Web export, no signing keys).
 
 # Imported translations (automatically generated from CSV files)
 *.translation
