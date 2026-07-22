@@ -1,33 +1,9 @@
 name: Deploy to Vercel
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-
-# NOTE (2026-07-22): push-to-main trigger disabled on purpose. Every
-# deployment made by this workflow (token-authenticated, via GitHub
-# Actions) comes back as a real 404 on every alias, even though the
-# exact same `vercel deploy --prod` run interactively from a logged-in
-# session works immediately. Identity, project settings, deployment
-# protection, and file counts were all compared and are identical
-# between the two — this looks like a Vercel-side quirk specific to
-# token-authenticated deploys for this project, not something fixable
-# from the workflow. Also tried forcing an explicit @vercel/static
-# builder via vercel.json (in case zero-config detection was the
-# issue) — confirmed applied ("Due to `builds` existing... Build
-# Settings will not apply") and still 404. Compared against this
-# account's two other Vercel-deployed repos (lone-wolf, exile-dowser)
-# — both have working CI deploys, both are real framework apps with a
-# package.json; also tried adding a trivial package.json here in case
-# a zero-signal directory was the trigger — still 404, and the build
-# log shows Vercel never even looked at it (no npm install attempted).
-# Also swapped the raw `vercel deploy --token=` invocation for
-# amondnet/vercel-action@v42.3.0 (actively maintained, different code
-# path) in case our own CLI invocation was the problem — same 404.
-# Seven different approaches, identical failure every time: this is a
-# Vercel-side issue, not something fixable from this repo. Re-enable
-# the `push` trigger only after a manual `workflow_dispatch` run is
-# confirmed to actually serve (curl the alias, not just a green
-# checkmark) — a successful Action run is not proof the site works.
 
 jobs:
   export_and_deploy:
@@ -48,11 +24,19 @@ jobs:
           presets_to_export: "Web"
           cache: true
 
+      - name: locate export output
+        id: locate
+        run: |
+          DIR=$(dirname "$(find export -name index.html | head -1)")
+          echo "Found index.html in: $DIR"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+
+      - name: install vercel cli
+        run: npm install -g vercel@54.14.2
+
       - name: deploy to vercel
-        uses: amondnet/vercel-action@v42.3.0
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: export/web
-          vercel-args: '--prod'
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
