@@ -148,6 +148,13 @@ un proyecto pequeño, antes de necesitarlo con uno grande.
       `workflow_dispatch` y **hay que verificar con `curl` la URL real, no solo el
       check verde de la Action**, antes de fiarse de un run. Reactivar el trigger de
       `push` solo si esto se resuelve (o se confirma como bug conocido de Vercel).
+      Se probaron 7 vías distintas (versión de CLI, receta oficial `--prebuilt`,
+      builder explícito `@vercel/static`, `package.json` mínimo, y la action mantenida
+      `amondnet/vercel-action`) — mismo 404 en todas. También se descartó
+      "Trusted Sources"/OIDC: leyendo la documentación oficial resulta que es para que
+      un servicio externo *lea* un deployment ya protegido (tests e2e contra un
+      preview), no para autenticar la *creación* del deploy — no aplica a este bug.
+      Único camino que queda: ticket a soporte de Vercel.
 
 ## Infraestructura (fuera de las fases del dossier)
 
