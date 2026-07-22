@@ -11,10 +11,13 @@ on:
 # protection, and file counts were all compared and are identical
 # between the two — this looks like a Vercel-side quirk specific to
 # token-authenticated deploys for this project, not something fixable
-# from the workflow. Re-enable the `push` trigger only after a manual
-# `workflow_dispatch` run is confirmed to actually serve (curl the
-# alias, not just a green checkmark) — a successful Action run is not
-# proof the site works.
+# from the workflow. Also tried forcing an explicit @vercel/static
+# builder via vercel.json (in case zero-config detection was the
+# issue) — confirmed applied ("Due to `builds` existing... Build
+# Settings will not apply") and still 404. Re-enable the `push`
+# trigger only after a manual `workflow_dispatch` run is confirmed to
+# actually serve (curl the alias, not just a green checkmark) — a
+# successful Action run is not proof the site works.
 
 jobs:
   export_and_deploy:
@@ -37,18 +40,6 @@ jobs:
 
       - name: install vercel cli
         run: npm install -g vercel@54.14.2
-
-      - name: write explicit vercel builder config
-        working-directory: export/web
-        run: |
-          cat > vercel.json <<'JSON'
-          {
-            "version": 2,
-            "builds": [
-              { "src": "**", "use": "@vercel/static" }
-            ]
-          }
-          JSON
 
       - name: deploy to vercel
         working-directory: export/web
