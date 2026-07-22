@@ -8,7 +8,7 @@ necesario para atacar el primer prototipo digital de SPQR.
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
 **Checkpoint actual (2026-07-22):** Fase 6 completa — deploy en Vercel, público en
-https://web-sand-nine-92.vercel.app (proyecto `rock-paper-scissor`). itch.io se
+https://rock-paper-scissor-godot.vercel.app (proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontró y corrigió un bug
 real: varios iconos (mapa, botones de combate) usaban glifos Unicode que dependen del
 font fallback del sistema operativo y se rompían en el export Web — sustituidos por
@@ -119,7 +119,7 @@ un proyecto pequeño, antes de necesitarlo con uno grande.
 - [x] Verificar el build localmente sirviéndolo con `python3 -m http.server` antes de
       subirlo — abrirlo directo con `file://` falla por CORS/WASM
 - [x] Deploy a Vercel (`vercel --prod` desde `export/web/`) — público en
-      **https://web-sand-nine-92.vercel.app**, proyecto `rock-paper-scissor` en la
+      **https://rock-paper-scissor-godot.vercel.app**, proyecto `rock-paper-scissor` en la
       cuenta de Vercel
 - [x] Confirmado visualmente en producción (Vercel) que el build carga y el combate es
       jugable
@@ -136,6 +136,18 @@ un proyecto pequeño, antes de necesitarlo con uno grande.
       no aportaba aprendizaje adicional relevante para un proyecto de prueba. Si SPQR
       alguna vez se publica en itch.io, el ajuste de viewport dentro de su iframe (ver
       `project.godot [display]`) es la única pieza no validada aquí.
+- [~] **CI/CD (GitHub Actions → Vercel) — bloqueado por un bug de Vercel, no nuestro.**
+      `.github/workflows/deploy.yml` existe (export con `firebelley/godot-export` +
+      `vercel deploy --prod --token=...`) pero su trigger de `push` está desactivado a
+      propósito: todo deploy autenticado con el token de la API (como hace el Action)
+      responde con un 404 real en todos sus alias, mientras el mismo comando exacto
+      corrido a mano desde una sesión logueada (`vercel --prod -y`) funciona al
+      instante. Se comparó identidad de cuenta, ajustes del proyecto, protección de
+      deployment y conteo de archivos entre un deploy roto y uno bueno — todo idéntico.
+      El deploy manual sigue siendo el camino fiable; el workflow solo se dispara con
+      `workflow_dispatch` y **hay que verificar con `curl` la URL real, no solo el
+      check verde de la Action**, antes de fiarse de un run. Reactivar el trigger de
+      `push` solo si esto se resuelve (o se confirma como bug conocido de Vercel).
 
 ## Infraestructura (fuera de las fases del dossier)
 

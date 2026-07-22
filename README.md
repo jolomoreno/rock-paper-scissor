@@ -50,14 +50,14 @@ escena de arranque) permite comprar las mejoras de la Fase 2 y lanzar una run; e
 de Jefe — construidas dinámicamente; el nodo de Descanso (`scenes/map/descanso.tscn`)
 cura al máximo. Bucle completo (Hub → Mapa → Combate/Descanso → Jefe → Hub) verificado
 por consola en `--headless` y confirmado visualmente en el editor. Fase 6 (deploy)
-completa: build HTML5 público en https://web-sand-nine-92.vercel.app. Ver
+completa: build HTML5 público en https://rock-paper-scissor-godot.vercel.app. Ver
 [ROADMAP.md](ROADMAP.md) para el desglose completo de fases.
 
 ## Stack técnico
 
 - **Motor:** Godot 4.7 (stable), GDScript — sin C#/.NET.
 - **Export objetivo:** HTML5/WASM sin threads, servido como sitio estático en Vercel
-  (https://web-sand-nine-92.vercel.app) como pieza de portfolio.
+  (https://rock-paper-scissor-godot.vercel.app) como pieza de portfolio.
 - **Sin arte propio:** formas geométricas/texto (círculo=piedra, cuadrado=papel,
   triángulo=tijera). Sin música ni sonido elaborado.
 
