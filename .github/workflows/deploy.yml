@@ -43,12 +43,11 @@ jobs:
           presets_to_export: "Web"
           cache: true
 
-      - name: install vercel cli
-        run: npm install -g vercel@54.14.2
-
       - name: deploy to vercel
-        working-directory: export/web
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        uses: amondnet/vercel-action@v42.3.0
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: export/web
+          vercel-args: '--prod'
