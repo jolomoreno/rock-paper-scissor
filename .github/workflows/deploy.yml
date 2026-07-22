@@ -38,6 +38,18 @@ jobs:
       - name: install vercel cli
         run: npm install -g vercel@54.14.2
 
+      - name: write explicit vercel builder config
+        working-directory: export/web
+        run: |
+          cat > vercel.json <<'JSON'
+          {
+            "version": 2,
+            "builds": [
+              { "src": "**", "use": "@vercel/static" }
+            ]
+          }
+          JSON
+
       - name: deploy to vercel
         working-directory: export/web
         run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
