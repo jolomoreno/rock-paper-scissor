@@ -83,6 +83,12 @@ text = "Enemigo: ?"
 horizontal_alignment = 1
 autowrap_mode = 3
 
+[node name="PhaseLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1394329542]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Fase Jugador — elige hasta 3 acciones"
+horizontal_alignment = 1
+
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1688472813]
 layout_mode = 2
 size_flags_vertical = 3
@@ -92,6 +98,19 @@ unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="PALabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=647291813]
+unique_name_in_owner = true
+layout_mode = 2
+text = "PA: 3/3"
+horizontal_alignment = 1
+
+[node name="QueueLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1156579301]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Cola: (vacía)"
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="ActionButtonsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1775047326]
 unique_name_in_owner = true
@@ -128,3 +147,21 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 48)
 layout_mode = 2
 text = "V Spock"
+
+[node name="SecondaryActionsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1698185523]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="BlockButton" type="Button" parent="MarginContainer/VBoxContainer/SecondaryActionsContainer" unique_id=344249401]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "Bloquear (1 PA)"
+
+[node name="EndTurnButton" type="Button" parent="MarginContainer/VBoxContainer/SecondaryActionsContainer" unique_id=623283507]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "Terminar turno"

@@ -7,7 +7,8 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-22):** Fase 6 completa, incluido CI/CD — cada push a
+**Checkpoint actual (2026-07-23):** Fase 7, punto 1 (Puntos de Acción) completo — ver
+detalle en esa sección. Antes de eso, Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -158,6 +159,69 @@ un proyecto pequeño, antes de necesitarlo con uno grande.
       Antes de sospechar de un servicio externo, comparar el *contenido real subido*
       (`vercel inspect --files` o la API `/v13/deployments/{id}/files`), no solo
       metadata/config — se podría haber encontrado esto en minutos, no horas.
+
+## Fase 7 — Mecánicas de SPQR a prototipar (opcional, pendiente)
+
+No es una fase del dossier de aprendizaje original (0-5) — es la lista de mecánicas del
+diseño cerrado de **SPQR: Punic Wars**
+(`0-documentation/SPQR_Punic_Wars_Dossier_v07_18072026.html`) que este proyecto
+todavía no ha probado, decidida en sesión el 2026-07-23. Criterio: transfer-or-cut,
+igual que el resto del roadmap. Orden recomendado por dependencia — no por número de
+la tabla — porque el sistema de PA (1) es prerrequisito de facto de Escuadrón (2) y
+Veterancía (7).
+
+| # | Mecánica | Importancia | Valor de aprendizaje | Tiempo | Nota |
+|---|---|---|---|---|---|
+| 1 | Puntos de Acción (PA) — hasta 3/turno, combinando acción héroe/recluta/bloquear/objeto | Alta | Alto | Grande | Toca `combat_manager.gd` a fondo; prerrequisito de 2 y 7 |
+| 2 | Escuadrón de reclutas (hasta 3 huecos, pasiva + acción cada uno) | Alta | Alto | Grande | Depende de 1. Ver nota de diseño abajo — necesita antes una capa mínima de daño variable |
+| 3 | Árbol de habilidades con dependencia lineal (nodo N requiere N-1, por rama) | Media-alta | Medio | Medio | Sustituye la lista plana actual de mejoras de Chispa |
+| 4 | Equipo del héroe (3 slots: Arma/Armadura/Accesorio, tier común/legendario) | Media | Medio | Medio | Independiente de las demás |
+| 5 | Bonus de daño por atacar tu clase débil (pentagrama RPSLS) | Media | Bajo-medio | Pequeño | Extensión barata del resolver de Fase 4 |
+| 6 | Nodos de mapa extra (Élite, Tienda, Reclutamiento) | Media | Bajo-medio | Pequeño | El patrón de tipo de nodo ya lo resuelve `RunState` |
+| 7 | Veterancía de reclutas (comprada con Oro, escala pasiva/acción) | Media | Medio | Medio | Bloqueada por 2 |
+| 8 | Crítico como valor aparte de las 6 stats | Baja-media | Bajo | Pequeño | Un roll de probabilidad más |
+| 9 | Enemigos especiales mapeados sobre una clase existente (heredan matriz) | Baja | Bajo | Pequeño | Ya es el mismo patrón de dato que `EnemyPattern` (Fase 5) |
+| 10 | Respec del árbol (reinicio total + reembolso %) | Baja | Bajo | Pequeño | Cola de la lista |
+
+**Nota de diseño — reclutas (punto 2):** hoy `combat_resolver.gd` no tiene
+estadísticas — cada ronda ganada resta un HP fijo (`combat_manager.gd`). Antes de que
+una pasiva de recluta tenga algo que modificar, hace falta una capa mínima de daño
+variable (el daño base deja de ser `1` fijo y pasa a ser una variable). Con eso puesto,
+3 pasivas bastan para probar el concepto sin construir las 6 estadísticas de SPQR:
++1 daño en ronda ganada (análogo Ataque/Hastatus), +1 HP máximo (análogo HP/Triario),
+% de anular daño en ronda perdida (análogo Esquiva/Eques) — más una acción alternativa
+que cuesta 1 PA (depende del punto 1) y compite por el turno contra tu propia tirada,
+que es la tensión real que SPQR quiere validar.
+
+- [x] 1. Sistema de Puntos de Acción (PA) — **completo (2026-07-23).** Modelo de cola
+      diferida, no resolución instantánea: en Fase Jugador, cada pulsación de
+      Atacar/Bloquear gasta 1 PA (hasta 3) y se añade a una cola visible
+      (`%QueueLabel`), sin resolver nada todavía. El turno se resuelve de una sola vez —
+      al agotar el PA o al pulsar "Terminar turno" (`%EndTurnButton`) — comparando en
+      orden cada acción encolada contra una única jugada del enemigo (`_resolve_turn()`
+      en `combat_manager.gd`). Bloquear reduce a la mitad (redondeo a favor del
+      jugador) el daño de la siguiente pérdida de esa cola; con el daño fijo actual de
+      1 HP eso equivale a anularlo por completo hasta que exista daño variable (ver
+      punto 2). Nueva etiqueta de fase (`%PhaseLabel`) explícita en cada transición.
+      Verificado por consola en `--headless` (cola, PA, fin de turno con cola parcial y
+      con cola vacía) y confirmado visualmente por el usuario en el editor.
+      **Limitaciones conocidas, aceptadas a propósito para esta primera versión:**
+      el enemigo elige una sola jugada por turno mientras el jugador puede encolar
+      hasta 3 — con solo 1 unidad enemiga hoy es equivalente a "cada enemigo actúa una
+      vez", pero si tienes suerte en la resolución puedes multiplicar el daño hasta x3
+      en un turno; encolar Bloquear más de una vez desperdicia PA porque el flag de
+      bloqueo no acumula. Ninguna de las dos se resuelve ahora — quedan anotadas para
+      revisar cuando el punto 2 (Escuadrón) añada más de una unidad por bando, que es
+      cuando este desequilibrio importará de verdad también en SPQR.
+- [ ] 2. Escuadrón de reclutas (pasiva + acción, requiere capa de daño variable primero)
+- [ ] 3. Árbol de habilidades con dependencia lineal
+- [ ] 4. Equipo del héroe (3 slots, tiers)
+- [ ] 5. Bonus de daño por clase débil (RPSLS)
+- [ ] 6. Nodos de mapa extra (Élite, Tienda, Reclutamiento)
+- [ ] 7. Veterancía de reclutas
+- [ ] 8. Crítico como valor aparte
+- [ ] 9. Enemigos especiales mapeados sobre clase existente
+- [ ] 10. Respec del árbol
 
 ## Infraestructura (fuera de las fases del dossier)
 

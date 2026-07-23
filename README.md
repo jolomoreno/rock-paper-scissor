@@ -15,7 +15,19 @@ Si un sistema no transfiere ese aprendizaje, no se construye, aunque "quedaría 
 
 ## Estado actual
 
-Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
+Con las 6 fases del dossier de aprendizaje y el deploy ya cerrados, el proyecto entró en
+una fase extra sin numerar en el dossier original: probar aquí, uno a uno, mecánicas del
+diseño cerrado de SPQR: Punic Wars que este ejercicio todavía no había tocado (ver
+"Fase 7" en [ROADMAP.md](ROADMAP.md) para la lista completa y el orden). El primer punto,
+un sistema de Puntos de Acción (PA), ya está construido: en combate, cada turno da hasta
+3 PA para repartir entre Atacar (los 5 botones RPSLS) y Bloquear, sin resolver nada al
+pulsar — las acciones se encolan y se muestran en pantalla, y el turno entero se resuelve
+de una vez (al agotar el PA o al pulsar "Terminar turno") comparando esa cola, en orden,
+contra una única jugada del enemigo. Quedó anotado a propósito, sin resolver todavía, un
+desequilibrio real: con una sola unidad enemiga, el jugador puede intentar hasta 3 veces
+por 1 del enemigo.
+
+Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en
 `resources/enemy_patterns/` — Aleatorio, Telegráfico (anuncia su jugada en pantalla antes

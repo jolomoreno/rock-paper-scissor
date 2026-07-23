@@ -11,6 +11,8 @@ const EnemyAI := preload("res://scripts/enemy_ai.gd")
 const EnemyPattern := preload("res://scripts/enemy_pattern.gd")
 const ROUND_DELAY_SECONDS := 1.2
 const COMBAT_WIN_CHISPA_REWARD := 2
+const MAX_PA_PER_TURN := 3
+const BASE_DAMAGE := 1
 const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
@@ -30,6 +32,9 @@ const RANDOM_PATTERNS: Array[EnemyPattern] = [
 var current_phase: TurnPhase = TurnPhase.PLAYER
 var player_hp: int
 var enemy_hp: int
+var player_pa: int = MAX_PA_PER_TURN
+var _blocking_next_loss: bool = false
+var _queued_actions: Array[Dictionary] = []
 
 var _resolver := CombatResolver.new()
 var _rng := RandomNumberGenerator.new()
@@ -43,12 +48,18 @@ var _has_pending_enemy_choice: bool = false
 @onready var player_health_bar: ProgressBar = %PlayerHealthBar
 @onready var enemy_health_bar: ProgressBar = %EnemyHealthBar
 @onready var enemy_intent_label: Label = %EnemyIntentLabel
+@onready var phase_label: Label = %PhaseLabel
+@onready var pa_label: Label = %PALabel
+@onready var queue_label: Label = %QueueLabel
 @onready var action_buttons_container: HBoxContainer = %ActionButtonsContainer
 @onready var rock_button: Button = %RockButton
 @onready var paper_button: Button = %PaperButton
 @onready var scissors_button: Button = %ScissorsButton
 @onready var lizard_button: Button = %LizardButton
 @onready var spock_button: Button = %SpockButton
+@onready var secondary_actions_container: HBoxContainer = %SecondaryActionsContainer
+@onready var block_button: Button = %BlockButton
+@onready var end_turn_button: Button = %EndTurnButton
 @onready var result_label: Label = %ResultLabel
 
 
@@ -82,21 +93,77 @@ func _ready() -> void:
 	scissors_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.SCISSORS))
 	lizard_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.LIZARD))
 	spock_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.SPOCK))
+	block_button.pressed.connect(_on_block_button_pressed)
+	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
 
+	_update_pa_label()
+	_update_queue_label()
 	_set_phase(TurnPhase.PLAYER)
 
 
 func _on_action_button_pressed(choice: CombatResolver.Choice) -> void:
+	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
+		return
+	_queue_action({"type": "attack", "choice": choice})
+
+
+func _on_block_button_pressed() -> void:
+	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
+		return
+	_queue_action({"type": "block"})
+
+
+func _on_end_turn_button_pressed() -> void:
 	if current_phase != TurnPhase.PLAYER:
 		return
-	_play_round(choice)
+	_resolve_turn()
+
+
+func _queue_action(action: Dictionary) -> void:
+	_queued_actions.append(action)
+	player_pa = max(player_pa - 1, 0)
+	_update_pa_label()
+	_update_queue_label()
+	if player_pa <= 0:
+		_resolve_turn()
+
+
+func _update_pa_label() -> void:
+	pa_label.text = "PA: %d/%d" % [player_pa, MAX_PA_PER_TURN]
+
+
+func _update_queue_label() -> void:
+	if _queued_actions.is_empty():
+		queue_label.text = "Cola: (vacía)"
+		return
+	var parts: Array[String] = []
+	for action: Dictionary in _queued_actions:
+		if action["type"] == "attack":
+			parts.append(CHOICE_NAMES[action["choice"]])
+		else:
+			parts.append("Bloquear")
+	queue_label.text = "Cola: %s" % ", ".join(parts)
+
+
+func _damage_taken_on_loss() -> int:
+	if _blocking_next_loss:
+		_blocking_next_loss = false
+		return int(floor(BASE_DAMAGE / 2.0))
+	return BASE_DAMAGE
+
+
+func _start_enemy_phase() -> void:
+	_set_phase(TurnPhase.ENEMY)
+	player_pa = MAX_PA_PER_TURN
+	_update_pa_label()
+	_set_phase(TurnPhase.PLAYER)
 
 
 func _on_chispa_changed(new_amount: int) -> void:
 	chispa_label.text = "Chispa: %d" % new_amount
 
 
-func _play_round(player_choice: CombatResolver.Choice) -> void:
+func _resolve_turn() -> void:
 	_set_phase(TurnPhase.RESOLUTION)
 
 	var enemy_choice: CombatResolver.Choice
@@ -106,33 +173,46 @@ func _play_round(player_choice: CombatResolver.Choice) -> void:
 	else:
 		enemy_choice = _enemy_ai.choose(_last_player_choice, _has_player_history)
 
-	var result: CombatResolver.Result = _resolver.resolve_round(player_choice, enemy_choice)
+	for action: Dictionary in _queued_actions:
+		if action["type"] == "block":
+			_blocking_next_loss = true
+			result_label.text = "Bloqueas el siguiente golpe."
+			await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
+			continue
 
-	_last_player_choice = player_choice
-	_has_player_history = true
+		var player_choice: CombatResolver.Choice = action["choice"]
+		var result: CombatResolver.Result = _resolver.resolve_round(player_choice, enemy_choice)
 
-	match result:
-		CombatResolver.Result.WINS_A:
-			enemy_hp -= 1
-		CombatResolver.Result.WINS_B:
-			player_hp -= 1
+		_last_player_choice = player_choice
+		_has_player_history = true
 
-	player_health_bar.value = player_hp
-	enemy_health_bar.value = enemy_hp
-	result_label.text = _describe_result(player_choice, enemy_choice, result)
-	round_resolved.emit(player_choice, enemy_choice, result)
+		match result:
+			CombatResolver.Result.WINS_A:
+				enemy_hp -= 1
+			CombatResolver.Result.WINS_B:
+				player_hp -= _damage_taken_on_loss()
 
-	if player_hp <= 0 or enemy_hp <= 0:
-		_end_combat(enemy_hp <= 0)
-		return
+		player_health_bar.value = player_hp
+		enemy_health_bar.value = enemy_hp
+		result_label.text = _describe_result(player_choice, enemy_choice, result)
+		round_resolved.emit(player_choice, enemy_choice, result)
 
-	await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
-	_set_phase(TurnPhase.ENEMY)
-	_set_phase(TurnPhase.PLAYER)
+		if player_hp <= 0 or enemy_hp <= 0:
+			_queued_actions.clear()
+			_update_queue_label()
+			_end_combat(enemy_hp <= 0)
+			return
+
+		await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
+
+	_queued_actions.clear()
+	_update_queue_label()
+	_start_enemy_phase()
 
 
 func _end_combat(player_won: bool) -> void:
 	action_buttons_container.visible = false
+	secondary_actions_container.visible = false
 
 	if not player_won:
 		result_label.text += "\nPerdiste el combate."
@@ -196,6 +276,15 @@ func _set_phase(phase: TurnPhase) -> void:
 	scissors_button.disabled = not buttons_enabled
 	lizard_button.disabled = not buttons_enabled
 	spock_button.disabled = not buttons_enabled
+	block_button.disabled = not buttons_enabled
+	end_turn_button.disabled = not buttons_enabled
+	match phase:
+		TurnPhase.PLAYER:
+			phase_label.text = "Fase Jugador — elige hasta 3 acciones"
+		TurnPhase.RESOLUTION:
+			phase_label.text = "Resolviendo turno..."
+		TurnPhase.ENEMY:
+			phase_label.text = "Fase Enemigos"
 	if phase == TurnPhase.PLAYER:
 		_prepare_enemy_turn()
 	phase_changed.emit(phase)
