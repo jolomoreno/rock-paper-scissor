@@ -13,6 +13,10 @@ const ROUND_DELAY_SECONDS := 1.2
 const COMBAT_WIN_CHISPA_REWARD := 2
 const MAX_PA_PER_TURN := 3
 const BASE_DAMAGE := 1
+const BASE_ENEMY_DAMAGE := 1
+const RECRUIT_NAME := "Hastatus"
+const RECRUIT_ATTACK_BONUS := 1
+const RECRUIT_ACTION_CHOICE := CombatResolver.Choice.ROCK
 const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
@@ -48,6 +52,7 @@ var _has_pending_enemy_choice: bool = false
 @onready var player_health_bar: ProgressBar = %PlayerHealthBar
 @onready var enemy_health_bar: ProgressBar = %EnemyHealthBar
 @onready var enemy_intent_label: Label = %EnemyIntentLabel
+@onready var recruit_label: Label = %RecruitLabel
 @onready var phase_label: Label = %PhaseLabel
 @onready var pa_label: Label = %PALabel
 @onready var queue_label: Label = %QueueLabel
@@ -59,6 +64,7 @@ var _has_pending_enemy_choice: bool = false
 @onready var spock_button: Button = %SpockButton
 @onready var secondary_actions_container: HBoxContainer = %SecondaryActionsContainer
 @onready var block_button: Button = %BlockButton
+@onready var recruit_action_button: Button = %RecruitActionButton
 @onready var end_turn_button: Button = %EndTurnButton
 @onready var result_label: Label = %ResultLabel
 
@@ -94,7 +100,10 @@ func _ready() -> void:
 	lizard_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.LIZARD))
 	spock_button.pressed.connect(_on_action_button_pressed.bind(CombatResolver.Choice.SPOCK))
 	block_button.pressed.connect(_on_block_button_pressed)
+	recruit_action_button.pressed.connect(_on_recruit_action_button_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
+
+	recruit_label.text = "Escuadrón: %s — pasiva +%d Ataque" % [RECRUIT_NAME, RECRUIT_ATTACK_BONUS]
 
 	_update_pa_label()
 	_update_queue_label()
@@ -104,13 +113,19 @@ func _ready() -> void:
 func _on_action_button_pressed(choice: CombatResolver.Choice) -> void:
 	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
 		return
-	_queue_action({"type": "attack", "choice": choice})
+	_queue_action({"type": "attack", "choice": choice, "source": "hero"})
 
 
 func _on_block_button_pressed() -> void:
 	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
 		return
 	_queue_action({"type": "block"})
+
+
+func _on_recruit_action_button_pressed() -> void:
+	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
+		return
+	_queue_action({"type": "attack", "choice": RECRUIT_ACTION_CHOICE, "source": "recruit"})
 
 
 func _on_end_turn_button_pressed() -> void:
@@ -139,7 +154,10 @@ func _update_queue_label() -> void:
 	var parts: Array[String] = []
 	for action: Dictionary in _queued_actions:
 		if action["type"] == "attack":
-			parts.append(CHOICE_NAMES[action["choice"]])
+			if action.get("source", "hero") == "recruit":
+				parts.append("Carga (%s)" % RECRUIT_NAME)
+			else:
+				parts.append(CHOICE_NAMES[action["choice"]])
 		else:
 			parts.append("Bloquear")
 	queue_label.text = "Cola: %s" % ", ".join(parts)
@@ -150,6 +168,10 @@ func _damage_taken_on_loss() -> int:
 		_blocking_next_loss = false
 		return int(floor(BASE_DAMAGE / 2.0))
 	return BASE_DAMAGE
+
+
+func _damage_dealt_on_win() -> int:
+	return BASE_ENEMY_DAMAGE + RECRUIT_ATTACK_BONUS
 
 
 func _start_enemy_phase() -> void:
@@ -181,6 +203,7 @@ func _resolve_turn() -> void:
 			continue
 
 		var player_choice: CombatResolver.Choice = action["choice"]
+		var is_recruit: bool = action.get("source", "hero") == "recruit"
 		var result: CombatResolver.Result = _resolver.resolve_round(player_choice, enemy_choice)
 
 		_last_player_choice = player_choice
@@ -188,13 +211,14 @@ func _resolve_turn() -> void:
 
 		match result:
 			CombatResolver.Result.WINS_A:
-				enemy_hp -= 1
+				enemy_hp -= _damage_dealt_on_win()
 			CombatResolver.Result.WINS_B:
 				player_hp -= _damage_taken_on_loss()
 
 		player_health_bar.value = player_hp
 		enemy_health_bar.value = enemy_hp
-		result_label.text = _describe_result(player_choice, enemy_choice, result)
+		var attacker_name := RECRUIT_NAME if is_recruit else "Tú"
+		result_label.text = _describe_result(player_choice, enemy_choice, result, attacker_name)
 		round_resolved.emit(player_choice, enemy_choice, result)
 
 		if player_hp <= 0 or enemy_hp <= 0:
@@ -256,8 +280,8 @@ func _prepare_enemy_turn() -> void:
 	]
 
 
-func _describe_result(player_choice: CombatResolver.Choice, enemy_choice: CombatResolver.Choice, result: CombatResolver.Result) -> String:
-	var line := "Tú: %s — Enemigo: %s" % [CHOICE_NAMES[player_choice], CHOICE_NAMES[enemy_choice]]
+func _describe_result(player_choice: CombatResolver.Choice, enemy_choice: CombatResolver.Choice, result: CombatResolver.Result, attacker_name: String = "Tú") -> String:
+	var line := "%s: %s — Enemigo: %s" % [attacker_name, CHOICE_NAMES[player_choice], CHOICE_NAMES[enemy_choice]]
 	match result:
 		CombatResolver.Result.DRAW:
 			return line + "\nEmpate."
@@ -277,6 +301,7 @@ func _set_phase(phase: TurnPhase) -> void:
 	lizard_button.disabled = not buttons_enabled
 	spock_button.disabled = not buttons_enabled
 	block_button.disabled = not buttons_enabled
+	recruit_action_button.disabled = not buttons_enabled
 	end_turn_button.disabled = not buttons_enabled
 	match phase:
 		TurnPhase.PLAYER:

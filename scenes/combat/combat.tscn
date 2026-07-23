@@ -83,6 +83,12 @@ text = "Enemigo: ?"
 horizontal_alignment = 1
 autowrap_mode = 3
 
+[node name="RecruitLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1956426971]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Escuadrón: ?"
+horizontal_alignment = 1
+
 [node name="PhaseLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1394329542]
 unique_name_in_owner = true
 layout_mode = 2
@@ -159,6 +165,12 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 48)
 layout_mode = 2
 text = "Bloquear (1 PA)"
+
+[node name="RecruitActionButton" type="Button" parent="MarginContainer/VBoxContainer/SecondaryActionsContainer" unique_id=645108831]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "Carga (Hastatus)"
 
 [node name="EndTurnButton" type="Button" parent="MarginContainer/VBoxContainer/SecondaryActionsContainer" unique_id=623283507]
 unique_name_in_owner = true

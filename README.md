@@ -27,6 +27,15 @@ contra una única jugada del enemigo. Quedó anotado a propósito, sin resolver 
 desequilibrio real: con una sola unidad enemiga, el jugador puede intentar hasta 3 veces
 por 1 del enemigo.
 
+El segundo punto de esa lista, un escuadrón de reclutas, también está construido — con
+alcance reducido a propósito: en vez de los 3 huecos seleccionables de SPQR (que
+necesitan economía de Oro y un nodo de Tienda que no existen todavía aquí), hay 1 recluta
+fijo (Hastatus) siempre presente en combate, con una pasiva (+1 de daño en cualquier
+ataque que gane, tuyo o suyo) y una acción "Carga" que compite por el mismo PA que tus
+propios ataques. Esto forzó a que el daño infligido al enemigo dejara de ser un `-1`
+fijo y pasara a calcularse — la pieza que le faltaba al sistema de PA para que una
+pasiva tuviera algo real que modificar.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

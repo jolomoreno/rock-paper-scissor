@@ -7,8 +7,9 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-23):** Fase 7, punto 1 (Puntos de Acción) completo — ver
-detalle en esa sección. Antes de eso, Fase 6 completa, incluido CI/CD — cada push a
+**Checkpoint actual (2026-07-23):** Fase 7, puntos 1 (Puntos de Acción) y 2 (Escuadrón
+de reclutas) completos — ver detalle en esa sección. Antes de eso, Fase 6 completa,
+incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -213,7 +214,21 @@ que es la tensión real que SPQR quiere validar.
       bloqueo no acumula. Ninguna de las dos se resuelve ahora — quedan anotadas para
       revisar cuando el punto 2 (Escuadrón) añada más de una unidad por bando, que es
       cuando este desequilibrio importará de verdad también en SPQR.
-- [ ] 2. Escuadrón de reclutas (pasiva + acción, requiere capa de daño variable primero)
+- [x] 2. Escuadrón de reclutas — **completo (2026-07-23), alcance reducido a propósito.**
+      No los 3 huecos seleccionables de SPQR — eso necesita el nodo de
+      Tienda/Reclutamiento (punto 6) y la economía de Oro, que todavía no existen aquí.
+      En su lugar, 1 recluta fijo siempre presente (Hastatus, Escudero Íbero) para
+      probar el mecanismo en sí: una pasiva (+1 de daño en cualquier ataque que gane su
+      ronda, tuyo o del recluta — esto resolvió el prerrequisito de daño variable vía
+      `_damage_dealt_on_win()`) y una acción "Carga" que cuesta 1 PA y compite por el
+      mismo pool que tus propios ataques, encolando un ataque con Piedra fija (sin RNG
+      ni elección de símbolo, a petición explícita del usuario). La cola distingue
+      origen ("Carga (Hastatus)" vs. el nombre del símbolo) para que se vea quién actuó.
+      Verificado por consola en `--headless` (pasiva aplicada a ambos orígenes de
+      ataque, cola distinguiendo recluta/héroe) y confirmado visualmente por el usuario.
+      Ampliar a 2-3 reclutas seleccionables queda para cuando el punto 6 (nodos de
+      mapa) o el 7 (veterancía) lo requieran de verdad.
+- [ ] 3. Árbol de habilidades con dependencia lineal
 - [ ] 3. Árbol de habilidades con dependencia lineal
 - [ ] 4. Equipo del héroe (3 slots, tiers)
 - [ ] 5. Bonus de daño por clase débil (RPSLS)
