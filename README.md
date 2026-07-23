@@ -52,6 +52,15 @@ un bug real: el daño del enemigo era `1` fijo, así que cualquier armadura con 
 Defensa volvía al jugador invulnerable sin más. El daño base subió a `2` para que la
 armadura reduzca sin anular por sí sola.
 
+El quinto punto sortea, al empezar cada run, una de las 5 elecciones RPSLS como "clase
+débil" (`RunState.weak_class_target`) — ganar una ronda contra ella da daño extra. Se
+anuncia reutilizando una etiqueta ya existente en combate, sin añadir ningún nodo a la
+escena. Queda anotada una limitación real de cara a SPQR: aquí "clase" es una tirada
+libre cada ronda, no una identidad fija de unidad como en el diseño real, así que un
+enemigo que optimizara evitaría la clase débil una vez revelada — no rompe nada hoy
+porque la IA actual no tiene esa lógica, pero es una pregunta abierta para el combate
+real de SPQR.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

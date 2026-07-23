@@ -8,8 +8,9 @@ necesario para atacar el primer prototipo digital de SPQR.
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
 **Checkpoint actual (2026-07-23):** Fase 7, puntos 1 (Puntos de Acción), 2 (Escuadrón de
-reclutas), 3 (Árbol de habilidades) y 4 (Equipo del héroe) completos — ver detalle en
-esa sección. Antes de eso, Fase 6 completa, incluido CI/CD — cada push a
+reclutas), 3 (Árbol de habilidades), 4 (Equipo del héroe) y 5 (Bonus de clase débil)
+completos — ver detalle en esa sección. Antes de eso, Fase 6 completa, incluido CI/CD —
+cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -277,7 +278,27 @@ que es la tensión real que SPQR quiere validar.
       24→12) porque con todas las etiquetas nuevas (Escuadrón, Equipo, Fase) los
       botones de abajo dejaban de caber en pantalla — mismo síntoma que en el Hub.
       Confirmado visualmente por el usuario en el editor.
-- [ ] 5. Bonus de daño por clase débil (RPSLS)
+- [x] 5. Bonus de daño por clase débil (RPSLS) — **completo (2026-07-23).**
+      `RunState.weak_class_target` sortea una de las 5 elecciones al empezar la run
+      (`start_run()`, con `RandomNumberGenerator` propio en el autoload, no `randi()`
+      global) y se mantiene fija durante toda ella. Ganar una ronda contra esa
+      elección da +1 de daño extra (`_damage_dealt_on_win()` ahora recibe la jugada
+      del enemigo). Se anuncia al empezar cada combate reutilizando `%ResultLabel`
+      (vacío hasta la primera ronda) — **sin nodos nuevos en la escena**, a petición
+      explícita del usuario tras los cortes de layout de los puntos 3 y 4. Si el
+      patrón es Telegráfico, el aviso de intención añade "(clase débil)" cuando
+      aplica. Verificado por consola en `--headless` (aleatoriedad entre runs — 5/5
+      valores distintos en 20 runs —, fijación dentro de la run, bonus aplicado solo
+      contra la elección correcta).
+      **Nota de diseño abierta, señalada por el usuario:** en SPQR "tu clase débil" es
+      la identidad fija de una unidad enemiga (un Vélite es Vélite todo el combate);
+      aquí "clase" se mapeó sobre la tirada RPSLS, una elección libre cada ronda, no
+      una identidad. Un agente que optimizara (humano, o una IA no trivial) evitaría
+      tirar la clase débil una vez revelada, vaciando el bonus de efecto — arreglarlo
+      de verdad exigiría que el enemigo tuviera una clase fija por combate en vez de
+      tirar libre cada ronda, que ya no es un cambio pequeño. No rompe nada hoy porque
+      `EnemyAI` (Aleatorio/Telegráfico/Reactivo) no tiene lógica que evite nada, pero
+      es una pregunta real para cuando se diseñe el combate de SPQR de verdad.
 - [ ] 6. Nodos de mapa extra (Élite, Tienda, Reclutamiento)
 - [ ] 7. Veterancía de reclutas
 - [ ] 8. Crítico como valor aparte

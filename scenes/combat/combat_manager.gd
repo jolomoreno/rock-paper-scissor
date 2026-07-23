@@ -19,6 +19,7 @@ const RECRUIT_ATTACK_BONUS := 1
 const RECRUIT_ACTION_CHOICE := CombatResolver.Choice.ROCK
 const EquipmentItem := preload("res://scripts/equipment_item.gd")
 const LOW_HP_THRESHOLD := 0.25
+const WEAK_CLASS_DAMAGE_BONUS := 1
 const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
@@ -42,6 +43,7 @@ var player_pa: int = MAX_PA_PER_TURN
 var _blocking_next_loss: bool = false
 var _queued_actions: Array[Dictionary] = []
 var _reserva_hierro_triggered: bool = false
+var _weak_class_target: CombatResolver.Choice
 
 var _resolver := CombatResolver.new()
 var _rng := RandomNumberGenerator.new()
@@ -87,6 +89,11 @@ func _ready() -> void:
 
 	enemy_hp = enemy_max_hp
 
+	if RunState.in_run:
+		_weak_class_target = RunState.weak_class_target
+	else:
+		_weak_class_target = _rng.randi_range(0, 4) as CombatResolver.Choice
+
 	_enemy_ai = EnemyAI.new(_pick_enemy_pattern())
 	enemy_intent_label.text = "Enemigo: %s" % _enemy_ai.pattern.display_name
 
@@ -109,6 +116,7 @@ func _ready() -> void:
 
 	recruit_label.text = "Escuadrón: %s — pasiva +%d Ataque" % [RECRUIT_NAME, RECRUIT_ATTACK_BONUS]
 	equipment_label.text = "Equipo: %s" % _describe_equipment()
+	result_label.text = "Clase débil de esta run: %s (daño extra al golpearla)" % CHOICE_NAMES[_weak_class_target]
 
 	_update_pa_label()
 	_update_queue_label()
@@ -207,8 +215,10 @@ func _damage_taken_on_loss() -> int:
 	return dmg
 
 
-func _damage_dealt_on_win() -> int:
+func _damage_dealt_on_win(enemy_choice: CombatResolver.Choice) -> int:
 	var dmg := BASE_ENEMY_DAMAGE + RECRUIT_ATTACK_BONUS
+	if enemy_choice == _weak_class_target:
+		dmg += WEAK_CLASS_DAMAGE_BONUS
 	var weapon: EquipmentItem = RunState.equipped_item("weapon")
 	if weapon != null:
 		dmg += weapon.attack_bonus
@@ -268,7 +278,7 @@ func _resolve_turn() -> void:
 
 		match result:
 			CombatResolver.Result.WINS_A:
-				enemy_hp -= _damage_dealt_on_win()
+				enemy_hp -= _damage_dealt_on_win(enemy_choice)
 			CombatResolver.Result.WINS_B:
 				player_hp -= _damage_taken_on_loss()
 				_maybe_trigger_reserva_hierro()
@@ -277,6 +287,8 @@ func _resolve_turn() -> void:
 		enemy_health_bar.value = enemy_hp
 		var attacker_name := RECRUIT_NAME if is_recruit else "Tú"
 		result_label.text = _describe_result(player_choice, enemy_choice, result, attacker_name)
+		if result == CombatResolver.Result.WINS_A and enemy_choice == _weak_class_target:
+			result_label.text += "\n¡Clase débil! Daño extra."
 		round_resolved.emit(player_choice, enemy_choice, result)
 
 		if player_hp <= 0 or enemy_hp <= 0:
@@ -334,9 +346,11 @@ func _prepare_enemy_turn() -> void:
 		return
 	_pending_enemy_choice = _enemy_ai.choose(_last_player_choice, _has_player_history)
 	_has_pending_enemy_choice = true
-	enemy_intent_label.text = "Enemigo: %s — jugará %s" % [
+	var weak_note := " (clase débil)" if _pending_enemy_choice == _weak_class_target else ""
+	enemy_intent_label.text = "Enemigo: %s — jugará %s%s" % [
 		_enemy_ai.pattern.display_name,
 		CHOICE_NAMES[_pending_enemy_choice],
+		weak_note,
 	]
 
 

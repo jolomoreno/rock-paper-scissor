@@ -4,6 +4,7 @@ signal run_started
 signal run_ended(victory: bool)
 
 const EquipmentItem := preload("res://scripts/equipment_item.gd")
+const CombatResolver := preload("res://scripts/combat_resolver.gd")
 
 const LAYERS: Array = [
 	["combate", "descanso"],
@@ -31,6 +32,13 @@ var path_history: Array = []
 var equipped_weapon_id: String = ""
 var equipped_armor_id: String = ""
 var equipped_accessory_id: String = ""
+var weak_class_target: CombatResolver.Choice = CombatResolver.Choice.ROCK
+
+var _rng := RandomNumberGenerator.new()
+
+
+func _ready() -> void:
+	_rng.randomize()
 
 
 func start_run() -> void:
@@ -40,6 +48,7 @@ func start_run() -> void:
 	player_max_hp = 3 + Chispa.player_hp_bonus() + armor_max_hp_bonus()
 	player_hp = player_max_hp
 	path_history = []
+	weak_class_target = _rng.randi_range(0, 4) as CombatResolver.Choice
 	run_started.emit()
 
 
