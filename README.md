@@ -36,6 +36,13 @@ propios ataques. Esto forzó a que el daño infligido al enemigo dejara de ser u
 fijo y pasara a calcularse — la pieza que le faltaba al sistema de PA para que una
 pasiva tuviera algo real que modificar.
 
+El tercer punto, un árbol de habilidades con dependencia lineal, sustituyó la lista
+plana de 2 mejoras sueltas del Hub por 2 ramas de 4 nodos cada una (Vigor y Botín),
+donde cada nodo exige tener comprado el anterior de su misma rama
+(`Chispa.is_dependency_met()`). Sin árbol radial visual — para 8 nodos de prueba habría
+sido decoración — pero el Hub explica en el propio botón si algo está bloqueado por
+precio o por dependencia, y qué nodo falta.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

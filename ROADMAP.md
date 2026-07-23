@@ -7,9 +7,9 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-23):** Fase 7, puntos 1 (Puntos de Acción) y 2 (Escuadrón
-de reclutas) completos — ver detalle en esa sección. Antes de eso, Fase 6 completa,
-incluido CI/CD — cada push a
+**Checkpoint actual (2026-07-23):** Fase 7, puntos 1 (Puntos de Acción), 2 (Escuadrón de
+reclutas) y 3 (Árbol de habilidades) completos — ver detalle en esa sección. Antes de
+eso, Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -228,8 +228,21 @@ que es la tensión real que SPQR quiere validar.
       ataque, cola distinguiendo recluta/héroe) y confirmado visualmente por el usuario.
       Ampliar a 2-3 reclutas seleccionables queda para cuando el punto 6 (nodos de
       mapa) o el 7 (veterancía) lo requieran de verdad.
-- [ ] 3. Árbol de habilidades con dependencia lineal
-- [ ] 3. Árbol de habilidades con dependencia lineal
+- [x] 3. Árbol de habilidades con dependencia lineal — **completo (2026-07-23).**
+      Las 2 mejoras planas de antes se convirtieron en 2 ramas de 4 nodos cada una —
+      Vigor I-IV (+1 Vida máxima cada uno, coste 5/10/18/30) y Botín I-IV (+1 Chispa
+      por combate ganado cada uno, coste 8/14/24/40) — sin árbol radial visual (fuera
+      de alcance para 8 nodos de prueba, era decoración). Cada nodo tiene un campo
+      `requires` apuntando al nodo previo de su rama en `Chispa.UPGRADES`;
+      `can_afford()` exige ahora también `is_dependency_met()`. El Hub
+      (`scenes/main/hub.gd`, generado dinámicamente, no tocó el `.tscn`) muestra rama y
+      nivel en cada botón y, si está bloqueado por dependencia, qué nodo falta —
+      distinto de estar bloqueado solo por precio. Verificado por consola en
+      `--headless` (dependencia dentro de una rama, independencia entre las dos ramas,
+      rechazo de compra fuera de orden, suma correcta de bonus por rama) — con cuidado
+      de hacer backup/restore del `user://savegame.json` real del usuario antes/después
+      de las pruebas, para no pisar su partida guardada. Confirmado visualmente por el
+      usuario en el editor ("Funciona a la perfección").
 - [ ] 4. Equipo del héroe (3 slots, tiers)
 - [ ] 5. Bonus de daño por clase débil (RPSLS)
 - [ ] 6. Nodos de mapa extra (Élite, Tienda, Reclutamiento)

@@ -7,12 +7,66 @@ const SAVE_PATH := "user://savegame.json"
 const UPGRADES := {
 	"vida_extra_jugador": {
 		"display_name": "Vida máxima +1",
+		"branch": "Vigor",
+		"tier": 1,
+		"requires": "",
 		"cost": 5,
+		"player_hp_bonus": 1,
+	},
+	"vida_extra_jugador_ii": {
+		"display_name": "Vida máxima +1",
+		"branch": "Vigor",
+		"tier": 2,
+		"requires": "vida_extra_jugador",
+		"cost": 10,
+		"player_hp_bonus": 1,
+	},
+	"vida_extra_jugador_iii": {
+		"display_name": "Vida máxima +1",
+		"branch": "Vigor",
+		"tier": 3,
+		"requires": "vida_extra_jugador_ii",
+		"cost": 18,
+		"player_hp_bonus": 1,
+	},
+	"vida_extra_jugador_iv": {
+		"display_name": "Vida máxima +1",
+		"branch": "Vigor",
+		"tier": 4,
+		"requires": "vida_extra_jugador_iii",
+		"cost": 30,
 		"player_hp_bonus": 1,
 	},
 	"chispa_extra_combate": {
 		"display_name": "Botín extra",
+		"branch": "Botín",
+		"tier": 1,
+		"requires": "",
 		"cost": 8,
+		"chispa_win_bonus": 1,
+	},
+	"chispa_extra_combate_ii": {
+		"display_name": "Botín extra",
+		"branch": "Botín",
+		"tier": 2,
+		"requires": "chispa_extra_combate",
+		"cost": 14,
+		"chispa_win_bonus": 1,
+	},
+	"chispa_extra_combate_iii": {
+		"display_name": "Botín extra",
+		"branch": "Botín",
+		"tier": 3,
+		"requires": "chispa_extra_combate_ii",
+		"cost": 24,
+		"chispa_win_bonus": 1,
+	},
+	"chispa_extra_combate_iv": {
+		"display_name": "Botín extra",
+		"branch": "Botín",
+		"tier": 4,
+		"requires": "chispa_extra_combate_iii",
+		"cost": 40,
 		"chispa_win_bonus": 1,
 	},
 }
@@ -36,7 +90,12 @@ func has_upgrade(upgrade_id: String) -> bool:
 
 
 func can_afford(upgrade_id: String) -> bool:
-	return not has_upgrade(upgrade_id) and chispa >= UPGRADES[upgrade_id]["cost"]
+	return not has_upgrade(upgrade_id) and is_dependency_met(upgrade_id) and chispa >= UPGRADES[upgrade_id]["cost"]
+
+
+func is_dependency_met(upgrade_id: String) -> bool:
+	var requires: String = UPGRADES[upgrade_id].get("requires", "")
+	return requires.is_empty() or has_upgrade(requires)
 
 
 func buy_upgrade(upgrade_id: String) -> bool:
