@@ -7,4 +7,5 @@ script = ExtResource("1_reserva")
 display_name = "Reserva de hierro"
 slot = 2
 tier = 1
+cost = 10
 heal_on_low_hp = 2

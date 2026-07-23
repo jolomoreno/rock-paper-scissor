@@ -6,7 +6,7 @@
 
 [node name="Tienda" type="Control" unique_id=1728039222]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1_skebs")
@@ -32,9 +32,15 @@ script = ExtResource("3_dna0g")
 
 [node name="@Label@4" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1648199833]
 layout_mode = 2
-text = "Tienda de campaña: cambia tu equipo sin coste antes de seguir."
+text = "Tienda de campaña: compra equipo y sube la veterancía de tu recluta con Oro."
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="OroLabel" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=812648383]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oro: 0"
+horizontal_alignment = 1
 
 [node name="EquipmentContainer" type="VBoxContainer" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1046945219]
 unique_name_in_owner = true
@@ -85,6 +91,29 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="@Label@32" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=764497030]
+layout_mode = 2
+text = "Veterancía"
+horizontal_alignment = 1
+
+[node name="VeterancyLabel" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=197711402]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Veterancía: ?"
+horizontal_alignment = 1
+
+[node name="VeterancyButton" type="Button" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=182207259]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Subir veterancía"
+
+[node name="MessageLabel" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=317358208]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="@Control@38" type="Control" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1614165751]
 layout_mode = 2

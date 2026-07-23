@@ -7,4 +7,5 @@ script = ExtResource("1_coraza")
 display_name = "Coraza del general"
 slot = 1
 tier = 1
+cost = 10
 max_hp_bonus = 3

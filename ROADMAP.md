@@ -7,10 +7,10 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-23):** Fase 7, puntos 1-6 (Puntos de Acción, Escuadrón de
+**Checkpoint actual (2026-07-23):** Fase 7, puntos 1-7 (Puntos de Acción, Escuadrón de
 reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil, Nodos de mapa
-extra) completos — ver detalle en esa sección. Antes de eso, Fase 6 completa, incluido
-CI/CD — cada push a
+extra, Veterancía de reclutas) completos — ver detalle en esa sección. Antes de eso,
+Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -346,7 +346,38 @@ que es la tensión real que SPQR quiere validar.
       Reclutamiento, tope de una vez por turno en Bloquear/Última Línea, gating de
       Terminar turno, iconos corregidos en `path_strip`) y confirmado visualmente por
       el usuario en el editor tras varias rondas de ajuste ("Funciona perfectamente").
-- [ ] 7. Veterancía de reclutas
+- [x] 7. Veterancía de reclutas — **completo (2026-07-23).** Primer punto de la lista
+      que no se pudo simplificar quitando la economía — "comprada con Oro" es el propio
+      mecanismo a probar. Se introdujo Oro mínimo: contador temporal en `RunState`
+      (se resetea a 0 cada run, a diferencia de la Chispa permanente), +5 por cada
+      combate ganado. Se gasta en la Tienda (reutilizada, no se creó un nodo nuevo) en
+      dos cosas:
+      **Veterancía** — Posterior (base) → Prior (5 Oro) → Primus Pilus (+10 Oro más),
+      un único `RunState.recruit_veterancy` (0-2) que se suma directo al campo
+      relevante del recluta ya existente (`attack_bonus` para Hastatus, `max_hp_bonus`
+      y `heal_amount` para Triario a la vez) — sin duplicar `.tres` por nivel.
+      **Equipo, ahora con coste real** — nuevo campo `cost` en `EquipmentItem` (común 4,
+      legendario 10, por objeto en vez de un precio fijo por tier). Regla acordada con
+      el usuario: solo se puede comprar una categoría **superior** a la que ya tienes
+      en ese slot — ni repetir la misma ni bajar de legendario a común — y cada compra
+      cobra el precio completo sin importar si tuviste ese objeto antes esa run (sin
+      inventario persistente, interpretación razonada de "sin reembolso" del dossier,
+      no una cita literal — se lo confirmé al usuario antes de construirlo). Un intento
+      inválido (categoría no superior, o Oro insuficiente) revierte el desplegable a lo
+      que ya tenías y avisa en pantalla, sin cobrar nada.
+      **Excepción anotada:** Reclutamiento sigue siendo gratis aunque el dossier diga
+      que reclutar también cuesta Oro — es la capa 0, antes de cualquier combate, con
+      0 Oro en el bolsillo; cobrarlo ahí dejaría al recluta inalcanzable en un mapa de
+      4 capas.
+      **Bug real encontrado y corregido en esta sesión:** la recompensa de Oro se sumaba
+      *después* de `Chispa.add_chispa()`, así que la etiqueta combinada ("Chispa: X |
+      Oro: Y") se refrescaba con el Oro todavía sin actualizar. Se invirtió el orden.
+      Verificado por consola en `--headless` (escalado de veterancía para ambos
+      reclutas, reseteo al cambiar de recluta y de run, gating de categoría/Oro en la
+      Tienda con reversión de la selección, recompensa de Oro y etiqueta combinada) y
+      confirmado visualmente por el usuario en el editor. El usuario señaló que el Oro
+      da para poco en un mapa de prueba de 4 capas — esperado y aceptado: el mapa real
+      de SPQR tendrá muchas más capas y dará más margen económico.
 - [ ] 8. Crítico como valor aparte
 - [ ] 9. Enemigos especiales mapeados sobre clase existente
 - [ ] 10. Respec del árbol

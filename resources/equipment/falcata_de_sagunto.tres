@@ -7,4 +7,5 @@ script = ExtResource("1_falcata")
 display_name = "Falcata de Sagunto"
 slot = 0
 tier = 1
+cost = 10
 double_damage_on_win = true

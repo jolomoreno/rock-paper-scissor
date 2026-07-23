@@ -70,6 +70,13 @@ dos bugs reales más: el equipo no se reseteaba entre runs (contradecía que sea
 equiparse solo se puede en la Tienda), y `path_strip.gd` tenía su propio diccionario de
 iconos sin actualizar, mostrando "?" para los tipos de nodo nuevos.
 
+El séptimo punto introdujo Oro — un contador temporal (se resetea cada run, a
+diferencia de la Chispa permanente) ganado combatiendo, gastado en la Tienda en dos
+cosas: subir la veterancía del recluta (Posterior → Prior → Primus Pilus, escala su
+pasiva y su acción a la vez) y comprar equipo, que ya no es gratis (común 4 Oro,
+legendario 10). Solo se puede comprar una categoría superior a la que ya tienes en cada
+slot, nunca repetir o bajar — un intento inválido revierte la selección sin cobrar.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

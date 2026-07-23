@@ -16,6 +16,9 @@ const LAYERS: Array = [
 const JEFE_ENEMY_HP := 5
 const ELITE_ENEMY_HP := 4
 const REST_HEALTH_THRESHOLD := 0.85
+const VETERANCY_NAMES := ["Posterior", "Prior", "Primus Pilus"]
+const VETERANCY_COSTS := [5, 10]
+const MAX_VETERANCY := 2
 const EQUIPMENT_CATALOG: Dictionary = {
 	"gladio_veterano": preload("res://resources/equipment/gladio_veterano.tres"),
 	"falcata_de_sagunto": preload("res://resources/equipment/falcata_de_sagunto.tres"),
@@ -39,6 +42,8 @@ var equipped_weapon_id: String = ""
 var equipped_armor_id: String = ""
 var equipped_accessory_id: String = ""
 var recruit_id: String = ""
+var recruit_veterancy: int = 0
+var oro: int = 0
 var weak_class_target: CombatResolver.Choice = CombatResolver.Choice.ROCK
 
 var _rng := RandomNumberGenerator.new()
@@ -53,6 +58,8 @@ func start_run() -> void:
 	current_layer = 0
 	chosen_node_type = ""
 	recruit_id = ""
+	recruit_veterancy = 0
+	oro = 0
 	equipped_weapon_id = ""
 	equipped_armor_id = ""
 	equipped_accessory_id = ""
@@ -87,6 +94,27 @@ func set_equipment(slot_id: String, item_id: String) -> void:
 		_apply_max_hp_delta(armor_max_hp_bonus() - old_bonus)
 
 
+func equipment_tier_rank(slot_id: String) -> int:
+	var item: EquipmentItem = equipped_item(slot_id)
+	return item.tier if item != null else -1
+
+
+func buy_equipment(slot_id: String, item_id: String) -> String:
+	if item_id == "":
+		set_equipment(slot_id, "")
+		return "ok"
+	var item: EquipmentItem = EQUIPMENT_CATALOG.get(item_id, null)
+	if item == null:
+		return "ok"
+	if item.tier <= equipment_tier_rank(slot_id):
+		return "tier"
+	if oro < item.cost:
+		return "oro"
+	oro -= item.cost
+	set_equipment(slot_id, item_id)
+	return "ok"
+
+
 func armor_max_hp_bonus() -> int:
 	var item: EquipmentItem = equipped_item("armor")
 	return item.max_hp_bonus if item != null else 0
@@ -99,12 +127,50 @@ func recruit() -> Recruit:
 func set_recruit(new_recruit_id: String) -> void:
 	var old_bonus := recruit_max_hp_bonus()
 	recruit_id = new_recruit_id
+	recruit_veterancy = 0
 	_apply_max_hp_delta(recruit_max_hp_bonus() - old_bonus)
 
 
 func recruit_max_hp_bonus() -> int:
 	var r: Recruit = recruit()
-	return r.max_hp_bonus if r != null else 0
+	if r == null or r.max_hp_bonus <= 0:
+		return 0
+	return r.max_hp_bonus + recruit_veterancy
+
+
+func recruit_effective_attack_bonus() -> int:
+	var r: Recruit = recruit()
+	if r == null or r.attack_bonus <= 0:
+		return 0
+	return r.attack_bonus + recruit_veterancy
+
+
+func recruit_effective_heal_amount() -> int:
+	var r: Recruit = recruit()
+	if r == null or r.heal_amount <= 0:
+		return 0
+	return r.heal_amount + recruit_veterancy
+
+
+func veterancy_name() -> String:
+	return VETERANCY_NAMES[recruit_veterancy]
+
+
+func veterancy_upgrade_cost() -> int:
+	if recruit_veterancy >= MAX_VETERANCY:
+		return -1
+	return VETERANCY_COSTS[recruit_veterancy]
+
+
+func upgrade_veterancy() -> bool:
+	var cost := veterancy_upgrade_cost()
+	if cost < 0 or oro < cost or recruit() == null:
+		return false
+	oro -= cost
+	var old_bonus := recruit_max_hp_bonus()
+	recruit_veterancy += 1
+	_apply_max_hp_delta(recruit_max_hp_bonus() - old_bonus)
+	return true
 
 
 func _apply_max_hp_delta(delta: int) -> void:

@@ -7,6 +7,7 @@ enum Tier { COMMON, LEGENDARY }
 @export var display_name: String
 @export var slot: Slot
 @export var tier: Tier
+@export var cost: int = 0
 @export var attack_bonus: int = 0
 @export var defense_bonus: int = 0
 @export var max_hp_bonus: int = 0

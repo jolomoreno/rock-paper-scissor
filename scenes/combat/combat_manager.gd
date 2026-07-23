@@ -15,6 +15,7 @@ const MAX_PA_PER_TURN := 3
 const BASE_DAMAGE := 2
 const BASE_ENEMY_DAMAGE := 1
 const ELITE_WIN_CHISPA_BONUS := 2
+const ORO_WIN_REWARD := 5
 const EquipmentItem := preload("res://scripts/equipment_item.gd")
 const Recruit := preload("res://scripts/recruit.gd")
 const LOW_HP_THRESHOLD := 0.25
@@ -101,7 +102,7 @@ func _ready() -> void:
 	_enemy_ai = EnemyAI.new(_pick_enemy_pattern())
 	enemy_intent_label.text = "Enemigo: %s" % _enemy_ai.pattern.display_name
 
-	chispa_label.text = "Chispa: %d" % Chispa.chispa
+	_update_chispa_oro_label()
 	Chispa.chispa_changed.connect(_on_chispa_changed)
 
 	player_health_bar.max_value = player_max_hp
@@ -120,7 +121,7 @@ func _ready() -> void:
 
 	_recruit = RunState.recruit()
 	if _recruit != null:
-		recruit_label.text = "Escuadrón: %s — %s" % [_recruit.display_name, _describe_recruit_passive()]
+		recruit_label.text = "Escuadrón: %s (%s) — %s" % [_recruit.display_name, RunState.veterancy_name(), _describe_recruit_passive()]
 		recruit_action_button.text = _recruit.action_label
 		recruit_action_button.visible = true
 	else:
@@ -155,7 +156,7 @@ func _on_recruit_action_button_pressed() -> void:
 		if _recruit_heal_used_this_turn:
 			return
 		_recruit_heal_used_this_turn = true
-		_queue_action({"type": "heal", "amount": _recruit.heal_amount})
+		_queue_action({"type": "heal", "amount": RunState.recruit_effective_heal_amount()})
 		_update_recruit_action_button()
 	else:
 		_queue_action({"type": "attack", "choice": _recruit.action_choice, "source": "recruit"})
@@ -218,9 +219,9 @@ func _update_recruit_action_button() -> void:
 func _describe_recruit_passive() -> String:
 	var parts: Array[String] = []
 	if _recruit.attack_bonus > 0:
-		parts.append("pasiva +%d Ataque" % _recruit.attack_bonus)
+		parts.append("pasiva +%d Ataque" % RunState.recruit_effective_attack_bonus())
 	if _recruit.max_hp_bonus > 0:
-		parts.append("pasiva +%d Vida máxima" % _recruit.max_hp_bonus)
+		parts.append("pasiva +%d Vida máxima" % RunState.recruit_max_hp_bonus())
 	return ", ".join(parts)
 
 
@@ -264,7 +265,7 @@ func _damage_taken_on_loss() -> int:
 
 
 func _damage_dealt_on_win(enemy_choice: CombatResolver.Choice) -> int:
-	var dmg := BASE_ENEMY_DAMAGE + (_recruit.attack_bonus if _recruit != null else 0)
+	var dmg := BASE_ENEMY_DAMAGE + RunState.recruit_effective_attack_bonus()
 	if enemy_choice == _weak_class_target:
 		dmg += WEAK_CLASS_DAMAGE_BONUS
 	var weapon: EquipmentItem = RunState.equipped_item("weapon")
@@ -298,8 +299,12 @@ func _start_enemy_phase() -> void:
 	_set_phase(TurnPhase.PLAYER)
 
 
-func _on_chispa_changed(new_amount: int) -> void:
-	chispa_label.text = "Chispa: %d" % new_amount
+func _on_chispa_changed(_new_amount: int) -> void:
+	_update_chispa_oro_label()
+
+
+func _update_chispa_oro_label() -> void:
+	chispa_label.text = "Chispa: %d | Oro: %d" % [Chispa.chispa, RunState.oro]
 
 
 func _resolve_turn() -> void:
@@ -379,8 +384,12 @@ func _end_combat(player_won: bool) -> void:
 	var accessory_chispa_bonus := accessory.chispa_win_bonus if accessory != null else 0
 	var elite_bonus := ELITE_WIN_CHISPA_BONUS if RunState.chosen_node_type == "elite" else 0
 	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus() + accessory_chispa_bonus + elite_bonus
+	if RunState.in_run:
+		RunState.oro += ORO_WIN_REWARD
 	Chispa.add_chispa(reward)
 	result_label.text += "\n¡Ganaste el combate! (+%d Chispa)" % reward
+	if RunState.in_run:
+		result_label.text += " (+%d Oro)" % ORO_WIN_REWARD
 	combat_ended.emit(player_won)
 
 	if RunState.in_run:

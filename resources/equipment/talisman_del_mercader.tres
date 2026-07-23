@@ -7,4 +7,5 @@ script = ExtResource("1_talisman")
 display_name = "Talismán del mercader"
 slot = 2
 tier = 0
+cost = 4
 chispa_win_bonus = 1
