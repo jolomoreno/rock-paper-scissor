@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/reclutamiento.gd" id="1_5flvd"]
+[ext_resource type="PackedScene" path="res://scenes/map/path_strip.tscn" id="2_jmsxf"]
+[ext_resource type="Script" path="res://scenes/map/path_strip.gd" id="3_nhkst"]
+
+[node name="Reclutamiento" type="Control" unique_id=1065215256]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_5flvd")
+
+[node name="@MarginContainer@2" type="MarginContainer" parent="." unique_id=135911890]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="@VBoxContainer@3" type="VBoxContainer" parent="@MarginContainer@2" unique_id=469128652]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PathStrip" type="Control" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1024160619 instance=ExtResource("2_jmsxf")]
+layout_mode = 2
+script = ExtResource("3_nhkst")
+
+[node name="@Label@4" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=730165828]
+layout_mode = 2
+text = "Elige quién se une a tu escuadrón esta run. Solo hay una oportunidad."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HastatusButton" type="Button" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=813699364]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Hastatus"
+
+[node name="TriarioButton" type="Button" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1919102435]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Triario"
+
+[node name="@Control@5" type="Control" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1115558204]
+layout_mode = 2
+size_flags_vertical = 3

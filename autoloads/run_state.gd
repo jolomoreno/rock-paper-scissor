@@ -4,15 +4,17 @@ signal run_started
 signal run_ended(victory: bool)
 
 const EquipmentItem := preload("res://scripts/equipment_item.gd")
+const Recruit := preload("res://scripts/recruit.gd")
 const CombatResolver := preload("res://scripts/combat_resolver.gd")
 
 const LAYERS: Array = [
-	["combate", "descanso"],
-	["combate", "descanso"],
-	["combate", "descanso"],
+	["combate", "reclutamiento"],
+	["elite", "descanso"],
+	["combate", "tienda"],
 	["jefe"],
 ]
 const JEFE_ENEMY_HP := 5
+const ELITE_ENEMY_HP := 4
 const REST_HEALTH_THRESHOLD := 0.85
 const EQUIPMENT_CATALOG: Dictionary = {
 	"gladio_veterano": preload("res://resources/equipment/gladio_veterano.tres"),
@@ -21,6 +23,10 @@ const EQUIPMENT_CATALOG: Dictionary = {
 	"coraza_del_general": preload("res://resources/equipment/coraza_del_general.tres"),
 	"talisman_del_mercader": preload("res://resources/equipment/talisman_del_mercader.tres"),
 	"reserva_de_hierro": preload("res://resources/equipment/reserva_de_hierro.tres"),
+}
+const RECRUIT_CATALOG: Dictionary = {
+	"hastatus": preload("res://resources/recruits/hastatus.tres"),
+	"triario": preload("res://resources/recruits/triario.tres"),
 }
 
 var in_run: bool = false
@@ -32,6 +38,7 @@ var path_history: Array = []
 var equipped_weapon_id: String = ""
 var equipped_armor_id: String = ""
 var equipped_accessory_id: String = ""
+var recruit_id: String = ""
 var weak_class_target: CombatResolver.Choice = CombatResolver.Choice.ROCK
 
 var _rng := RandomNumberGenerator.new()
@@ -45,6 +52,10 @@ func start_run() -> void:
 	in_run = true
 	current_layer = 0
 	chosen_node_type = ""
+	recruit_id = ""
+	equipped_weapon_id = ""
+	equipped_armor_id = ""
+	equipped_accessory_id = ""
 	player_max_hp = 3 + Chispa.player_hp_bonus() + armor_max_hp_bonus()
 	player_hp = player_max_hp
 	path_history = []
@@ -63,9 +74,44 @@ func equipped_item(slot_id: String) -> EquipmentItem:
 	return null
 
 
+func set_equipment(slot_id: String, item_id: String) -> void:
+	var old_bonus := armor_max_hp_bonus() if slot_id == "armor" else 0
+	match slot_id:
+		"weapon":
+			equipped_weapon_id = item_id
+		"armor":
+			equipped_armor_id = item_id
+		"accessory":
+			equipped_accessory_id = item_id
+	if slot_id == "armor":
+		_apply_max_hp_delta(armor_max_hp_bonus() - old_bonus)
+
+
 func armor_max_hp_bonus() -> int:
 	var item: EquipmentItem = equipped_item("armor")
 	return item.max_hp_bonus if item != null else 0
+
+
+func recruit() -> Recruit:
+	return RECRUIT_CATALOG.get(recruit_id, null)
+
+
+func set_recruit(new_recruit_id: String) -> void:
+	var old_bonus := recruit_max_hp_bonus()
+	recruit_id = new_recruit_id
+	_apply_max_hp_delta(recruit_max_hp_bonus() - old_bonus)
+
+
+func recruit_max_hp_bonus() -> int:
+	var r: Recruit = recruit()
+	return r.max_hp_bonus if r != null else 0
+
+
+func _apply_max_hp_delta(delta: int) -> void:
+	if delta == 0:
+		return
+	player_max_hp += delta
+	player_hp += delta
 
 
 func choose_node(node_type: String) -> void:

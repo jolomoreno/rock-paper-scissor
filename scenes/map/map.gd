@@ -7,7 +7,12 @@ const NODE_ICONS := {
 	"combate": "†",
 	"descanso": "+",
 	"jefe": "!",
+	"elite": "E",
+	"tienda": "$",
+	"reclutamiento": "R",
 }
+const TOP_TYPES := ["jefe", "elite", "combate"]
+const BOTTOM_TYPES := ["descanso", "tienda", "reclutamiento"]
 
 const GOLD := Color(0.878, 0.698, 0.235)
 const GOLD_TEXT := Color(0.227, 0.165, 0.02)
@@ -50,10 +55,18 @@ func _style_legend() -> void:
 func _build_map() -> void:
 	for layer_idx in range(RunState.LAYERS.size()):
 		var layer_types: Array = RunState.LAYERS[layer_idx]
-		var top_type: String = "jefe" if "jefe" in layer_types else "combate"
+		var top_type: String = _pick_type(layer_types, TOP_TYPES)
+		var bottom_type: String = _pick_type(layer_types, BOTTOM_TYPES)
 		marker_row.add_child(_make_marker_cell(layer_idx))
 		combat_row.add_child(_make_slot_cell(layer_idx, top_type, layer_types))
-		rest_row.add_child(_make_slot_cell(layer_idx, "descanso", layer_types))
+		rest_row.add_child(_make_slot_cell(layer_idx, bottom_type, layer_types))
+
+
+func _pick_type(layer_types: Array, candidates: Array) -> String:
+	for candidate: String in candidates:
+		if candidate in layer_types:
+			return candidate
+	return candidates[-1]
 
 
 func _make_marker_cell(layer_idx: int) -> Control:
@@ -139,10 +152,15 @@ func _chosen_node_type_for_layer(layer_idx: int) -> String:
 
 func _on_node_button_pressed(node_type: String) -> void:
 	RunState.choose_node(node_type)
-	if node_type == "descanso":
-		get_tree().change_scene_to_file("res://scenes/map/descanso.tscn")
-	else:
-		get_tree().change_scene_to_file("res://scenes/combat/combat.tscn")
+	match node_type:
+		"descanso":
+			get_tree().change_scene_to_file("res://scenes/map/descanso.tscn")
+		"tienda":
+			get_tree().change_scene_to_file("res://scenes/map/tienda.tscn")
+		"reclutamiento":
+			get_tree().change_scene_to_file("res://scenes/map/reclutamiento.tscn")
+		_:
+			get_tree().change_scene_to_file("res://scenes/combat/combat.tscn")
 
 
 func _on_path_overlay_draw() -> void:
@@ -152,7 +170,7 @@ func _on_path_overlay_draw() -> void:
 
 	if not history.is_empty() and RunState.current_layer < RunState.LAYERS.size():
 		var current_layer_types: Array = RunState.LAYERS[RunState.current_layer]
-		var current_top_type: String = "jefe" if "jefe" in current_layer_types else "combate"
+		var current_top_type: String = _pick_type(current_layer_types, TOP_TYPES)
 		var current_key := "%d:%s" % [RunState.current_layer, current_top_type]
 		_draw_segment(_history_key(history[-1]), current_key)
 

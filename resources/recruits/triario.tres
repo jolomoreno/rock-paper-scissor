@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Recruit" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/recruit.gd" id="1_triario"]
+
+[resource]
+script = ExtResource("1_triario")
+display_name = "Triario"
+max_hp_bonus = 1
+action_label = "Última Línea (Triario)"
+action_type = 1
+heal_amount = 1

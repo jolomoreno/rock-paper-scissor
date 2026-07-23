@@ -4,6 +4,9 @@ const NODE_ICONS := {
 	"combate": "†",
 	"descanso": "+",
 	"jefe": "!",
+	"elite": "E",
+	"tienda": "$",
+	"reclutamiento": "R",
 }
 const GOLD := Color(0.878, 0.698, 0.235)
 const CURRENT_BG := Color(0.310, 0.639, 0.820)

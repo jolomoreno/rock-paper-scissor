@@ -61,6 +61,15 @@ enemigo que optimizara evitaría la clase débil una vez revelada — no rompe n
 porque la IA actual no tiene esa lógica, pero es una pregunta abierta para el combate
 real de SPQR.
 
+El sexto punto amplió el mapa con Élite (reutiliza el combate con más HP, patrón
+Reactivo y más Chispa), Tienda (cambia de equipo gratis a mitad de run) y Reclutamiento
+(el héroe empieza cada run sin recluta — fiel al dossier — y esta es la única
+oportunidad de conseguir uno: Hastatus o el nuevo Triario, defensivo). De paso salieron
+dos bugs reales más: el equipo no se reseteaba entre runs (contradecía que sea
+"temporal"; ahora se resetea igual que el recluta, y el selector se quitó del Hub —
+equiparse solo se puede en la Tienda), y `path_strip.gd` tenía su propio diccionario de
+iconos sin actualizar, mostrando "?" para los tipos de nodo nuevos.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/map/tienda.gd" id="1_skebs"]
+[ext_resource type="PackedScene" path="res://scenes/map/path_strip.tscn" id="2_u3lkj"]
+[ext_resource type="Script" path="res://scenes/map/path_strip.gd" id="3_dna0g"]
+
+[node name="Tienda" type="Control" unique_id=1728039222]
+layout_mode = 3
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_skebs")
+
+[node name="@MarginContainer@2" type="MarginContainer" parent="." unique_id=1334284894]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="@VBoxContainer@3" type="VBoxContainer" parent="@MarginContainer@2" unique_id=1822945470]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PathStrip" type="Control" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1024160619 instance=ExtResource("2_u3lkj")]
+layout_mode = 2
+script = ExtResource("3_dna0g")
+
+[node name="@Label@4" type="Label" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1648199833]
+layout_mode = 2
+text = "Tienda de campaña: cambia tu equipo sin coste antes de seguir."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="EquipmentContainer" type="VBoxContainer" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1046945219]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="WeaponRow" type="HBoxContainer" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer" unique_id=2005088712]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="@Label@5" type="Label" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer/WeaponRow" unique_id=76439656]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Arma"
+
+[node name="WeaponOptionButton" type="OptionButton" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer/WeaponRow" unique_id=1713368277]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ArmorRow" type="HBoxContainer" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer" unique_id=1036922068]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="@Label@16" type="Label" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer/ArmorRow" unique_id=1437837564]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Armadura"
+
+[node name="ArmorOptionButton" type="OptionButton" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer/ArmorRow" unique_id=1193513768]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AccessoryRow" type="HBoxContainer" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer" unique_id=1562302166]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="@Label@27" type="Label" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer/AccessoryRow" unique_id=1328837494]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+text = "Accesorio"
+
+[node name="AccessoryOptionButton" type="OptionButton" parent="@MarginContainer@2/@VBoxContainer@3/EquipmentContainer/AccessoryRow" unique_id=1770916019]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="@Control@38" type="Control" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=1614165751]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ContinueButton" type="Button" parent="@MarginContainer@2/@VBoxContainer@3" unique_id=11784795]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Continuar"

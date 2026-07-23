@@ -7,10 +7,10 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-23):** Fase 7, puntos 1 (Puntos de Acción), 2 (Escuadrón de
-reclutas), 3 (Árbol de habilidades), 4 (Equipo del héroe) y 5 (Bonus de clase débil)
-completos — ver detalle en esa sección. Antes de eso, Fase 6 completa, incluido CI/CD —
-cada push a
+**Checkpoint actual (2026-07-23):** Fase 7, puntos 1-6 (Puntos de Acción, Escuadrón de
+reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil, Nodos de mapa
+extra) completos — ver detalle en esa sección. Antes de eso, Fase 6 completa, incluido
+CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -299,7 +299,53 @@ que es la tensión real que SPQR quiere validar.
       tirar libre cada ronda, que ya no es un cambio pequeño. No rompe nada hoy porque
       `EnemyAI` (Aleatorio/Telegráfico/Reactivo) no tiene lógica que evite nada, pero
       es una pregunta real para cuando se diseñe el combate de SPQR de verdad.
-- [ ] 6. Nodos de mapa extra (Élite, Tienda, Reclutamiento)
+- [x] 6. Nodos de mapa extra (Élite, Tienda, Reclutamiento) — **completo (2026-07-23).**
+      `map.gd` asumía exactamente 2 huecos fijos por capa (arriba: Combate/Jefe; abajo:
+      siempre Descanso) — se generalizó para que **qué tipo** ocupa cada hueco varíe
+      por capa (`_pick_type()`), sin rediseñar la cuadrícula. Nuevo reparto de las 4
+      capas: Combate/Reclutamiento → Élite/Descanso → Combate/Tienda → Jefe. Iconos
+      ASCII nuevos (E, $, R — nada de Unicode, lección de la Fase 6).
+      **Élite:** reutiliza `combat.tscn` sin contenido nuevo — más HP
+      (`ELITE_ENEMY_HP=4`), patrón Reactivo (antes solo el Jefe) y +2 Chispa extra al
+      ganar.
+      **Tienda:** escena nueva, cambia de equipo gratis a mitad de run (sin Oro).
+      **Reclutamiento:** escena nueva — el héroe **empieza sin recluta** (fiel al
+      dossier: "cada run empieza siempre con el héroe solo"), y esta es la única
+      oportunidad de la run para conseguir uno. Elegir entre Hastatus (ya existía) o
+      **Triario** (nuevo: pasiva +1 Vida máxima, acción "Última Línea" cura 1 HP por
+      1 PA) fija `RunState.recruit_id` para el resto de la run.
+      **Refactor necesario:** los datos de recluta, antes consts sueltas en
+      `combat_manager.gd`, pasaron a un `Resource` `Recruit` (como `EquipmentItem`) con
+      catálogo en `RunState`, para poder elegir entre dos. `RunState.set_recruit()` y
+      `set_equipment()` ajustan la vida máxima al instante si cambian a mitad de run
+      (delta, no solo al recalcular en `start_run()`).
+      **Bug real encontrado y corregido en esta sesión (dos veces):**
+      1. El equipo **no se reseteaba entre runs** — contradecía al dossier
+         ("temporal... perdido al terminar la run"), arrastre de cuando el punto 4 se
+         construyó sin Tienda todavía. Ahora `equipped_weapon_id/armor_id/accessory_id`
+         se resetean a vacío en `start_run()`, igual que el recluta, y se quitó el
+         selector de equipo del Hub por completo — el único sitio para equiparse es la
+         Tienda, en paralelo exacto a como el único sitio para reclutar es
+         Reclutamiento.
+      2. `path_strip.gd` tiene su propio diccionario de iconos, duplicado del de
+         `map.gd` — no se actualizó con los 3 tipos nuevos, así que el resumen de
+         camino sobre Combate/Descanso mostraba "?" en vez del icono real. Corregido.
+      **Pulido de UX, a petición del usuario:** con el selector de equipo fuera, el
+      árbol de habilidades del Hub se ensanchó para ocupar el espacio libre
+      (`SIZE_EXPAND_FILL`, botones de 56px). Bloquear y "Última Línea" (la acción de
+      Triario) se capan a una vez por turno — el botón se deshabilita tras el primer
+      uso y se reactiva en el turno siguiente, en vez de dejar que gastar más PA en
+      ellos desperdicie el resto sin avisar. "Terminar turno" también se deshabilita
+      con 3/3 PA sin gastar, para no permitir un turno sin ninguna acción.
+      **Nota de diseño abierta, señalada por el usuario:** Bloquear (acción del héroe)
+      y Última Línea (acción de Triario) hacen esencialmente lo mismo — mitigar/evitar
+      daño, una vez por turno. Puede que en el diseño real de SPQR deban fusionarse o
+      diferenciarse mejor en vez de ser dos botones distintos con el mismo efecto.
+      Verificado por consola en `--headless` en cada pieza (capas, iconos, HP y
+      recompensa de Élite, swap de equipo en Tienda, elección y reseteo de recluta en
+      Reclutamiento, tope de una vez por turno en Bloquear/Última Línea, gating de
+      Terminar turno, iconos corregidos en `path_strip`) y confirmado visualmente por
+      el usuario en el editor tras varias rondas de ajuste ("Funciona perfectamente").
 - [ ] 7. Veterancía de reclutas
 - [ ] 8. Crítico como valor aparte
 - [ ] 9. Enemigos especiales mapeados sobre clase existente

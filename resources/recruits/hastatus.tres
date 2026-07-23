@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Recruit" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/recruit.gd" id="1_hastatus"]
+
+[resource]
+script = ExtResource("1_hastatus")
+display_name = "Hastatus"
+attack_bonus = 1
+action_label = "Carga (Hastatus)"
+action_type = 0
+action_choice = 0

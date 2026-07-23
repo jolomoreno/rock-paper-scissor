@@ -14,10 +14,9 @@ const COMBAT_WIN_CHISPA_REWARD := 2
 const MAX_PA_PER_TURN := 3
 const BASE_DAMAGE := 2
 const BASE_ENEMY_DAMAGE := 1
-const RECRUIT_NAME := "Hastatus"
-const RECRUIT_ATTACK_BONUS := 1
-const RECRUIT_ACTION_CHOICE := CombatResolver.Choice.ROCK
+const ELITE_WIN_CHISPA_BONUS := 2
 const EquipmentItem := preload("res://scripts/equipment_item.gd")
+const Recruit := preload("res://scripts/recruit.gd")
 const LOW_HP_THRESHOLD := 0.25
 const WEAK_CLASS_DAMAGE_BONUS := 1
 const CHOICE_NAMES := {
@@ -44,6 +43,9 @@ var _blocking_next_loss: bool = false
 var _queued_actions: Array[Dictionary] = []
 var _reserva_hierro_triggered: bool = false
 var _weak_class_target: CombatResolver.Choice
+var _recruit: Recruit
+var _recruit_heal_used_this_turn: bool = false
+var _block_used_this_turn: bool = false
 
 var _resolver := CombatResolver.new()
 var _rng := RandomNumberGenerator.new()
@@ -83,6 +85,8 @@ func _ready() -> void:
 		player_hp = RunState.player_hp
 		if RunState.chosen_node_type == "jefe":
 			enemy_max_hp = RunState.JEFE_ENEMY_HP
+		elif RunState.chosen_node_type == "elite":
+			enemy_max_hp = RunState.ELITE_ENEMY_HP
 	else:
 		player_max_hp += Chispa.player_hp_bonus() + RunState.armor_max_hp_bonus()
 		player_hp = player_max_hp
@@ -114,7 +118,14 @@ func _ready() -> void:
 	recruit_action_button.pressed.connect(_on_recruit_action_button_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
 
-	recruit_label.text = "Escuadrón: %s — pasiva +%d Ataque" % [RECRUIT_NAME, RECRUIT_ATTACK_BONUS]
+	_recruit = RunState.recruit()
+	if _recruit != null:
+		recruit_label.text = "Escuadrón: %s — %s" % [_recruit.display_name, _describe_recruit_passive()]
+		recruit_action_button.text = _recruit.action_label
+		recruit_action_button.visible = true
+	else:
+		recruit_label.text = "Escuadrón: (sin reclutar)"
+		recruit_action_button.visible = false
 	equipment_label.text = "Equipo: %s" % _describe_equipment()
 	result_label.text = "Clase débil de esta run: %s (daño extra al golpearla)" % CHOICE_NAMES[_weak_class_target]
 
@@ -130,19 +141,28 @@ func _on_action_button_pressed(choice: CombatResolver.Choice) -> void:
 
 
 func _on_block_button_pressed() -> void:
-	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
+	if current_phase != TurnPhase.PLAYER or player_pa <= 0 or _block_used_this_turn:
 		return
+	_block_used_this_turn = true
 	_queue_action({"type": "block"})
+	_update_block_button()
 
 
 func _on_recruit_action_button_pressed() -> void:
-	if current_phase != TurnPhase.PLAYER or player_pa <= 0:
+	if current_phase != TurnPhase.PLAYER or player_pa <= 0 or _recruit == null:
 		return
-	_queue_action({"type": "attack", "choice": RECRUIT_ACTION_CHOICE, "source": "recruit"})
+	if _recruit.action_type == Recruit.ActionType.HEAL:
+		if _recruit_heal_used_this_turn:
+			return
+		_recruit_heal_used_this_turn = true
+		_queue_action({"type": "heal", "amount": _recruit.heal_amount})
+		_update_recruit_action_button()
+	else:
+		_queue_action({"type": "attack", "choice": _recruit.action_choice, "source": "recruit"})
 
 
 func _on_end_turn_button_pressed() -> void:
-	if current_phase != TurnPhase.PLAYER:
+	if current_phase != TurnPhase.PLAYER or player_pa >= MAX_PA_PER_TURN:
 		return
 	_resolve_turn()
 
@@ -158,6 +178,11 @@ func _queue_action(action: Dictionary) -> void:
 
 func _update_pa_label() -> void:
 	pa_label.text = "PA: %d/%d" % [player_pa, MAX_PA_PER_TURN]
+	_update_end_turn_button()
+
+
+func _update_end_turn_button() -> void:
+	end_turn_button.disabled = current_phase != TurnPhase.PLAYER or player_pa >= MAX_PA_PER_TURN
 
 
 func _update_queue_label() -> void:
@@ -168,12 +193,35 @@ func _update_queue_label() -> void:
 	for action: Dictionary in _queued_actions:
 		if action["type"] == "attack":
 			if action.get("source", "hero") == "recruit":
-				parts.append("Carga (%s)" % RECRUIT_NAME)
+				parts.append(_recruit.action_label)
 			else:
 				parts.append(CHOICE_NAMES[action["choice"]])
+		elif action["type"] == "heal":
+			parts.append(_recruit.action_label)
 		else:
 			parts.append("Bloquear")
 	queue_label.text = "Cola: %s" % ", ".join(parts)
+
+
+func _update_block_button() -> void:
+	block_button.disabled = current_phase != TurnPhase.PLAYER or _block_used_this_turn
+
+
+func _update_recruit_action_button() -> void:
+	if _recruit == null:
+		recruit_action_button.visible = false
+		return
+	var capped := _recruit.action_type == Recruit.ActionType.HEAL and _recruit_heal_used_this_turn
+	recruit_action_button.disabled = current_phase != TurnPhase.PLAYER or capped
+
+
+func _describe_recruit_passive() -> String:
+	var parts: Array[String] = []
+	if _recruit.attack_bonus > 0:
+		parts.append("pasiva +%d Ataque" % _recruit.attack_bonus)
+	if _recruit.max_hp_bonus > 0:
+		parts.append("pasiva +%d Vida máxima" % _recruit.max_hp_bonus)
+	return ", ".join(parts)
 
 
 func _describe_equipment() -> String:
@@ -216,7 +264,7 @@ func _damage_taken_on_loss() -> int:
 
 
 func _damage_dealt_on_win(enemy_choice: CombatResolver.Choice) -> int:
-	var dmg := BASE_ENEMY_DAMAGE + RECRUIT_ATTACK_BONUS
+	var dmg := BASE_ENEMY_DAMAGE + (_recruit.attack_bonus if _recruit != null else 0)
 	if enemy_choice == _weak_class_target:
 		dmg += WEAK_CLASS_DAMAGE_BONUS
 	var weapon: EquipmentItem = RunState.equipped_item("weapon")
@@ -244,6 +292,8 @@ func _maybe_trigger_reserva_hierro() -> void:
 func _start_enemy_phase() -> void:
 	_set_phase(TurnPhase.ENEMY)
 	player_pa = MAX_PA_PER_TURN
+	_recruit_heal_used_this_turn = false
+	_block_used_this_turn = false
 	_update_pa_label()
 	_set_phase(TurnPhase.PLAYER)
 
@@ -269,6 +319,14 @@ func _resolve_turn() -> void:
 			await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
 			continue
 
+		if action["type"] == "heal":
+			var heal_amount: int = action["amount"]
+			player_hp = min(player_hp + heal_amount, player_max_hp)
+			player_health_bar.value = player_hp
+			result_label.text = "%s cura %d HP." % [_recruit.display_name, heal_amount]
+			await get_tree().create_timer(ROUND_DELAY_SECONDS).timeout
+			continue
+
 		var player_choice: CombatResolver.Choice = action["choice"]
 		var is_recruit: bool = action.get("source", "hero") == "recruit"
 		var result: CombatResolver.Result = _resolver.resolve_round(player_choice, enemy_choice)
@@ -285,7 +343,7 @@ func _resolve_turn() -> void:
 
 		player_health_bar.value = player_hp
 		enemy_health_bar.value = enemy_hp
-		var attacker_name := RECRUIT_NAME if is_recruit else "Tú"
+		var attacker_name := _recruit.display_name if is_recruit else "Tú"
 		result_label.text = _describe_result(player_choice, enemy_choice, result, attacker_name)
 		if result == CombatResolver.Result.WINS_A and enemy_choice == _weak_class_target:
 			result_label.text += "\n¡Clase débil! Daño extra."
@@ -319,7 +377,8 @@ func _end_combat(player_won: bool) -> void:
 
 	var accessory: EquipmentItem = RunState.equipped_item("accessory")
 	var accessory_chispa_bonus := accessory.chispa_win_bonus if accessory != null else 0
-	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus() + accessory_chispa_bonus
+	var elite_bonus := ELITE_WIN_CHISPA_BONUS if RunState.chosen_node_type == "elite" else 0
+	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus() + accessory_chispa_bonus + elite_bonus
 	Chispa.add_chispa(reward)
 	result_label.text += "\n¡Ganaste el combate! (+%d Chispa)" % reward
 	combat_ended.emit(player_won)
@@ -336,7 +395,7 @@ func _end_combat(player_won: bool) -> void:
 
 
 func _pick_enemy_pattern() -> EnemyPattern:
-	if RunState.in_run and RunState.chosen_node_type == "jefe":
+	if RunState.in_run and RunState.chosen_node_type in ["jefe", "elite"]:
 		return REACTIVE_PATTERN
 	return RANDOM_PATTERNS[_rng.randi_range(0, RANDOM_PATTERNS.size() - 1)]
 
@@ -374,9 +433,9 @@ func _set_phase(phase: TurnPhase) -> void:
 	scissors_button.disabled = not buttons_enabled
 	lizard_button.disabled = not buttons_enabled
 	spock_button.disabled = not buttons_enabled
-	block_button.disabled = not buttons_enabled
-	recruit_action_button.disabled = not buttons_enabled
-	end_turn_button.disabled = not buttons_enabled
+	_update_block_button()
+	_update_recruit_action_button()
+	_update_end_turn_button()
 	match phase:
 		TurnPhase.PLAYER:
 			phase_label.text = "Fase Jugador — elige hasta 3 acciones"
