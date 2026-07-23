@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EquipmentItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/equipment_item.gd" id="1_talisman"]
+
+[resource]
+script = ExtResource("1_talisman")
+display_name = "Talismán del mercader"
+slot = 2
+tier = 0
+chispa_win_bonus = 1

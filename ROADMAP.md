@@ -8,8 +8,8 @@ necesario para atacar el primer prototipo digital de SPQR.
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
 **Checkpoint actual (2026-07-23):** Fase 7, puntos 1 (Puntos de Acción), 2 (Escuadrón de
-reclutas) y 3 (Árbol de habilidades) completos — ver detalle en esa sección. Antes de
-eso, Fase 6 completa, incluido CI/CD — cada push a
+reclutas), 3 (Árbol de habilidades) y 4 (Equipo del héroe) completos — ver detalle en
+esa sección. Antes de eso, Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
 descartó a propósito (ver detalle en esa fase). De paso se encontraron y corrigieron dos
@@ -242,8 +242,41 @@ que es la tensión real que SPQR quiere validar.
       rechazo de compra fuera de orden, suma correcta de bonus por rama) — con cuidado
       de hacer backup/restore del `user://savegame.json` real del usuario antes/después
       de las pruebas, para no pisar su partida guardada. Confirmado visualmente por el
-      usuario en el editor ("Funciona a la perfección").
-- [ ] 4. Equipo del héroe (3 slots, tiers)
+      usuario en el editor ("Funciona a la perfección"). **Pulido en el punto 4:** los
+      8 botones ya no caben en una columna con todo lo demás en pantalla — se
+      reagruparon en 2 filas horizontales (una por rama) con botones pequeños
+      (solo el número de nivel, detalle completo en tooltip), y los nodos ya comprados
+      se distinguen con un tinte verde (`Button.modulate`, no iconos Unicode — la
+      lección de la Fase 6 sobre glifos que rompen en el export Web sigue aplicando).
+- [x] 4. Equipo del héroe — **completo (2026-07-23), alcance reducido a propósito.**
+      No hay Oro/Tienda/Cofres todavía (punto 6), así que el equipo se elige libre y
+      sin coste en el Hub como un "loadout" — no es aún el sistema de obtención real
+      de SPQR. 3 slots (Arma/Armadura/Accesorio) × 2 tiers, nuevo `Resource`
+      `EquipmentItem` (`class_name`, como `EnemyPattern`) con 6 `.tres` en
+      `resources/equipment/`: Gladio veterano (común, +1 daño al ganar) / Falcata de
+      Sagunto (legendaria, duplica el daño al ganar — **adaptada del dossier**, que la
+      liga a un crítico que no existe todavía, punto 8); Lorica de recluta (común, -1
+      daño recibido) / Coraza del general (legendaria, +3 Vida máxima, **sin
+      defense_bonus** — un rasgo distinto, no más Defensa, a propósito); Talismán del
+      mercader (común, +1 Chispa al ganar) / Reserva de hierro (legendaria, cura 2 HP
+      la primera vez que la vida baja del 25% en el combate). `RunState` guarda qué
+      hay equipado por slot (persiste entre runs hasta que se cambie en el Hub, no se
+      resetea al empezar una — otra simplificación explícita). El Hub tiene 3
+      `OptionButton` nuevos; el combate muestra un `%EquipmentLabel` con qué llevas y
+      su efecto en texto llano.
+      **Bug real encontrado y corregido en esta sesión:** el daño base del enemigo
+      era `1` fijo, así que la Lorica de recluta (-1 Defensa) lo anulaba por completo
+      solo con equiparla — el jugador se volvía invulnerable sin gastar nada. Subido
+      el daño base a `2`; ahora la armadura reduce pero no anula por sí sola, y solo
+      llega a 0 si además se gasta PA en Bloquear (sinergia intencional, no bug).
+      Verificado por consola en `--headless` para cada bono de cada objeto, incluida
+      la Coraza del general confirmando que no reduce daño (`defense_bonus == 0`) —
+      con backup/restore del `user://savegame.json` real en cada tanda de pruebas.
+      También se comprimió el layout de la pantalla de combate (etiquetas de estado
+      agrupadas en un `StatusContainer` con separación mínima, separación general de
+      24→12) porque con todas las etiquetas nuevas (Escuadrón, Equipo, Fase) los
+      botones de abajo dejaban de caber en pantalla — mismo síntoma que en el Hub.
+      Confirmado visualmente por el usuario en el editor.
 - [ ] 5. Bonus de daño por clase débil (RPSLS)
 - [ ] 6. Nodos de mapa extra (Élite, Tienda, Reclutamiento)
 - [ ] 7. Veterancía de reclutas

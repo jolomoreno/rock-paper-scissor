@@ -12,11 +12,13 @@ const EnemyPattern := preload("res://scripts/enemy_pattern.gd")
 const ROUND_DELAY_SECONDS := 1.2
 const COMBAT_WIN_CHISPA_REWARD := 2
 const MAX_PA_PER_TURN := 3
-const BASE_DAMAGE := 1
+const BASE_DAMAGE := 2
 const BASE_ENEMY_DAMAGE := 1
 const RECRUIT_NAME := "Hastatus"
 const RECRUIT_ATTACK_BONUS := 1
 const RECRUIT_ACTION_CHOICE := CombatResolver.Choice.ROCK
+const EquipmentItem := preload("res://scripts/equipment_item.gd")
+const LOW_HP_THRESHOLD := 0.25
 const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
@@ -39,6 +41,7 @@ var enemy_hp: int
 var player_pa: int = MAX_PA_PER_TURN
 var _blocking_next_loss: bool = false
 var _queued_actions: Array[Dictionary] = []
+var _reserva_hierro_triggered: bool = false
 
 var _resolver := CombatResolver.new()
 var _rng := RandomNumberGenerator.new()
@@ -53,6 +56,7 @@ var _has_pending_enemy_choice: bool = false
 @onready var enemy_health_bar: ProgressBar = %EnemyHealthBar
 @onready var enemy_intent_label: Label = %EnemyIntentLabel
 @onready var recruit_label: Label = %RecruitLabel
+@onready var equipment_label: Label = %EquipmentLabel
 @onready var phase_label: Label = %PhaseLabel
 @onready var pa_label: Label = %PALabel
 @onready var queue_label: Label = %QueueLabel
@@ -78,7 +82,7 @@ func _ready() -> void:
 		if RunState.chosen_node_type == "jefe":
 			enemy_max_hp = RunState.JEFE_ENEMY_HP
 	else:
-		player_max_hp += Chispa.player_hp_bonus()
+		player_max_hp += Chispa.player_hp_bonus() + RunState.armor_max_hp_bonus()
 		player_hp = player_max_hp
 
 	enemy_hp = enemy_max_hp
@@ -104,6 +108,7 @@ func _ready() -> void:
 	end_turn_button.pressed.connect(_on_end_turn_button_pressed)
 
 	recruit_label.text = "Escuadrón: %s — pasiva +%d Ataque" % [RECRUIT_NAME, RECRUIT_ATTACK_BONUS]
+	equipment_label.text = "Equipo: %s" % _describe_equipment()
 
 	_update_pa_label()
 	_update_queue_label()
@@ -163,15 +168,67 @@ func _update_queue_label() -> void:
 	queue_label.text = "Cola: %s" % ", ".join(parts)
 
 
+func _describe_equipment() -> String:
+	var parts: Array[String] = []
+	parts.append(_describe_equipment_slot("weapon"))
+	parts.append(_describe_equipment_slot("armor"))
+	parts.append(_describe_equipment_slot("accessory"))
+	return " | ".join(parts)
+
+
+func _describe_equipment_slot(slot_id: String) -> String:
+	var item: EquipmentItem = RunState.equipped_item(slot_id)
+	if item == null:
+		return "-"
+	var effects: Array[String] = []
+	if item.attack_bonus > 0:
+		effects.append("+%d daño al ganar" % item.attack_bonus)
+	if item.double_damage_on_win:
+		effects.append("x2 daño al ganar")
+	if item.defense_bonus > 0:
+		effects.append("-%d daño recibido" % item.defense_bonus)
+	if item.max_hp_bonus > 0:
+		effects.append("+%d Vida máxima" % item.max_hp_bonus)
+	if item.chispa_win_bonus > 0:
+		effects.append("+%d Chispa al ganar" % item.chispa_win_bonus)
+	if item.heal_on_low_hp > 0:
+		effects.append("cura %d HP bajo 25%% vida" % item.heal_on_low_hp)
+	return "%s (%s)" % [item.display_name, ", ".join(effects)]
+
+
 func _damage_taken_on_loss() -> int:
+	var dmg := BASE_DAMAGE
 	if _blocking_next_loss:
 		_blocking_next_loss = false
-		return int(floor(BASE_DAMAGE / 2.0))
-	return BASE_DAMAGE
+		dmg = int(floor(dmg / 2.0))
+	var armor: EquipmentItem = RunState.equipped_item("armor")
+	if armor != null:
+		dmg = max(dmg - armor.defense_bonus, 0)
+	return dmg
 
 
 func _damage_dealt_on_win() -> int:
-	return BASE_ENEMY_DAMAGE + RECRUIT_ATTACK_BONUS
+	var dmg := BASE_ENEMY_DAMAGE + RECRUIT_ATTACK_BONUS
+	var weapon: EquipmentItem = RunState.equipped_item("weapon")
+	if weapon != null:
+		dmg += weapon.attack_bonus
+		if weapon.double_damage_on_win:
+			dmg *= 2
+	return dmg
+
+
+func _maybe_trigger_reserva_hierro() -> void:
+	if _reserva_hierro_triggered:
+		return
+	var accessory: EquipmentItem = RunState.equipped_item("accessory")
+	if accessory == null or accessory.heal_on_low_hp <= 0:
+		return
+	if float(player_hp) / float(player_max_hp) > LOW_HP_THRESHOLD:
+		return
+	_reserva_hierro_triggered = true
+	player_hp = min(player_hp + accessory.heal_on_low_hp, player_max_hp)
+	player_health_bar.value = player_hp
+	result_label.text += "\nReserva de hierro te cura %d HP." % accessory.heal_on_low_hp
 
 
 func _start_enemy_phase() -> void:
@@ -214,6 +271,7 @@ func _resolve_turn() -> void:
 				enemy_hp -= _damage_dealt_on_win()
 			CombatResolver.Result.WINS_B:
 				player_hp -= _damage_taken_on_loss()
+				_maybe_trigger_reserva_hierro()
 
 		player_health_bar.value = player_hp
 		enemy_health_bar.value = enemy_hp
@@ -247,7 +305,9 @@ func _end_combat(player_won: bool) -> void:
 			get_tree().change_scene_to_file("res://scenes/main/hub.tscn")
 		return
 
-	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus()
+	var accessory: EquipmentItem = RunState.equipped_item("accessory")
+	var accessory_chispa_bonus := accessory.chispa_win_bonus if accessory != null else 0
+	var reward := COMBAT_WIN_CHISPA_REWARD + Chispa.combat_win_chispa_bonus() + accessory_chispa_bonus
 	Chispa.add_chispa(reward)
 	result_label.text += "\n¡Ganaste el combate! (+%d Chispa)" % reward
 	combat_ended.emit(player_won)

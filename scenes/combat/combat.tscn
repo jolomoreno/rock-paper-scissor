@@ -26,7 +26,7 @@ theme_override_constants/margin_bottom = 32
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 24
+theme_override_constants/separation = 12
 
 [node name="PathStrip" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1024160619 instance=ExtResource("2_pqpfu")]
 layout_mode = 2
@@ -76,20 +76,32 @@ size_flags_horizontal = 3
 max_value = 3.0
 value = 3.0
 
-[node name="EnemyIntentLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1923915615]
+[node name="StatusContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1590606635]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="EnemyIntentLabel" type="Label" parent="MarginContainer/VBoxContainer/StatusContainer" unique_id=1923915615]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Enemigo: ?"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="RecruitLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1956426971]
+[node name="RecruitLabel" type="Label" parent="MarginContainer/VBoxContainer/StatusContainer" unique_id=1956426971]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Escuadrón: ?"
 horizontal_alignment = 1
 
-[node name="PhaseLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1394329542]
+[node name="EquipmentLabel" type="Label" parent="MarginContainer/VBoxContainer/StatusContainer" unique_id=1642908236]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Equipo: ?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="PhaseLabel" type="Label" parent="MarginContainer/VBoxContainer/StatusContainer" unique_id=1394329542]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Fase Jugador — elige hasta 3 acciones"

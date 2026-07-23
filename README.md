@@ -41,7 +41,16 @@ plana de 2 mejoras sueltas del Hub por 2 ramas de 4 nodos cada una (Vigor y Bot�
 donde cada nodo exige tener comprado el anterior de su misma rama
 (`Chispa.is_dependency_met()`). Sin árbol radial visual — para 8 nodos de prueba habría
 sido decoración — pero el Hub explica en el propio botón si algo está bloqueado por
-precio o por dependencia, y qué nodo falta.
+precio o por dependencia, y qué nodo falta. Los 8 nodos se reagruparon después en 2
+filas horizontales (una por rama) con botones pequeños y tinte verde para lo ya
+comprado, porque en una sola columna dejaban de caber junto al resto del Hub.
+
+El cuarto punto, equipo del héroe, añadió 3 slots (Arma/Armadura/Accesorio) con 6
+objetos del dossier de SPQR (`resources/equipment/`, `Resource` `EquipmentItem`),
+elegibles gratis en el Hub como un "loadout" — sin Oro ni Tienda todavía. De paso salió
+un bug real: el daño del enemigo era `1` fijo, así que cualquier armadura con -1
+Defensa volvía al jugador invulnerable sin más. El daño base subió a `2` para que la
+armadura reduzca sin anular por sí sola.
 
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
