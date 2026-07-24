@@ -7,9 +7,9 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-23):** Fase 7, puntos 1-7 (Puntos de Acción, Escuadrón de
+**Checkpoint actual (2026-07-24):** Fase 7, puntos 1-8 (Puntos de Acción, Escuadrón de
 reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil, Nodos de mapa
-extra, Veterancía de reclutas) completos — ver detalle en esa sección. Antes de eso,
+extra, Veterancía de reclutas, Crítico) completos — ver detalle en esa sección. Antes de eso,
 Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
@@ -378,7 +378,34 @@ que es la tensión real que SPQR quiere validar.
       confirmado visualmente por el usuario en el editor. El usuario señaló que el Oro
       da para poco en un mapa de prueba de 4 capas — esperado y aceptado: el mapa real
       de SPQR tendrá muchas más capas y dará más margen económico.
-- [ ] 8. Crítico como valor aparte
+- [x] 8. Crítico como valor aparte — **completo (2026-07-24), bidireccional.** El
+      dossier define el crítico como "valor fuera de las 6 estadísticas", base 5%, y
+      señala que en el diseño completo enemigos y héroe comparten el mismo marco de
+      estadísticas — así que a diferencia del punto 5 (clase débil, unidireccional a
+      propósito) aquí sí se implementó bidireccional desde el principio, a petición
+      explícita del usuario ("al final es una tirada random antes de atacar").
+      `CRIT_CHANCE := 0.05` y `CRIT_DAMAGE_MULTIPLIER := 2` en `combat_manager.gd`; en
+      `_resolve_turn()`, cada vez que una ronda tiene ganador (`WINS_A` o `WINS_B`) se
+      tira con la instancia propia de `RandomNumberGenerator` del combate y, si acierta,
+      el daño de ese golpe se duplica — para cualquiera de los dos bandos. El
+      `result_label` añade "¡Golpe crítico!" cuando ocurre. Alcance reducido a
+      propósito: el dossier liga el crítico a dos nodos de árbol (Golpe doble, Sangre
+      fría) y a la Falcata de Sagunto, todos parte de la rama Ars Belli que este
+      proyecto no construyó (solo existen las ramas Vigor/Botín) — no se tocó el árbol
+      ni el equipo existente.
+      **Lección de proceso (no de diseño):** verificar esto por consola en `--headless`
+      llevó más intentos de los habituales por dos gotchas de Godot al margen del
+      crítico en sí — un `preload()` a nivel de script de una escena que referencia un
+      autoload (`RunState`) falla si se evalúa antes de que el motor registre los
+      autoloads (hay que usar `load()` diferido dentro de una función, no un `const`
+      a nivel de archivo); y `await` sobre una señal que ya se emitió de forma síncrona
+      antes de que el `await` empezara a escuchar se queda colgado para siempre — hay
+      que leer el estado inmediatamente después de la llamada síncrona que la dispara,
+      no esperar la señal. Verificado con 6 asserts (crítico dobla daño ganando y
+      perdiendo, mensaje aparece solo cuando corresponde, sin crítico el daño es
+      normal), usando un patrón de enemigo no-telegráfico con RNG propio sembrado para
+      forzar de forma determinista tanto el resultado de la ronda como el roll de
+      crítico.
 - [ ] 9. Enemigos especiales mapeados sobre clase existente
 - [ ] 10. Respec del árbol
 

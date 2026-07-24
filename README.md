@@ -77,6 +77,12 @@ pasiva y su acción a la vez) y comprar equipo, que ya no es gratis (común 4 Or
 legendario 10). Solo se puede comprar una categoría superior a la que ya tienes en cada
 slot, nunca repetir o bajar — un intento inválido revierte la selección sin cobrar.
 
+El octavo punto añadió el crítico (5% de probabilidad, dobla el daño del golpe) como
+valor fuera de las 6 estadísticas del dossier — y, a diferencia del bonus de clase débil
+del punto 5 (unidireccional a propósito), aquí es bidireccional: afecta por igual a los
+golpes del jugador y a los del enemigo, porque el dossier señala que ambos comparten el
+mismo marco de estadísticas.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

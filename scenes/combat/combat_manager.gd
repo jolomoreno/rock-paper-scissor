@@ -20,6 +20,8 @@ const EquipmentItem := preload("res://scripts/equipment_item.gd")
 const Recruit := preload("res://scripts/recruit.gd")
 const LOW_HP_THRESHOLD := 0.25
 const WEAK_CLASS_DAMAGE_BONUS := 1
+const CRIT_CHANCE := 0.05
+const CRIT_DAMAGE_MULTIPLIER := 2
 const CHOICE_NAMES := {
 	CombatResolver.Choice.ROCK: "Piedra",
 	CombatResolver.Choice.PAPER: "Papel",
@@ -339,11 +341,16 @@ func _resolve_turn() -> void:
 		_last_player_choice = player_choice
 		_has_player_history = true
 
+		var crit := false
 		match result:
 			CombatResolver.Result.WINS_A:
-				enemy_hp -= _damage_dealt_on_win(enemy_choice)
+				crit = _rng.randf() < CRIT_CHANCE
+				var dmg := _damage_dealt_on_win(enemy_choice)
+				enemy_hp -= dmg * CRIT_DAMAGE_MULTIPLIER if crit else dmg
 			CombatResolver.Result.WINS_B:
-				player_hp -= _damage_taken_on_loss()
+				crit = _rng.randf() < CRIT_CHANCE
+				var dmg := _damage_taken_on_loss()
+				player_hp -= dmg * CRIT_DAMAGE_MULTIPLIER if crit else dmg
 				_maybe_trigger_reserva_hierro()
 
 		player_health_bar.value = player_hp
@@ -352,6 +359,8 @@ func _resolve_turn() -> void:
 		result_label.text = _describe_result(player_choice, enemy_choice, result, attacker_name)
 		if result == CombatResolver.Result.WINS_A and enemy_choice == _weak_class_target:
 			result_label.text += "\n¡Clase débil! Daño extra."
+		if crit:
+			result_label.text += "\n¡Golpe crítico! Daño duplicado."
 		round_resolved.emit(player_choice, enemy_choice, result)
 
 		if player_hp <= 0 or enemy_hp <= 0:
