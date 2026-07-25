@@ -444,7 +444,15 @@ que es la tensión real que SPQR quiere validar.
       esa run — coherente con la regla ya acordada de "sin reembolso, solo se sube de
       categoría", sin diálogos de confirmación nuevos. Verificado por consola en
       `--headless` (deshabilitada tras comprar, habilitada antes).
-- [ ] 10. Respec del árbol
+- [ ] 10. Respec del árbol — **diseño acordado (2026-07-25), pendiente de implementar.**
+      Reembolso del 75% de la Chispa gastada, sobre el árbol completo (ambas ramas,
+      Vigor + Botín, a la vez — no hay respec parcial por rama). El botón vive en el Hub
+      principal, visible nada más entrar al juego (no escondido en un submenú aparte).
+      Con `unlocked_upgrades: Array[String]` como única fuente de verdad de lo comprado
+      (`autoloads/chispa.gd`), el respec sale barato: sumar el `cost` de cada id en
+      `unlocked_upgrades`, devolver el 75% de esa suma a `chispa`, vaciar el array. Sin
+      huecos que resolver por la dependencia lineal (`requires`) — vaciar el array
+      entero funciona igual aunque una rama esté a medio comprar.
 
 ## Infraestructura (fuera de las fases del dossier)
 
