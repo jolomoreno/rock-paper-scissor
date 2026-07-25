@@ -91,6 +91,15 @@ propio del enemigo en vez de aleatorio por run). De paso salió otro bug real en
 Tienda: la opción "Ninguno" del desplegable de equipo desequipaba sin devolver el Oro
 gastado y sin ningún aviso — ahora se deshabilita en cuanto compras algo en ese hueco.
 
+El décimo y último punto de la lista añadió un respec del árbol de habilidades: un botón
+en el Hub, visible desde el principio, devuelve el 75% (redondeado hacia abajo) de toda
+la Chispa gastada en las dos ramas a la vez y vacía `unlocked_upgrades` — sin respec
+parcial por rama, porque la dependencia lineal del árbol no deja huecos que resolver. Pide
+confirmación antes de ejecutar, con el importe exacto a recuperar, porque a diferencia del
+resto de acciones inválidas del proyecto (que revierten solas sin diálogo) esta es una
+acción válida y deliberada que cuesta Chispa real. Con esto se cierra la lista de 10
+puntos de la Fase 7.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

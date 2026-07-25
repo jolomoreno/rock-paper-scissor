@@ -7,13 +7,13 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-25):** Fase 7, puntos 1-9 (Puntos de Acción, Escuadrón de
-reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil, Nodos de mapa
-extra, Veterancía de reclutas, Crítico, Enemigos especiales) completos — ver detalle en
-esa sección. El mapa pasó de 4 a 5 capas para dar sitio a la capa "Especial" garantizada
-del punto 9; de paso se corrigió un bug real en la Tienda (la opción "Ninguno" del
-desplegable de equipo desequipaba sin devolver el Oro gastado y sin confirmación). Antes
-de eso,
+**Checkpoint actual (2026-07-25):** Fase 7 completa, los 10 puntos (Puntos de Acción,
+Escuadrón de reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil,
+Nodos de mapa extra, Veterancía de reclutas, Crítico, Enemigos especiales, Respec del
+árbol) — ver detalle en esa sección. El mapa pasó de 4 a 5 capas para dar sitio a la capa
+"Especial" garantizada del punto 9; de paso se corrigió un bug real en la Tienda (la
+opción "Ninguno" del desplegable de equipo desequipaba sin devolver el Oro gastado y sin
+confirmación). Antes de eso,
 Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
@@ -166,7 +166,7 @@ un proyecto pequeño, antes de necesitarlo con uno grande.
       (`vercel inspect --files` o la API `/v13/deployments/{id}/files`), no solo
       metadata/config — se podría haber encontrado esto en minutos, no horas.
 
-## Fase 7 — Mecánicas de SPQR a prototipar (opcional, pendiente)
+## Fase 7 — Mecánicas de SPQR a prototipar (opcional, completa)
 
 No es una fase del dossier de aprendizaje original (0-5) — es la lista de mecánicas del
 diseño cerrado de **SPQR: Punic Wars**
@@ -444,15 +444,26 @@ que es la tensión real que SPQR quiere validar.
       esa run — coherente con la regla ya acordada de "sin reembolso, solo se sube de
       categoría", sin diálogos de confirmación nuevos. Verificado por consola en
       `--headless` (deshabilitada tras comprar, habilitada antes).
-- [ ] 10. Respec del árbol — **diseño acordado (2026-07-25), pendiente de implementar.**
-      Reembolso del 75% de la Chispa gastada, sobre el árbol completo (ambas ramas,
-      Vigor + Botín, a la vez — no hay respec parcial por rama). El botón vive en el Hub
-      principal, visible nada más entrar al juego (no escondido en un submenú aparte).
-      Con `unlocked_upgrades: Array[String]` como única fuente de verdad de lo comprado
-      (`autoloads/chispa.gd`), el respec sale barato: sumar el `cost` de cada id en
-      `unlocked_upgrades`, devolver el 75% de esa suma a `chispa`, vaciar el array. Sin
+- [x] 10. Respec del árbol — **completo (2026-07-25).**
+      Reembolso del 75% de la Chispa gastada, redondeado hacia abajo, sobre el árbol
+      completo (ambas ramas, Vigor + Botín, a la vez — no hay respec parcial por rama).
+      `Chispa.respec_tree()` suma el `cost` de cada id en `unlocked_upgrades`, devuelve
+      `int(floor(gasto * 0.75))` a `chispa` y vacía el array; `Chispa.respec_refund_amount()`
+      expone el mismo cálculo sin ejecutar nada, para mostrarlo antes de confirmar. Sin
       huecos que resolver por la dependencia lineal (`requires`) — vaciar el array
       entero funciona igual aunque una rama esté a medio comprar.
+      Botón "Respec" en el Hub, visible desde el principio junto a "Empezar Run",
+      deshabilitado si `unlocked_upgrades` está vacío. Único punto de la Fase 7 con
+      diálogo de confirmación (`ConfirmationDialog`) antes de ejecutar — decisión
+      explícita del usuario: a diferencia de las acciones inválidas de la Tienda (que
+      revierten solas sin diálogo), esta es una acción válida y deliberada que cuesta
+      Chispa real, y un misclick no debe poder vaciar el árbol sin querer.
+      Verificado por consola en `--headless` (reembolso exacto sobre el save real del
+      usuario — 149 Chispa gastadas en las 8 mejoras → 111 de vuelta —, no-op sobre
+      árbol vacío, redondeo hacia abajo con una suma impar) y confirmado visualmente por
+      el usuario en el editor. El save real se respaldó y se restauró tal cual antes y
+      después de la prueba, para no perder progreso de verdad por una prueba de humo.
+      **Cierra la lista de 10 puntos de la Fase 7.**
 
 ## Infraestructura (fuera de las fases del dossier)
 

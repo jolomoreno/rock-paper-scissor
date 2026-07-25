@@ -3,6 +3,8 @@ extends Control
 @onready var chispa_label: Label = %ChispaLabel
 @onready var upgrades_container: VBoxContainer = %UpgradesContainer
 @onready var start_run_button: Button = %StartRunButton
+@onready var respec_button: Button = %RespecButton
+@onready var respec_confirm_dialog: ConfirmationDialog = %RespecConfirmDialog
 
 var _upgrade_buttons: Dictionary = {}
 var _branch_rows: Dictionary = {}
@@ -14,8 +16,11 @@ func _ready() -> void:
 	Chispa.upgrade_purchased.connect(_on_upgrade_purchased)
 
 	start_run_button.pressed.connect(_on_start_run_pressed)
+	respec_button.pressed.connect(_on_respec_button_pressed)
+	respec_confirm_dialog.confirmed.connect(_on_respec_confirmed)
 
 	_build_upgrade_buttons()
+	_refresh_respec_button()
 
 
 func _on_start_run_pressed() -> void:
@@ -23,13 +28,24 @@ func _on_start_run_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/map/map.tscn")
 
 
+func _on_respec_button_pressed() -> void:
+	respec_confirm_dialog.dialog_text = "Vaciar el árbol y recuperar %d Chispa?" % Chispa.respec_refund_amount()
+	respec_confirm_dialog.popup_centered()
+
+
+func _on_respec_confirmed() -> void:
+	Chispa.respec_tree()
+
+
 func _on_chispa_changed(new_amount: int) -> void:
 	chispa_label.text = "Chispa: %d" % new_amount
 	_refresh_upgrade_buttons()
+	_refresh_respec_button()
 
 
 func _on_upgrade_purchased(_upgrade_id: String) -> void:
 	_refresh_upgrade_buttons()
+	_refresh_respec_button()
 
 
 func _build_upgrade_buttons() -> void:
@@ -83,3 +99,7 @@ func _refresh_upgrade_buttons() -> void:
 
 		button.disabled = owned or not Chispa.can_afford(upgrade_id)
 		button.modulate = Color(0.55, 1.0, 0.55) if owned else Color(1, 1, 1)
+
+
+func _refresh_respec_button() -> void:
+	respec_button.disabled = Chispa.unlocked_upgrades.is_empty()

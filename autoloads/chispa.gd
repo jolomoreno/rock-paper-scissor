@@ -110,6 +110,23 @@ func buy_upgrade(upgrade_id: String) -> bool:
 	return true
 
 
+func respec_refund_amount() -> int:
+	var spent := 0
+	for upgrade_id: String in unlocked_upgrades:
+		spent += UPGRADES[upgrade_id]["cost"]
+	return int(floor(spent * 0.75))
+
+
+func respec_tree() -> void:
+	if unlocked_upgrades.is_empty():
+		return
+
+	chispa += respec_refund_amount()
+	unlocked_upgrades.clear()
+	chispa_changed.emit(chispa)
+	_save_to_disk()
+
+
 func player_hp_bonus() -> int:
 	return _sum_upgrade_field("player_hp_bonus")
 
