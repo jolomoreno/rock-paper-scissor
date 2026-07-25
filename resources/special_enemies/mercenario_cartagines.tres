@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SpecialEnemy" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/special_enemy.gd" id="1_mercenario"]
+[ext_resource type="Resource" path="res://resources/enemy_patterns/reactivo.tres" id="2_reactivo"]
+
+[resource]
+script = ExtResource("1_mercenario")
+display_name = "Mercenario Cartaginés"
+weak_class = 4
+pattern = ExtResource("2_reactivo")

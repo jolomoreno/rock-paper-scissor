@@ -7,9 +7,13 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-24):** Fase 7, puntos 1-8 (Puntos de Acción, Escuadrón de
+**Checkpoint actual (2026-07-25):** Fase 7, puntos 1-9 (Puntos de Acción, Escuadrón de
 reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil, Nodos de mapa
-extra, Veterancía de reclutas, Crítico) completos — ver detalle en esa sección. Antes de eso,
+extra, Veterancía de reclutas, Crítico, Enemigos especiales) completos — ver detalle en
+esa sección. El mapa pasó de 4 a 5 capas para dar sitio a la capa "Especial" garantizada
+del punto 9; de paso se corrigió un bug real en la Tienda (la opción "Ninguno" del
+desplegable de equipo desequipaba sin devolver el Oro gastado y sin confirmación). Antes
+de eso,
 Fase 6 completa, incluido CI/CD — cada push a
 `main` exporta con Godot y despliega a Vercel automáticamente
 (https://rock-paper-scissor-godot.vercel.app, proyecto `rock-paper-scissor`). itch.io se
@@ -406,7 +410,40 @@ que es la tensión real que SPQR quiere validar.
       normal), usando un patrón de enemigo no-telegráfico con RNG propio sembrado para
       forzar de forma determinista tanto el resultado de la ronda como el roll de
       crítico.
-- [ ] 9. Enemigos especiales mapeados sobre clase existente
+- [x] 9. Enemigos especiales mapeados sobre clase existente — **completo (2026-07-25).**
+      A petición explícita del usuario, "garantizado" se interpretó como una capa nueva
+      dedicada (la run pasa de 4 a 5 capas), no como una 3ª opción dentro de una capa ya
+      existente — y colocada en el índice 2, empujando la Tienda/Combate antigua y el
+      Jefe una posición hacia atrás:
+      `combate/reclutamiento → elite/descanso → especial → combate/tienda → jefe`.
+      Sin IA ni sistema de combate nuevo — "heredan matriz" se tradujo literalmente en
+      reutilizar lo que ya existía: nuevo `Resource` `SpecialEnemy`
+      (`scripts/special_enemy.gd`) con `display_name`, `weak_class` (una elección RPSLS,
+      reutiliza el bonus de daño por clase débil del punto 5 pero fijo a este enemigo en
+      vez de al azar por run) y `pattern` (reutiliza directamente uno de los 3
+      `EnemyPattern` ya existentes de la Fase 5). 2 instancias en
+      `resources/special_enemies/`: Contrabandista Céltiba (débil a Lagarto, patrón
+      Telegráfico) y Mercenario Cartaginés (débil a Spock, patrón Reactivo). HP igualada
+      a Élite (`SPECIAL_ENEMY_HP = 4`, sin inventar un tercer número). `map.gd` y
+      `path_strip.gd` ya eran genéricos sobre `RunState.LAYERS`, así que solo hizo falta
+      añadir el icono ASCII nuevo (`S`) y meter `"especial"` en `TOP_TYPES` para que se
+      dibuje en la fila de combate, igual que `"jefe"`. Verificado por consola en
+      `--headless`: 5 capas, capa 2 ofrece solo `especial`, catálogo con los 2 enemigos y
+      sus datos correctos, recorrido completo de una run pasando por la capa nueva, y
+      (instanciando `combat.tscn` de verdad) que `enemy_max_hp`, el `SpecialEnemy`
+      asignado y la clase débil sobreescrita cuadran. Confirmado indirectamente por el
+      usuario, que jugó una run completa hasta la Tienda (capa 3, la siguiente después de
+      Especial) sin problemas.
+      **Bug real encontrado y corregido en esta sesión, al probar la Tienda en esa
+      misma run:** la opción "Ninguno" del desplegable de equipo no tenía ninguna de las
+      restricciones de común/legendario — siempre se podía seleccionar, y desequipaba lo
+      ya comprado sin devolver el Oro gastado ni pedir confirmación. Un clic accidental
+      después de comprar bastaba para perder el objeto y el Oro de golpe, sin deshacerlo.
+      `tienda.gd` ahora deshabilita la opción "Ninguno" del desplegable
+      (`OptionButton.set_item_disabled(0, true)`) en cuanto se compra algo en ese hueco
+      esa run — coherente con la regla ya acordada de "sin reembolso, solo se sube de
+      categoría", sin diálogos de confirmación nuevos. Verificado por consola en
+      `--headless` (deshabilitada tras comprar, habilitada antes).
 - [ ] 10. Respec del árbol
 
 ## Infraestructura (fuera de las fases del dossier)

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SpecialEnemy" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/special_enemy.gd" id="1_contrabandista"]
+[ext_resource type="Resource" path="res://resources/enemy_patterns/telegrafico.tres" id="2_telegrafico"]
+
+[resource]
+script = ExtResource("1_contrabandista")
+display_name = "Contrabandista Céltiba"
+weak_class = 3
+pattern = ExtResource("2_telegrafico")

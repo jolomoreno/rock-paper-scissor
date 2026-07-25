@@ -78,6 +78,8 @@ func _on_equipment_selected(index: int, slot_data: Dictionary, option_button: Op
 	else:
 		message_label.text = ""
 		_update_oro_label()
+		if index != 0:
+			option_button.set_item_disabled(0, true)
 
 
 func _update_veterancy_section() -> void:

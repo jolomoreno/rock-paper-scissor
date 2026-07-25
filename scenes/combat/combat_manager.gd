@@ -9,6 +9,7 @@ enum TurnPhase { PLAYER, RESOLUTION, ENEMY }
 const CombatResolver := preload("res://scripts/combat_resolver.gd")
 const EnemyAI := preload("res://scripts/enemy_ai.gd")
 const EnemyPattern := preload("res://scripts/enemy_pattern.gd")
+const SpecialEnemy := preload("res://scripts/special_enemy.gd")
 const ROUND_DELAY_SECONDS := 1.2
 const COMBAT_WIN_CHISPA_REWARD := 2
 const MAX_PA_PER_TURN := 3
@@ -46,6 +47,7 @@ var _blocking_next_loss: bool = false
 var _queued_actions: Array[Dictionary] = []
 var _reserva_hierro_triggered: bool = false
 var _weak_class_target: CombatResolver.Choice
+var _special_enemy: SpecialEnemy
 var _recruit: Recruit
 var _recruit_heal_used_this_turn: bool = false
 var _block_used_this_turn: bool = false
@@ -90,19 +92,25 @@ func _ready() -> void:
 			enemy_max_hp = RunState.JEFE_ENEMY_HP
 		elif RunState.chosen_node_type == "elite":
 			enemy_max_hp = RunState.ELITE_ENEMY_HP
+		elif RunState.chosen_node_type == "especial":
+			_special_enemy = RunState.SPECIAL_ENEMY_CATALOG[_rng.randi_range(0, RunState.SPECIAL_ENEMY_CATALOG.size() - 1)]
+			enemy_max_hp = RunState.SPECIAL_ENEMY_HP
 	else:
 		player_max_hp += Chispa.player_hp_bonus() + RunState.armor_max_hp_bonus()
 		player_hp = player_max_hp
 
 	enemy_hp = enemy_max_hp
 
-	if RunState.in_run:
+	if _special_enemy != null:
+		_weak_class_target = _special_enemy.weak_class
+	elif RunState.in_run:
 		_weak_class_target = RunState.weak_class_target
 	else:
 		_weak_class_target = _rng.randi_range(0, 4) as CombatResolver.Choice
 
 	_enemy_ai = EnemyAI.new(_pick_enemy_pattern())
-	enemy_intent_label.text = "Enemigo: %s" % _enemy_ai.pattern.display_name
+	var enemy_display_name: String = _special_enemy.display_name if _special_enemy != null else _enemy_ai.pattern.display_name
+	enemy_intent_label.text = "Enemigo: %s" % enemy_display_name
 
 	_update_chispa_oro_label()
 	Chispa.chispa_changed.connect(_on_chispa_changed)
@@ -413,6 +421,8 @@ func _end_combat(player_won: bool) -> void:
 
 
 func _pick_enemy_pattern() -> EnemyPattern:
+	if _special_enemy != null:
+		return _special_enemy.pattern
 	if RunState.in_run and RunState.chosen_node_type in ["jefe", "elite"]:
 		return REACTIVE_PATTERN
 	return RANDOM_PATTERNS[_rng.randi_range(0, RANDOM_PATTERNS.size() - 1)]

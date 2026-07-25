@@ -83,6 +83,14 @@ del punto 5 (unidireccional a propósito), aquí es bidireccional: afecta por ig
 golpes del jugador y a los del enemigo, porque el dossier señala que ambos comparten el
 mismo marco de estadísticas.
 
+El noveno punto añadió enemigos especiales garantizados: el mapa pasó de 4 a 5 capas,
+con una capa dedicada solo a un enemigo especial (sin alternativa, como el Jefe). Sin IA
+nueva — cada especial es un `Resource` `SpecialEnemy` que reutiliza directamente un
+patrón de la Fase 5 y una clase RPSLS débil fija (el mismo bonus del punto 5, pero
+propio del enemigo en vez de aleatorio por run). De paso salió otro bug real en la
+Tienda: la opción "Ninguno" del desplegable de equipo desequipaba sin devolver el Oro
+gastado y sin ningún aviso — ahora se deshabilita en cuanto compras algo en ese hueco.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

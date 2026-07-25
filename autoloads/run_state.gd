@@ -10,11 +10,13 @@ const CombatResolver := preload("res://scripts/combat_resolver.gd")
 const LAYERS: Array = [
 	["combate", "reclutamiento"],
 	["elite", "descanso"],
+	["especial"],
 	["combate", "tienda"],
 	["jefe"],
 ]
 const JEFE_ENEMY_HP := 5
 const ELITE_ENEMY_HP := 4
+const SPECIAL_ENEMY_HP := 4
 const REST_HEALTH_THRESHOLD := 0.85
 const VETERANCY_NAMES := ["Posterior", "Prior", "Primus Pilus"]
 const VETERANCY_COSTS := [5, 10]
@@ -31,6 +33,10 @@ const RECRUIT_CATALOG: Dictionary = {
 	"hastatus": preload("res://resources/recruits/hastatus.tres"),
 	"triario": preload("res://resources/recruits/triario.tres"),
 }
+const SPECIAL_ENEMY_CATALOG: Array = [
+	preload("res://resources/special_enemies/contrabandista_celtiba.tres"),
+	preload("res://resources/special_enemies/mercenario_cartagines.tres"),
+]
 
 var in_run: bool = false
 var current_layer: int = 0

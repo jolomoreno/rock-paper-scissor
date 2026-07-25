@@ -10,8 +10,9 @@ const NODE_ICONS := {
 	"elite": "E",
 	"tienda": "$",
 	"reclutamiento": "R",
+	"especial": "S",
 }
-const TOP_TYPES := ["jefe", "elite", "combate"]
+const TOP_TYPES := ["jefe", "elite", "especial", "combate"]
 const BOTTOM_TYPES := ["descanso", "tienda", "reclutamiento"]
 
 const GOLD := Color(0.878, 0.698, 0.235)
