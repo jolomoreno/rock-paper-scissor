@@ -157,6 +157,12 @@ recalcular posiciones a mano cada vez que cambia algo.
 - Usa `preload()` para lo que sabes que vas a necesitar sí o sí (escenas de enemigo, la
   UI de combate); reserva `load()` para lo que depende de una condición en tiempo de
   ejecución.
+- Cualquier icono representado como texto/glifo debe limitarse a caracteres ASCII
+  simples. Glifos Unicode fuera de ASCII (`♥ ★ ▼ ● ○ ■ ▲ ◆`) dependen del *font
+  fallback* del sistema operativo — funcionan en el editor pero se rompen en el export
+  Web (sin ese fallback, se ven como caja + código hex; costó horas de depuración en
+  Fase 6). Si hace falta un icono más elaborado, usa una fuente propia embebida con
+  fallback, no un carácter Unicode suelto.
 [Godot Docs — Logic preferences](https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html)
 
 ## Probar sin abrir el editor
@@ -174,6 +180,19 @@ ojo en consola, la opción estándar de la comunidad es el addon **GUT** (Godot 
 Test), ejecutable también en modo headless — no hace falta para la Fase 0, es una nota
 para cuando el motor de resolución crezca lo suficiente como para que merezca la pena.
 [Godot Docs — Command line tutorial](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html)
+
+Dos gotchas recurrentes al verificar por `--headless` en este proyecto (ya han costado
+tiempo de depuración más de una vez, en fases distintas):
+
+- Un `preload()` a nivel de script (`const X = preload(...)`) que apunta a una escena
+  dependiente de un autoload puede evaluarse antes de que el motor registre los
+  autoloads, y falla. Usa `load()` diferido dentro de una función en vez de una
+  constante a nivel de archivo cuando el script se ejecuta vía `-s` o se instancia desde
+  otro script en modo headless.
+- Un `await` sobre una señal que ya se emitió de forma síncrona antes de que el `await`
+  empezara a escuchar se queda colgado para siempre, sin error. Si el emisor puede
+  disparar la señal de forma síncrona, lee el estado inmediatamente después de la
+  llamada que la dispara — no esperes la señal.
 
 ## Formato de código
 

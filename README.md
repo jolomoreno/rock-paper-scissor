@@ -100,6 +100,12 @@ resto de acciones inválidas del proyecto (que revierten solas sin diálogo) est
 acción válida y deliberada que cuesta Chispa real. Con esto se cierra la lista de 10
 puntos de la Fase 7.
 
+Cerrada la Fase 7, quedó una revisión de qué mecánicas del dossier de SPQR siguen sin
+probar (combate multi-enemigo, esquiva como estadística, robo de turno, entre otras),
+anotada como backlog sin empezar en la Fase 8 de [ROADMAP.md](ROADMAP.md), junto con una
+retrospectiva de aprendizajes técnicos, de diseño y de proceso pensada para releerse
+antes de arrancar el desarrollo real de SPQR.
+
 Antes de eso, Fase 6 completa (última del roadmap, deploy incluido): el enemigo ya no juega con un
 roll uniforme puro.
 `scripts/enemy_pattern.gd` define un `Resource` `EnemyPattern` con 3 instancias en

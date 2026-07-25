@@ -7,7 +7,13 @@ necesario para atacar el primer prototipo digital de SPQR.
 
 Leyenda: `[ ]` pendiente · `[~]` en curso · `[x]` completado
 
-**Checkpoint actual (2026-07-25):** Fase 7 completa, los 10 puntos (Puntos de Acción,
+**Checkpoint actual (2026-07-25):** Fase 7 completa (10/10 puntos) y cerrada. Esta misma
+sesión se añadió la **Fase 8**, un backlog sin empezar de mecánicas del dossier de SPQR
+que la Fase 7 dejó fuera a propósito (combate multi-enemigo, esquiva, robo de turno,
+entre otras — ver esa sección), y una sección final **"Aprendizajes para SPQR"** que
+consolida en un solo sitio lo aprendido en todo el proyecto, técnico y de diseño, para
+releer antes de arrancar el desarrollo real de SPQR. Ninguna de las dos cosas es código
+nuevo — son notas y backlog. Antes de eso: Fase 7 completa, los 10 puntos (Puntos de Acción,
 Escuadrón de reclutas, Árbol de habilidades, Equipo del héroe, Bonus de clase débil,
 Nodos de mapa extra, Veterancía de reclutas, Crítico, Enemigos especiales, Respec del
 árbol) — ver detalle en esa sección. El mapa pasó de 4 a 5 capas para dar sitio a la capa
@@ -465,9 +471,117 @@ que es la tensión real que SPQR quiere validar.
       después de la prueba, para no perder progreso de verdad por una prueba de humo.
       **Cierra la lista de 10 puntos de la Fase 7.**
 
+## Fase 8 — Candidatas a prototipar (backlog, sin empezar)
+
+No es una fase decidida — es la lista de mecánicas del dossier de SPQR que la Fase 7 dejó
+fuera a propósito (por reducción de alcance) o que directamente nunca entró en esa lista,
+revisada en sesión el 2026-07-25 comparando el dossier
+(`0-documentation/SPQR_Punic_Wars_Dossier_v07_18072026.html`) contra los 10 puntos ya
+cerrados de la Fase 7. Ninguno de estos puntos tiene plan aprobado todavía. Si se retoma
+este repo, el primer paso es decidir con el usuario si se ataca alguno — con el mismo
+proceso de la Fase 7: plan → validación → implementación → comprobación → commit, un
+punto a la vez.
+
+| # | Mecánica | Por qué no está probada | Valor de aprendizaje |
+|---|---|---|---|
+| 1 | Combate multi-enemigo (Fase Enemigos: cada unidad enemiga actúa una vez, en bucle, en vez de un único roll) | Todo combate del repo es 1 vs 1; ya anotado como limitación aceptada en el punto 1 de Fase 7 (con 3 PA de cola el jugador puede triplicar daño contra un solo enemigo) | Alto — prerrequisito real de facto de los puntos 3 y 4 de esta tabla |
+| 2 | Esquiva como estadística aparte (probabilidad plana de esquivar del todo, distinta de Defensa que reduce y de Bloquear que mitiga 1 vez) | No existe hoy | Medio — barato de construir, como el Crítico del punto 8 de Fase 7 |
+| 3 | Robo de turno (acción de Eques en el dossier: actúa una vez extra al empezar la Fase Enemigos, robando el turno al primer enemigo) | Ningún recluta probado hasta ahora toca el orden de turno, solo números (daño/mitigación) | Medio — es un tipo de interacción nuevo, no solo otro modificador |
+| 4 | Área / ataque multi-objetivo (pasivo de Vélite en el dossier: Descarga golpea a 2 enemigos a la vez) | Depende del punto 1 — no tiene sentido probarlo con un solo enemigo en pantalla | Medio, bloqueado por el punto 1 |
+| 5 | Niebla de mapa (tipos de nodo ocultos más allá de una capa de visibilidad, revelados por nodos de la rama Ingenium) | El mapa actual siempre muestra todas las capas y tipos | Bajo — es más generación/UI de datos que combate, pero la técnica de mostrar/ocultar nodos generados sí transfiere |
+| 6 | Draft de escuadrón (3 de 5 huecos desbloqueados permanentemente con Gloria, C(5,3) = 10 combinaciones por run) | Hoy hay 1 solo hueco de recluta, elegido 1-de-2 en el nodo de Reclutamiento | Bajo-medio — ver nota de diseño abierta abajo antes de tocar esto |
+
+**Nota de diseño abierta, sin resolver — el punto 6 y la tercera moneda:** el draft de
+escuadrón del dossier depende de **Gloria**, una moneda permanente distinta de la
+Chispa (Gloria financia el árbol de habilidades + los huecos de escuadrón; Oro sigue
+siendo el temporal de dentro de la run). Añadirla tal cual chocaría con la regla
+explícita de este mismo `CLAUDE.md` de no meter "una tercera moneda". Si algún día se
+quiere probar el draft de verdad, hay que decidir antes si Gloria sustituye a Chispa
+(renombrar el concepto, no añadir una moneda nueva) o si se acepta romper esa regla por
+esta vez de forma consciente — no es una decisión que deba tomarse sin el usuario.
+
+**Recomendación de Claude (2026-07-25), no una decisión tomada:** de toda la lista, el
+punto 1 (combate multi-enemigo) es el que más transfiere a SPQR directamente — nunca es
+1 vs 1 — y el único que le da sentido real a los puntos 3 y 4. El resto se puede dejar
+anotado sin construir sin perder aprendizaje relevante.
+
 ## Infraestructura (fuera de las fases del dossier)
 
 - [x] Godot 4.7 instalado
 - [x] `gh` CLI instalado y autenticado
 - [x] Repositorio en GitHub (público, `main`)
 - [x] `CLAUDE.md` con convenciones de desarrollo
+
+## Aprendizajes para SPQR (retrospectiva, 2026-07-25)
+
+Con la Fase 7 cerrada (10/10 puntos), esta sección consolida en un solo sitio los
+aprendizajes que ya estaban dispersos por el detalle fase a fase de este documento, más
+los que solo se ven mirando el conjunto. Pensada para releerse antes de escribir la
+primera línea de código del SPQR real, no solo como archivo histórico de este repo.
+
+### Técnicos (Godot)
+
+- **`--headless` + autoloads es una trampa sutil, ya repetida en fases distintas (Fase 5
+  y Fase 7 punto 8):** un `preload()` a nivel de script que referencia un autoload puede
+  evaluarse antes de que el motor registre los autoloads y falla — hace falta `load()`
+  diferido dentro de una función, no una `const` a nivel de archivo. Y un `await` sobre
+  una señal que ya se emitió de forma síncrona antes de que el `await` empezara a
+  escuchar se cuelga para siempre — hay que leer el estado justo después de la llamada
+  síncrona que la dispara, no esperar la señal. (Ver también `CLAUDE.md`, sección
+  "Probar sin abrir el editor".)
+- **Cualquier icono como texto debe limitarse a ASCII**, o exige una fuente propia
+  embebida con fallback — los glifos Unicode (`♥ ★ ▼`) funcionan en el editor pero
+  rompen en el export Web sin avisar (Fase 6, horas de depuración).
+- **El pipeline de CI/export es donde se esconden los bugs de verdad, no el motor en
+  sí** — el 404 de producción durante horas en Fase 6 no era un bug de Vercel, era que
+  la action de export anidaba el build una carpeta más adentro de lo esperado. Antes de
+  sospechar de un servicio externo, comparar el contenido real subido (manifiesto de
+  archivos), no solo la config o el comportamiento "a mano".
+- **Verificar sistemas de persistencia por consola exige backup/restore explícito del
+  `user://savegame.json` real** cada vez, para no pisar progreso real del usuario —
+  rutina ya establecida aquí, que en SPQR con un savegame más grande probablemente pida
+  un savegame de test dedicado en vez de tocar siempre el real.
+
+### Diseño (solo visible construyendo, no en el papel)
+
+- **Mecánicas que en el dossier parecen distintas colisionan en la práctica:** Bloquear
+  (acción del héroe) y Última Línea (acción de Triario) resultaron ser, jugando, lo
+  mismo — mitigar daño una vez por turno. Señal real de que hay que vigilar el solape
+  entre acciones de héroe y pasivos/acciones de recluta al añadir las 5 clases completas
+  de SPQR.
+- **"Clase débil" necesita ser una identidad fija de unidad, no una tirada libre:**
+  mapear el bonus sobre una elección RPSLS libre cada ronda (en vez de sobre la
+  identidad fija de una unidad enemiga, como en el diseño real) permite que un agente
+  que optimice evite la clase débil una vez revelada, vaciando el bonus. No rompe nada
+  aquí porque la IA actual no tiene esa lógica, pero es una pregunta abierta real para
+  el combate de SPQR.
+- **La curva de coste del árbol debe crecer casi exponencial, no lineal:** confirmado
+  con datos reales de playtesting (149 Chispa gastadas en solo 8 nodos de 2 ramas de
+  prueba, sobrando Chispa al final del recorrido). Con 29 nodos y 4 ramas reales en
+  SPQR, una curva plana dejaría el árbol vacío en pocas runs.
+- **Ningún número de este repo debe copiarse literalmente a SPQR** — son cifras de
+  prueba para validar el mecanismo, no el balance (regla ya explícita en `CLAUDE.md`,
+  confirmada empíricamente por la escasez de Oro en un mapa de prueba de 4-5 capas: se
+  espera que un mapa de campaña real con más capas dé más margen económico, no que la
+  cifra en sí sea correcta).
+- **Los bugs reales aparecen jugando, no diseñando:** el desplegable "Ninguno" de la
+  Tienda desequipaba sin devolver el Oro gastado; la Lorica de recluta anulaba el daño
+  del todo porque el daño base enemigo era `1` fijo. Ninguno se habría visto sin una run
+  completa jugada de verdad — el paso de "confirmado visualmente por el usuario" no es
+  un trámite, es donde salen los bugs reales.
+
+### Proceso de trabajo
+
+- **Un punto a la vez, con validación del usuario entre cada uno** (plan → implementar →
+  verificar por consola → confirmar visualmente → commit) evitó que un mecanismo mal
+  entendido se propagara a los siguientes puntos de la lista — con 29 nodos de árbol y 5
+  clases reales en SPQR, este ritmo importa más, no menos.
+- **Reducir alcance a propósito y anotar el corte** ("1 recluta fijo en vez de 3
+  huecos", "equipo sin coste hasta que exista Tienda") permitió probar el mecanismo sin
+  construir el sistema completo de golpe, dejando escrito exactamente qué falta para
+  retomarlo — patrón directamente reutilizable en SPQR.
+- **El dossier de diseño (v_07, 18/07/2026) es anterior a estos hallazgos** (sesiones
+  del 23 al 25/07/2026) — ninguno de los puntos de diseño de esta sección está todavía
+  incorporado al documento real. Antes de empezar el desarrollo real de SPQR, vale la
+  pena una pasada explícita de "retroalimentar el dossier con lo aprendido aquí", para
+  no perder estas notas sueltas en el ROADMAP de un repo distinto.
